@@ -1,0 +1,159 @@
+{
+  "provinces": [
+    {
+      "code": 8,
+      "name": "تهران",
+      "slug": "tehran-province"
+    },
+    {
+      "code": 27,
+      "name": "مازندران",
+      "slug": "mazandaran"
+    },
+    {
+      "code": 1,
+      "name": "آذربایجان شرقی",
+      "slug": "east-azerbaijan"
+    },
+    {
+      "code": 2,
+      "name": "آذربایجان غربی",
+      "slug": "west-azerbaijan"
+    },
+    {
+      "code": 3,
+      "name": "اردبیل",
+      "slug": "ardabil-province"
+    },
+    {
+      "code": 4,
+      "name": "اصفهان",
+      "slug": "isfahan-province"
+    },
+    {
+      "code": 5,
+      "name": "البرز",
+      "slug": "alborz"
+    },
+    {
+      "code": 6,
+      "name": "ایلام",
+      "slug": "ilam-province"
+    },
+    {
+      "code": 7,
+      "name": "بوشهر",
+      "slug": "bushehr-province"
+    },
+    {
+      "code": 9,
+      "name": "چهارمحال و بختیاری",
+      "slug": "charmahal-bakhtiari"
+    },
+    {
+      "code": 10,
+      "name": "خراسان جنوبی",
+      "slug": "south-khorasan"
+    },
+    {
+      "code": 11,
+      "name": "خراسان رضوی",
+      "slug": "razavi-khorasan"
+    },
+    {
+      "code": 12,
+      "name": "خراسان شمالی",
+      "slug": "north-khorasan"
+    },
+    {
+      "code": 13,
+      "name": "خوزستان",
+      "slug": "khuzestan"
+    },
+    {
+      "code": 14,
+      "name": "زنجان",
+      "slug": "zanjan-province"
+    },
+    {
+      "code": 15,
+      "name": "سمنان",
+      "slug": "semnan-province"
+    },
+    {
+      "code": 16,
+      "name": "سیستان و بلوچستان",
+      "slug": "sistan-baluchestan"
+    },
+    {
+      "code": 17,
+      "name": "فارس",
+      "slug": "fars"
+    },
+    {
+      "code": 18,
+      "name": "قزوین",
+      "slug": "qazvin-province"
+    },
+    {
+      "code": 19,
+      "name": "قم",
+      "slug": "qom-province"
+    },
+    {
+      "code": 20,
+      "name": "کردستان",
+      "slug": "kurdistan"
+    },
+    {
+      "code": 21,
+      "name": "کرمان",
+      "slug": "kerman-province"
+    },
+    {
+      "code": 22,
+      "name": "کرمانشاه",
+      "slug": "kermanshah-province"
+    },
+    {
+      "code": 23,
+      "name": "کهگیلویه و بویراحمد",
+      "slug": "kohgiluyeh-boyerahmad"
+    },
+    {
+      "code": 24,
+      "name": "گلستان",
+      "slug": "golestan"
+    },
+    {
+      "code": 25,
+      "name": "لرستان",
+      "slug": "lorestan"
+    },
+    {
+      "code": 26,
+      "name": "گیلان",
+      "slug": "gilan"
+    },
+    {
+      "code": 28,
+      "name": "مرکزی",
+      "slug": "markazi"
+    },
+    {
+      "code": 29,
+      "name": "هرمزگان",
+      "slug": "hormozgan"
+    },
+    {
+      "code": 30,
+      "name": "همدان",
+      "slug": "hamadan-province"
+    },
+    {
+      "code": 31,
+      "name": "یزد",
+      "slug": "yazd-province"
+    }
+  ]
+}

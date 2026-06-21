@@ -1,0 +1,342 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@source inline("{xs:,sm:,md:,lg:,xl:,}col-start-{1,2,3,4,5,6,7,8,9,10,11,12,13}");
+@source inline("{xs:,sm:,md:,lg:,xl:,}col-end-{1,2,3,4,5,6,7,8,9,10,11,12,13}");
+
+@custom-variant dark (&:is(.dark *));
+
+/* ==========================================================================
+Tailwind v4 Theme Mapping
+========================================================================== */
+
+@theme inline {
+  /* Core */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Charts */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Commerce */
+  --color-rating: var(--rating);
+  --color-wishlist: var(--wishlist);
+  --color-sale: var(--sale);
+  --color-success: var(--success);
+
+  --color-status-pending-bg: var(--status-pending-bg);
+  --color-status-pending-text: var(--status-pending-text);
+
+  --color-status-processing-bg: var(--status-processing-bg);
+  --color-status-processing-text: var(--status-processing-text);
+
+  --color-status-shipped-bg: var(--status-shipped-bg);
+  --color-status-shipped-text: var(--status-shipped-text);
+
+  --color-status-delivered-bg: var(--status-delivered-bg);
+  --color-status-delivered-text: var(--status-delivered-text);
+
+  --color-status-cancelled-bg: var(--status-cancelled-bg);
+  --color-status-cancelled-text: var(--status-cancelled-text);
+
+  --color-status-refunded-bg: var(--status-refunded-bg);
+  --color-status-refunded-text: var(--status-refunded-text);
+
+  /* Fonts */
+  --font-sans: var(--iransans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Radius */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/* ==========================================================================
+TWEAKCN THEME TOKENS
+========================================================================== */
+
+@layer theme {
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+
+    --destructive: oklch(0.577 0.245 27.325);
+
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+
+    --radius: 0.625rem;
+
+    /* sidebar follows theme */
+    --sidebar: var(--background);
+    --sidebar-foreground: var(--foreground);
+
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+  }
+
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+
+    --destructive: oklch(0.704 0.191 22.216);
+
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+  }
+}
+
+/* ==========================================================================
+Application Tokens
+========================================================================== */
+
+@layer base {
+  :root {
+    /* Store accent colors — edit these to retheme the store */
+    --rating: var(--chart-1);
+    --wishlist: var(--destructive);
+    --sale: var(--chart-2);
+    --success: var(--chart-3);
+
+    /* Order status colors */
+    --status-pending-bg: color-mix(in oklch, var(--chart-1) 15%, white);
+    --status-pending-text: var(--chart-1);
+
+    --status-processing-bg: color-mix(in oklch, var(--chart-2) 15%, white);
+    --status-processing-text: var(--chart-2);
+
+    --status-shipped-bg: color-mix(in oklch, var(--chart-3) 15%, white);
+    --status-shipped-text: var(--chart-3);
+
+    --status-delivered-bg: color-mix(in oklch, var(--success) 15%, white);
+    --status-delivered-text: var(--success);
+
+    --status-cancelled-bg: color-mix(in oklch, var(--destructive) 15%, white);
+    --status-cancelled-text: var(--destructive);
+
+    --status-refunded-bg: var(--muted);
+    --status-refunded-text: var(--muted-foreground);
+  }
+
+  * {
+    border-color: var(--color-border);
+    outline-color: var(--color-ring);
+  }
+
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+  }
+}
+
+/* ============================================================================
+   marketing site  — Prose styles for rich HTML content
+   Used by: product descriptions, blog posts, CMS pages
+   ============================================================================ */
+
+
+@utility marketing-container {
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* ============================================================================
+   .blog-body — Prose styles for rich HTML content
+   Used by: product descriptions, blog posts, CMS pages
+   ============================================================================ */
+
+.blog-body {
+  @apply text-base leading-7 text-foreground/90;
+}
+
+.blog-body > * + * {
+  @apply mt-5;
+}
+
+.blog-body h1 {
+  @apply mt-10 text-3xl font-bold tracking-tight text-foreground;
+}
+
+.blog-body h2 {
+  @apply mt-10 text-2xl font-bold tracking-tight text-foreground;
+}
+
+.blog-body h3 {
+  @apply mt-8 text-xl font-semibold tracking-tight text-foreground;
+}
+
+.blog-body h4 {
+  @apply mt-6 text-lg font-semibold tracking-tight text-foreground;
+}
+
+.blog-body p {
+  @apply leading-7;
+}
+
+.blog-body ul {
+  @apply list-disc space-y-2 pl-6;
+}
+
+.blog-body ol {
+  @apply list-decimal space-y-2 pl-6;
+}
+
+.blog-body li {
+  @apply leading-7;
+}
+
+.blog-body li > ul,
+.blog-body li > ol {
+  @apply mt-2;
+}
+
+.blog-body a {
+  @apply text-foreground underline underline-offset-4 transition-colors hover:text-foreground/70;
+}
+
+.blog-body blockquote {
+  @apply border-l-4 border-border pl-6 italic text-muted-foreground;
+}
+
+.blog-body img {
+  @apply rounded-lg;
+}
+
+.blog-body hr {
+  @apply my-10 border-border;
+}
+
+.blog-body code {
+  @apply rounded-sm bg-muted px-1.5 py-0.5 font-mono text-[0.875em];
+}
+
+.blog-body pre {
+  @apply overflow-x-auto rounded-lg bg-neutral-900 p-4 text-sm text-neutral-100;
+}
+
+.blog-body pre code {
+  @apply bg-transparent p-0 text-inherit;
+}
+
+.blog-body strong {
+  @apply font-semibold text-foreground;
+}
+
+.blog-body em {
+  @apply italic;
+}
+
+.blog-body table {
+  @apply w-full border-collapse text-sm;
+}
+
+.blog-body th,
+.blog-body td {
+  @apply border border-border px-3 py-2 text-left;
+}
+
+.blog-body th {
+  @apply bg-muted font-semibold;
+}

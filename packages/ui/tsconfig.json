@@ -1,0 +1,11 @@
+{
+  "extends": "@ecom/config/tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "types": ["react", "react-dom"]
+  },
+  "include": ["src"]
+}

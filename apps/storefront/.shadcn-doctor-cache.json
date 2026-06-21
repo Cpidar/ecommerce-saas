@@ -1,0 +1,1969 @@
+{
+  "version": 1,
+  "rootPath": "D:\\Projects\\Medusa\\ecommerce-saas\\apps\\storefront",
+  "lastScan": "2026-06-15T12:26:12.350Z",
+  "entries": {
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/next-env.d.ts": {
+      "mtime": 1781439297047.2793,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/next.config.ts": {
+      "mtime": 1781161039493.041,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(admin)/admin/(panel)/layout.tsx": {
+      "mtime": 1781453537321.4734,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(admin)/admin/(panel)/page.tsx": {
+      "mtime": 1781456072875.7815,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(admin)/admin/login/layout.tsx": {
+      "mtime": 1781454174694.743,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(admin)/admin/login/page.tsx": {
+      "mtime": 1781453989626.9673,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(admin)/admin/login/page.tsx",
+          "line": 49,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form action={handleLogin} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(admin)/admin/puck/[...puckPath]/client.tsx": {
+      "mtime": 1781175953660.4446,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(admin)/admin/puck/[...puckPath]/page.tsx": {
+      "mtime": 1781176025608.2825,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(auth)/auth/authenticate/page.tsx": {
+      "mtime": 1781020261594.206,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(auth)/auth/authenticate/page.tsx",
+          "line": 80,
+          "column": 11,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "          <form className=\"\" onSubmit={handleSubmit}>\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(auth)/auth/forgot-password/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(auth)/auth/forgot-password/page.tsx",
+          "line": 53,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form onSubmit={handleSubmit} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(auth)/auth/layout.tsx": {
+      "mtime": 1779217400358.5276,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(auth)/auth/layout.tsx",
+          "line": 17,
+          "column": 9,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "        <div\r",
+          "suggestedLine": "<Card>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(auth)/auth/otp/page.tsx": {
+      "mtime": 1781020367779.013,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/app/(auth)/auth/otp/page.tsx",
+          "line": 113,
+          "column": 9,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "        <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/app/(auth)/auth/otp/page.tsx",
+          "line": 137,
+          "column": 9,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "        <form className=\"\" onSubmit={handleSubmit}>\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(auth)/auth/password/page.tsx": {
+      "mtime": 1781020554699.7832,
+      "findingsCount": 3,
+      "findings": [
+        {
+          "file": "src/app/(auth)/auth/password/page.tsx",
+          "line": 79,
+          "column": 9,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "        <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/app/(auth)/auth/password/page.tsx",
+          "line": 98,
+          "column": 9,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "        <form className=\"grid grid-cols-1 gap-6\" onSubmit={handleSubmit}>\r",
+          "suggestedLine": "<Form>"
+        },
+        {
+          "file": "src/app/(auth)/auth/password/page.tsx",
+          "line": 118,
+          "column": 9,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "        <button onClick={loginByOTP} className=\"text-sm text-green-600\">\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(auth)/auth/register/page.tsx": {
+      "mtime": 1781020736264.8435,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(auth)/auth/register/page.tsx",
+          "line": 85,
+          "column": 9,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "        <form onSubmit={handleSubmit} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(auth)/auth/reset-password/page.tsx": {
+      "mtime": 1779220471800.3984,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(auth)/auth/reset-password/page.tsx",
+          "line": 69,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form onSubmit={handleSubmit} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/[slug]/brand-view.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/[slug]/category-view.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/[slug]/loading.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/[slug]/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/[slug]/product-detail-view.tsx": {
+      "mtime": 1780925374840.6357,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/about/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/account/addresses/page.tsx": {
+      "mtime": 1781103109153.4983,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/account/addresses/page.tsx",
+          "line": 132,
+          "column": 13,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "            <form onSubmit={handleAdd} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/account/layout.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/account/orders/[id]/page.tsx": {
+      "mtime": 1781103141277.087,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/account/orders/[id]/return-request-dialog.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/account/orders/page.tsx": {
+      "mtime": 1781103121591.3845,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/account/page.tsx": {
+      "mtime": 1781102808235.9968,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/account/settings/page.tsx": {
+      "mtime": 1781102733343.9917,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/account/settings/page.tsx",
+          "line": 63,
+          "column": 11,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "          <form onSubmit={handleSave} className=\"space-y-4\">",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/blog/[slug]/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/blog/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/brands/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/cart/layout.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/cart/page.tsx": {
+      "mtime": 1781102604142.6528,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/checkout/layout.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/checkout/page.tsx": {
+      "mtime": 1781383949842.589,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/checkout/success/page.tsx": {
+      "mtime": 1781385614453.8853,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/client.tsx": {
+      "mtime": 1781175261728.189,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/contact/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/contact/page.tsx",
+          "line": 114,
+          "column": 13,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "            <form onSubmit={handleSubmit} className=\"space-y-6\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/emailauth/forgot-password/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/emailauth/forgot-password/page.tsx",
+          "line": 53,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form onSubmit={handleSubmit} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/emailauth/layout.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/emailauth/login/page.tsx": {
+      "mtime": 1779218266553.273,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/emailauth/login/page.tsx",
+          "line": 51,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form onSubmit={handleSubmit} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/emailauth/register/page.tsx": {
+      "mtime": 1779218319393.895,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/emailauth/register/page.tsx",
+          "line": 57,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form onSubmit={handleSubmit} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/emailauth/reset-password/page.tsx": {
+      "mtime": 1781441164184.2688,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/emailauth/reset-password/page.tsx",
+          "line": 67,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form onSubmit={handleSubmit} className=\"space-y-4\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/error.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/faq/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/faq/page.tsx",
+          "line": 81,
+          "column": 7,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "      <div className=\"mt-12 rounded-lg border bg-neutral-50 p-6 text-center\">\r",
+          "suggestedLine": "<Card>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/layout.tsx": {
+      "mtime": 1779218387949.9365,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/page-original.tsx": {
+      "mtime": 1781103767019.4734,
+      "findingsCount": 4,
+      "findings": [
+        {
+          "file": "src/app/(store)/page-original.tsx",
+          "line": 90,
+          "column": 11,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "          <div className=\"rounded-lg border bg-white p-6\">\r",
+          "suggestedLine": "<Card>"
+        },
+        {
+          "file": "src/app/(store)/page-original.tsx",
+          "line": 98,
+          "column": 11,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "          <div className=\"rounded-lg border bg-white p-6\">\r",
+          "suggestedLine": "<Card>"
+        },
+        {
+          "file": "src/app/(store)/page-original.tsx",
+          "line": 106,
+          "column": 11,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "          <div className=\"rounded-lg border bg-white p-6\">\r",
+          "suggestedLine": "<Card>"
+        },
+        {
+          "file": "src/app/(store)/page-original.tsx",
+          "line": 245,
+          "column": 17,
+          "rule": "prefer-shadcn-aspect-ratio",
+          "violation": "Raw <div> with Tailwind aspect ratio class detected. Use <AspectRatio> from shadcn/ui.",
+          "suggestion": "Use <AspectRatio> from shadcn/ui.",
+          "element": "div",
+          "replacement": "AspectRatio",
+          "sourceLine": "                <div className=\"relative aspect-square overflow-hidden rounded-lg bg-neutral-100\">\r",
+          "suggestedLine": "<AspectRatio>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/page.tsx": {
+      "mtime": 1781175198902.2993,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/pages/[slug]/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/pages/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/policies/privacy/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/policies/returns/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/policies/shipping/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/policies/terms/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/search/loading.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/search/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/app/(store)/search/page.tsx",
+          "line": 31,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form className=\"relative mt-8 max-w-lg\" action=\"/search\" method=\"get\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/shop/loading.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/shop/page.tsx": {
+      "mtime": 1781102879823.5469,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/wishlist/layout.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/(store)/wishlist/page.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/api/behpardakht/callback/route.ts": {
+      "mtime": 1781384826497.995,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/api/payment/[provider]/request/route.ts": {
+      "mtime": 1781456438205.906,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/api/puck/route.ts": {
+      "mtime": 1781175341797.9397,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/error.tsx": {
+      "mtime": 1778754496610.626,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/layout.tsx": {
+      "mtime": 1781038533556.2012,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/not-found.tsx": {
+      "mtime": 1778754496621.7788,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/robots.ts": {
+      "mtime": 1778754496621.7788,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/app/sitemap.ts": {
+      "mtime": 1778754496621.7788,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/assets/font.ts": {
+      "mtime": 1781038398988.8806,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/admin/sidebar.tsx": {
+      "mtime": 1781453484188.1904,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/admin/sidebar.tsx",
+          "line": 71,
+          "column": 9,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "        <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/auth/auth-card-layout.tsx": {
+      "mtime": 1778754496621.7788,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/cart/cart-drawer.tsx": {
+      "mtime": 1781020948412.7815,
+      "findingsCount": 4,
+      "findings": [
+        {
+          "file": "src/components/cart/cart-drawer.tsx",
+          "line": 42,
+          "column": 13,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "            <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/cart/cart-drawer.tsx",
+          "line": 48,
+          "column": 13,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "            <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/cart/cart-drawer.tsx",
+          "line": 74,
+          "column": 13,
+          "rule": "prefer-shadcn-scroll-area",
+          "violation": "Raw <div> with overflow scroll/auto class detected. Use <ScrollArea> from shadcn/ui.",
+          "suggestion": "Use <ScrollArea> from shadcn/ui.",
+          "element": "div",
+          "replacement": "ScrollArea",
+          "sourceLine": "            <div className=\"flex-1 overflow-y-auto px-4\">\r",
+          "suggestedLine": "<ScrollArea>"
+        },
+        {
+          "file": "src/components/cart/cart-drawer.tsx",
+          "line": 95,
+          "column": 17,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "                <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/cart/cart-item.tsx": {
+      "mtime": 1778754496621.7788,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/cart/cart-summary.tsx": {
+      "mtime": 1781022995677.9065,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/cart/promotion-code-form.tsx": {
+      "mtime": 1781022995681.417,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/cart/promotion-code-form.tsx",
+          "line": 86,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form onSubmit={handleAdd} className=\"flex gap-2\">\r",
+          "suggestedLine": "<Form>"
+        },
+        {
+          "file": "src/components/cart/promotion-code-form.tsx",
+          "line": 106,
+          "column": 15,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "              <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/checkout/BehpardakhtIcon.tsx": {
+      "mtime": 1752207474605.7383,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/checkout/checkout-address-step.tsx": {
+      "mtime": 1781383949832.594,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/checkout/checkout-address-step.tsx",
+          "line": 80,
+          "column": 5,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "    <form onSubmit={handleSubmit} className=\"space-y-6\">\r",
+          "suggestedLine": "<Form>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/checkout/checkout-payment-step.tsx": {
+      "mtime": 1781384004402.2876,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/checkout/checkout-payment-step.tsx",
+          "line": 118,
+          "column": 17,
+          "rule": "prefer-shadcn-input",
+          "violation": "Raw <input> detected. Use <Input> from shadcn/ui or wrap in <Field>.",
+          "suggestion": "Use <Input> from shadcn/ui.",
+          "element": "input",
+          "replacement": "Input",
+          "sourceLine": "                <input\r",
+          "suggestedLine": "<Input>"
+        },
+        {
+          "file": "src/components/checkout/checkout-payment-step.tsx",
+          "line": 118,
+          "column": 17,
+          "rule": "prefer-shadcn-radio-group",
+          "violation": "Raw <input type=\"radio\"> detected. Use <RadioGroup> from shadcn/ui.",
+          "suggestion": "Use <RadioGroup> from shadcn/ui.",
+          "element": "input",
+          "replacement": "RadioGroup",
+          "sourceLine": "                <input\r",
+          "suggestedLine": "<RadioGroup>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/checkout/checkout-shipping-step.tsx": {
+      "mtime": 1781383949832.594,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/checkout/checkout-shipping-step.tsx",
+          "line": 81,
+          "column": 17,
+          "rule": "prefer-shadcn-input",
+          "violation": "Raw <input> detected. Use <Input> from shadcn/ui or wrap in <Field>.",
+          "suggestion": "Use <Input> from shadcn/ui.",
+          "element": "input",
+          "replacement": "Input",
+          "sourceLine": "                <input\r",
+          "suggestedLine": "<Input>"
+        },
+        {
+          "file": "src/components/checkout/checkout-shipping-step.tsx",
+          "line": 81,
+          "column": 17,
+          "rule": "prefer-shadcn-radio-group",
+          "violation": "Raw <input type=\"radio\"> detected. Use <RadioGroup> from shadcn/ui.",
+          "suggestion": "Use <RadioGroup> from shadcn/ui.",
+          "element": "input",
+          "replacement": "RadioGroup",
+          "sourceLine": "                <input\r",
+          "suggestedLine": "<RadioGroup>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/checkout/payment-provider-input.tsx": {
+      "mtime": 1781441131048.133,
+      "findingsCount": 3,
+      "findings": [
+        {
+          "file": "src/components/checkout/payment-provider-input.tsx",
+          "line": 116,
+          "column": 7,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "      <div className=\"rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900\">\r",
+          "suggestedLine": "<Card>"
+        },
+        {
+          "file": "src/components/checkout/payment-provider-input.tsx",
+          "line": 126,
+          "column": 7,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "      <form action={`http://localhost:3000/payment/${referenceId}`} method=\"GET\">\r",
+          "suggestedLine": "<Form>"
+        },
+        {
+          "file": "src/components/checkout/payment-provider-input.tsx",
+          "line": 128,
+          "column": 9,
+          "rule": "prefer-shadcn-input",
+          "violation": "Raw <input> detected. Use <Input> from shadcn/ui or wrap in <Field>.",
+          "suggestion": "Use <Input> from shadcn/ui.",
+          "element": "input",
+          "replacement": "Input",
+          "sourceLine": "        <input type=\"hidden\" value={referenceId} id=\"RefId\" name=\"RefId\" />\r",
+          "suggestedLine": "<Input>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/layout/Carousel.tsx": {
+      "mtime": 1781184955064.0454,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/layout/Carousel.tsx",
+          "line": 64,
+          "column": 21,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "                    <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/layout/Carousel.tsx",
+          "line": 82,
+          "column": 21,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "                    <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/layout/Layout.tsx": {
+      "mtime": 1778780280052.3125,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/layout/announcement-bar.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/layout/announcement-bar.tsx",
+          "line": 27,
+          "column": 7,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "      <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/layout/back-to-top.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/layout/back-to-top.tsx",
+          "line": 23,
+          "column": 5,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "    <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/layout/footer.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/layout/header.tsx": {
+      "mtime": 1781023684569.6155,
+      "findingsCount": 4,
+      "findings": [
+        {
+          "file": "src/components/layout/header.tsx",
+          "line": 91,
+          "column": 15,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "              <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/layout/header.tsx",
+          "line": 127,
+          "column": 29,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "                            <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/layout/header.tsx",
+          "line": 184,
+          "column": 11,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "          <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/layout/header.tsx",
+          "line": 248,
+          "column": 11,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "          <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/layout/newsletter-form.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/layout/newsletter-form.tsx",
+          "line": 24,
+          "column": 5,
+          "rule": "prefer-shadcn-form",
+          "violation": "Raw <form> detected. Use <Form> from shadcn/ui with react-hook-form.",
+          "suggestion": "Use <Form> from shadcn/ui.",
+          "element": "form",
+          "replacement": "Form",
+          "sourceLine": "    <form onSubmit={handleSubmit} className=\"mt-8 flex w-full max-w-md gap-2\">\r",
+          "suggestedLine": "<Form>"
+        },
+        {
+          "file": "src/components/layout/newsletter-form.tsx",
+          "line": 25,
+          "column": 7,
+          "rule": "prefer-shadcn-input",
+          "violation": "Raw <input> detected. Use <Input> from shadcn/ui or wrap in <Field>.",
+          "suggestion": "Use <Input> from shadcn/ui.",
+          "element": "input",
+          "replacement": "Input",
+          "sourceLine": "      <input\r",
+          "suggestedLine": "<Input>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/option-select.tsx": {
+      "mtime": 1780030766003.4302,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/products/option-select.tsx",
+          "line": 33,
+          "column": 13,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "            <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/pagination.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/products/pagination.tsx",
+          "line": 39,
+          "column": 5,
+          "rule": "prefer-shadcn-pagination",
+          "violation": "Raw pagination <nav> detected. Use <Pagination> from shadcn/ui.",
+          "suggestion": "Use <Pagination> from shadcn/ui.",
+          "element": "nav",
+          "replacement": "Pagination",
+          "sourceLine": "    <nav\r",
+          "suggestedLine": "<Pagination>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/product-card.tsx": {
+      "mtime": 1781023643292.4836,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/products/product-card.tsx",
+          "line": 60,
+          "column": 7,
+          "rule": "prefer-shadcn-aspect-ratio",
+          "violation": "Raw <div> with Tailwind aspect ratio class detected. Use <AspectRatio> from shadcn/ui.",
+          "suggestion": "Use <AspectRatio> from shadcn/ui.",
+          "element": "div",
+          "replacement": "AspectRatio",
+          "sourceLine": "      <div className=\"relative aspect-square overflow-hidden rounded-lg bg-neutral-100\">\r",
+          "suggestedLine": "<AspectRatio>"
+        },
+        {
+          "file": "src/components/products/product-card.tsx",
+          "line": 76,
+          "column": 9,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "        <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/product-gallery.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/products/product-gallery.tsx",
+          "line": 21,
+          "column": 7,
+          "rule": "prefer-shadcn-aspect-ratio",
+          "violation": "Raw <div> with Tailwind aspect ratio class detected. Use <AspectRatio> from shadcn/ui.",
+          "suggestion": "Use <AspectRatio> from shadcn/ui.",
+          "element": "div",
+          "replacement": "AspectRatio",
+          "sourceLine": "      <div className=\"relative aspect-square overflow-hidden rounded-lg bg-neutral-100\">\r",
+          "suggestedLine": "<AspectRatio>"
+        },
+        {
+          "file": "src/components/products/product-gallery.tsx",
+          "line": 36,
+          "column": 13,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "            <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/product-grid.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/quantity-selector.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/components/products/quantity-selector.tsx",
+          "line": 21,
+          "column": 7,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "      <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/products/quantity-selector.tsx",
+          "line": 32,
+          "column": 7,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "      <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/recently-viewed.tsx": {
+      "mtime": 1778754496623.7893,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/products/recently-viewed.tsx",
+          "line": 27,
+          "column": 7,
+          "rule": "prefer-shadcn-scroll-area",
+          "violation": "Raw <div> with overflow scroll/auto class detected. Use <ScrollArea> from shadcn/ui.",
+          "suggestion": "Use <ScrollArea> from shadcn/ui.",
+          "element": "div",
+          "replacement": "ScrollArea",
+          "sourceLine": "      <div className=\"mt-6 flex gap-4 overflow-x-auto pb-2\">\r",
+          "suggestedLine": "<ScrollArea>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/sort-dropdown.tsx": {
+      "mtime": 1781440297730.427,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/components/products/sort-dropdown.tsx",
+          "line": 36,
+          "column": 7,
+          "rule": "prefer-shadcn-select",
+          "violation": "Raw <select> detected. Use <Select> from shadcn/ui.",
+          "suggestion": "Use <Select> from shadcn/ui.",
+          "element": "select",
+          "replacement": "Select",
+          "sourceLine": "      <select\r",
+          "suggestedLine": "<Select>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/star-rating.tsx": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/trust-signals.tsx": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/products/variant-selector.tsx": {
+      "mtime": 1780035927754.3623,
+      "findingsCount": 3,
+      "findings": [
+        {
+          "file": "src/components/products/variant-selector.tsx",
+          "line": 84,
+          "column": 11,
+          "rule": "prefer-shadcn-label",
+          "violation": "Raw <label> with styling className detected. Use <Label> from shadcn/ui.",
+          "suggestion": "Use <Label> from shadcn/ui",
+          "element": "label",
+          "replacement": "Label",
+          "sourceLine": "          <label className=\"text-sm font-medium\">\r",
+          "suggestedLine": "<Label>"
+        },
+        {
+          "file": "src/components/products/variant-selector.tsx",
+          "line": 102,
+          "column": 17,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "                <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/products/variant-selector.tsx",
+          "line": 102,
+          "column": 17,
+          "rule": "prefer-shadcn-toggle",
+          "violation": "Raw <button aria-pressed> detected. Use <Toggle> from shadcn/ui.",
+          "suggestion": "Use <Toggle> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Toggle",
+          "sourceLine": "                <button\r",
+          "suggestedLine": "<Toggle>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/search/search-modal.tsx": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 6,
+      "findings": [
+        {
+          "file": "src/components/search/search-modal.tsx",
+          "line": 104,
+          "column": 7,
+          "rule": "prefer-shadcn-dialog",
+          "violation": "Custom modal <div> detected. Use <Dialog> from shadcn/ui.",
+          "suggestion": "Use <Dialog> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Dialog",
+          "sourceLine": "      <div ref={modalRef} className=\"relative mx-auto mt-[10vh] w-full max-w-2xl px-4\" role=\"dialog\" aria-modal=\"true\" aria-label=\"Search products\">\r",
+          "suggestedLine": "<Dialog>"
+        },
+        {
+          "file": "src/components/search/search-modal.tsx",
+          "line": 105,
+          "column": 9,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "        <div className=\"overflow-hidden rounded-xl bg-white shadow-2xl\">\r",
+          "suggestedLine": "<Card>"
+        },
+        {
+          "file": "src/components/search/search-modal.tsx",
+          "line": 109,
+          "column": 13,
+          "rule": "prefer-shadcn-input",
+          "violation": "Raw <input> detected. Use <Input> from shadcn/ui or wrap in <Field>.",
+          "suggestion": "Use <Input> from shadcn/ui.",
+          "element": "input",
+          "replacement": "Input",
+          "sourceLine": "            <input\r",
+          "suggestedLine": "<Input>"
+        },
+        {
+          "file": "src/components/search/search-modal.tsx",
+          "line": 119,
+          "column": 15,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "              <button\r",
+          "suggestedLine": "<Button>"
+        },
+        {
+          "file": "src/components/search/search-modal.tsx",
+          "line": 134,
+          "column": 11,
+          "rule": "prefer-shadcn-scroll-area",
+          "violation": "Raw <div> with overflow scroll/auto class detected. Use <ScrollArea> from shadcn/ui.",
+          "suggestion": "Use <ScrollArea> from shadcn/ui.",
+          "element": "div",
+          "replacement": "ScrollArea",
+          "sourceLine": "          <div className=\"max-h-[60vh] overflow-y-auto\">\r",
+          "suggestedLine": "<ScrollArea>"
+        },
+        {
+          "file": "src/components/search/search-modal.tsx",
+          "line": 197,
+          "column": 21,
+          "rule": "prefer-shadcn-button",
+          "violation": "Raw <button> detected. Use <Button> from shadcn/ui.",
+          "suggestion": "Use <Button> from shadcn/ui.",
+          "element": "button",
+          "replacement": "Button",
+          "sourceLine": "                    <button\r",
+          "suggestedLine": "<Button>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/ui/Link.tsx": {
+      "mtime": 1778780280052.3125,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/ui/Link.tsx": {
+      "mtime": 1781023962877.232,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/ui/NcImage.tsx": {
+      "mtime": 1778780280053.818,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/ui/empty-state.tsx": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/ui/order-status-badge.tsx": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/components/ui/page-header.tsx": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/hooks/use-auth-guard.ts": {
+      "mtime": 1779219065141.6748,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/hooks/use-country-link.ts": {
+      "mtime": 1779219018372.4011,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/i18n/config.ts": {
+      "mtime": 1781017509944.7798,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/i18n/request.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/admin-auth.ts": {
+      "mtime": 1781453083709.5386,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/analytics.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/auth-client.ts": {
+      "mtime": 1781441939912.5947,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/cart-client.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/checkout/demo-provider.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/checkout/index.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/config.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/constants.tsx": {
+      "mtime": 1781374725992.213,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/country.ts": {
+      "mtime": 1779218910252.8062,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/customer-client.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/env.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/get-page.ts": {
+      "mtime": 1781160400682.861,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/medusa-client-search.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/medusa-region.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/medusa.ts": {
+      "mtime": 1781160859691.2522,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/navigation.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/redirects.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/index.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/json-blog-repository.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/json-brand-repository.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/json-category-repository.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/json-page-repository.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/json-product-repository.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/medusa-brand-repository.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/medusa-category-repository.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/medusa-collection-repository.ts": {
+      "mtime": 1781129030992.6362,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/medusa-product-repository.ts": {
+      "mtime": 1779961573824.768,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/repositories/product-types.ts": {
+      "mtime": 1781159419099.1858,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/structured-data.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/utils.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/lib/validators/index.ts": {
+      "mtime": 1781011804044.7395,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/pages/api/behpardakht/request.ts": {
+      "mtime": 1781384388500.1333,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/pages/api/behpardakht/verify.ts": {
+      "mtime": 1781384332004.607,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/proxy.ts": {
+      "mtime": 1781447537133.0745,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/AboutSection.tsx": {
+      "mtime": 1781103767024.4885,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/FeaturedProductCard.tsx": {
+      "mtime": 1781103767030.4705,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/FullWidthImageSection.tsx": {
+      "mtime": 1778780280054.8286,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/HeroSection01.tsx": {
+      "mtime": 1778780280054.8286,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/IncredibleOffer/component.client.tsx": {
+      "mtime": 1781103767030.4705,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/IncredibleOffer/components.tsx": {
+      "mtime": 1781103997949.9421,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/IncredibleOffer/config.tsx": {
+      "mtime": 1781170139608.5093,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/InspirationTextSection.tsx": {
+      "mtime": 1781169514488.5493,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/IntroSection01.tsx": {
+      "mtime": 1781103767019.4734,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/ProductTypeCard01.tsx": {
+      "mtime": 1781103767030.4705,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/ProductTypeSection01.tsx": {
+      "mtime": 1781103767023.4724,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/Space/index.tsx": {
+      "mtime": 1781176609381.1548,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/collection-slider/CollectionsSection.tsx": {
+      "mtime": 1781185133998.7522,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/collection-slider/CollectionsSliderSection.tsx": {
+      "mtime": 1781103715917.2173,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/hero-sections/TwoColumn/TwoColumn.tsx": {
+      "mtime": 1781114534218.271,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/hero-sections/TwoColumn/index.tsx": {
+      "mtime": 1781114424995.4375,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/pitch-panel/component.tsx": {
+      "mtime": 1781170780907.3523,
+      "findingsCount": 3,
+      "findings": [
+        {
+          "file": "src/puck/blocks/pitch-panel/component.tsx",
+          "line": 22,
+          "column": 9,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "        <div className=\"rounded-lg border bg-white p-6\">\r",
+          "suggestedLine": "<Card>"
+        },
+        {
+          "file": "src/puck/blocks/pitch-panel/component.tsx",
+          "line": 30,
+          "column": 9,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "        <div className=\"rounded-lg border bg-white p-6\">\r",
+          "suggestedLine": "<Card>"
+        },
+        {
+          "file": "src/puck/blocks/pitch-panel/component.tsx",
+          "line": 38,
+          "column": 9,
+          "rule": "prefer-shadcn-card",
+          "violation": "Custom styled <div> detected. Use <Card> from shadcn/ui.",
+          "suggestion": "Use <Card> from shadcn/ui.",
+          "element": "div",
+          "replacement": "Card",
+          "sourceLine": "        <div className=\"rounded-lg border bg-white p-6\">\r",
+          "suggestedLine": "<Card>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/blocks/pitch-panel/config.ts": {
+      "mtime": 1781170334478.6692,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/config.tsx": {
+      "mtime": 1781174086534.2676,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/fields/ImagePickerField.tsx": {
+      "mtime": 1781103832649.5488,
+      "findingsCount": 1,
+      "findings": [
+        {
+          "file": "src/puck/fields/ImagePickerField.tsx",
+          "line": 86,
+          "column": 11,
+          "rule": "prefer-shadcn-aspect-ratio",
+          "violation": "Raw <div> with Tailwind aspect ratio class detected. Use <AspectRatio> from shadcn/ui.",
+          "suggestion": "Use <AspectRatio> from shadcn/ui.",
+          "element": "div",
+          "replacement": "AspectRatio",
+          "sourceLine": "          <div className=\"relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-muted\">\r",
+          "suggestedLine": "<AspectRatio>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/fields/checkbox.tsx": {
+      "mtime": 1778780280059.3525,
+      "findingsCount": 2,
+      "findings": [
+        {
+          "file": "src/puck/fields/checkbox.tsx",
+          "line": 9,
+          "column": 7,
+          "rule": "prefer-shadcn-checkbox",
+          "violation": "Raw <input type=\"checkbox\"> detected. Use <Checkbox> from shadcn/ui.",
+          "suggestion": "Use <Checkbox> from shadcn/ui.",
+          "element": "input",
+          "replacement": "Checkbox",
+          "sourceLine": "      <input\r",
+          "suggestedLine": "<Checkbox>"
+        },
+        {
+          "file": "src/puck/fields/checkbox.tsx",
+          "line": 9,
+          "column": 7,
+          "rule": "prefer-shadcn-input",
+          "violation": "Raw <input> detected. Use <Input> from shadcn/ui or wrap in <Field>.",
+          "suggestion": "Use <Input> from shadcn/ui.",
+          "element": "input",
+          "replacement": "Input",
+          "sourceLine": "      <input\r",
+          "suggestedLine": "<Input>"
+        }
+      ],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/fields/image-picker.tsx": {
+      "mtime": 1781103794853.7327,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/options.ts": {
+      "mtime": 1781176498317.7402,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/puck/utils/slug-matcher.ts": {
+      "mtime": 1779265052145.71,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/store/auth.ts": {
+      "mtime": 1781011544484.0637,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/store/cart.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/store/recently-viewed.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/store/wishlist.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    },
+    "D:/Projects/Medusa/ecommerce-saas/apps/storefront/src/types/index.ts": {
+      "mtime": 1778754496625.7966,
+      "findingsCount": 0,
+      "findings": [],
+      "warnings": []
+    }
+  }
+}

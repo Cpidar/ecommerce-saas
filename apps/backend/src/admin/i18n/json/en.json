@@ -1,0 +1,74 @@
+{
+  "storeConfig": {
+    "title": "Store Configuration",
+    "subtitle": "Manage your store's brand identity, SEO, marketing, and advanced settings.",
+    "mode": {
+      "create": "Create",
+      "update": "Update"
+    },
+    "loading": "Loading store config...",
+
+    "basic": {
+      "title": "Basic Information",
+      "subtitle": "Core details about your store",
+      "medusaStoreId": "Medusa Store ID",
+      "storeTitle": "Store Title",
+      "handle": "Handle",
+      "domain": "Domain",
+      "description": "Description"
+    },
+
+    "brand": {
+      "title": "Brand Assets",
+      "subtitle": "Logo, favicon, and branding elements",
+      "logoUrl": "Logo URL",
+      "logoAlt": "Alt Text",
+      "faviconUrl": "Favicon URL",
+      "preview": "Preview",
+      "upload": "Upload",
+      "moreSettings": "More brand settings (colors, fonts, etc.) are available in the Advanced section."
+    },
+
+    "seo": {
+      "title": "SEO Settings",
+      "subtitle": "Search engine optimization and social sharing",
+      "defaultTitle": "Default Title",
+      "titleTemplate": "Title Template",
+      "defaultDescription": "Default Description",
+      "defaultImageUrl": "Default Image URL",
+      "canonicalUrl": "Canonical URL",
+      "robots": "Robots Directives",
+      "index": "Index",
+      "follow": "Follow",
+      "ogSiteName": "OG Site Name",
+      "ogType": "OG Type",
+      "twitterCard": "Twitter Card"
+    },
+
+    "marketing": {
+      "title": "Marketing & Analytics",
+      "subtitle": "Tracking and social media links",
+      "googleAnalytics": "Google Analytics ID",
+      "googleTagManager": "Google Tag Manager ID",
+      "socialLinks": "Social Media Links"
+    },
+
+    "advanced": {
+      "title": "Advanced Configuration",
+      "subtitle": "Raw JSON for homepage layout, custom configs, etc.",
+      "show": "Show Advanced JSON",
+      "hide": "Hide Advanced JSON",
+      "seoJson": "SEO Config (JSON)",
+      "marketingJson": "Marketing Config (JSON)",
+      "generalJson": "General Config (JSON)"
+    },
+
+    "actions": {
+      "save": "Save All Changes",
+      "saving": "Saving...",
+      "success": "Store config saved successfully",
+      "jsonError": "One of the JSON fields contains invalid JSON",
+      "saveError": "Unable to save store config"
+    }
+  }
+}

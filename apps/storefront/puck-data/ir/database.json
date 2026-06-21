@@ -1,0 +1,266 @@
+{
+  "/about": {
+    "root": {
+      "props": {}
+    },
+    "content": [
+      {
+        "type": "HeroSection03",
+        "props": {
+          "rightSection": {
+            "text": "test",
+            "image": "/images/products/placeholder.svg"
+          },
+          "leftSection": {
+            "text": "test 2",
+            "image": "/images/products/placeholder.svg"
+          },
+          "id": "HeroSection03-62ffbbbe-0381-4ec8-8867-516047ba6ae3"
+        }
+      }
+    ],
+    "zones": {}
+  },
+  "/home": {
+    "root": {
+      "props": {}
+    },
+    "content": [
+      {
+        "type": "HeroSection03",
+        "props": {
+          "rightSection": {
+            "text": "test",
+            "image": "/images/products/placeholder.svg"
+          },
+          "leftSection": {
+            "text": "test 2",
+            "image": "/images/products/placeholder.svg"
+          },
+          "id": "HeroSection03-ddc2edd4-9b78-4c9b-9f3b-315c5823d599"
+        }
+      }
+    ],
+    "zones": {}
+  },
+  "/": {
+    "root": {
+      "props": {}
+    },
+    "content": [
+      {
+        "type": "HeroSection",
+        "props": {
+          "image": "/images/content/living-room-gray-armchair-two-seater-sofa.png",
+          "imageAlt": "Living room with gray armchair and two-seater sofa",
+          "id": "HeroSection-abbaa8e5-d203-4aa1-977c-929dda7c1056"
+        }
+      },
+      {
+        "type": "IntroSection",
+        "props": {
+          "title": "Elevate Your Living Space with Unmatched Comfort & Style",
+          "exploreText": "Discover Your Perfect Sofa Today",
+          "exploreLinkText": "Explore Now",
+          "id": "IntroSection-eb6d7baf-3271-4046-b35d-6503aab381d1"
+        }
+      },
+      {
+        "type": "IncredibleOffersSection",
+        "props": {
+          "collectionSlug": "incredible_offers",
+          "categoryCardType": "card07",
+          "heading": "تخفیفات شگفت انگیز",
+          "subHeading": "",
+          "id": "IncredibleOffersSection-9032a750-9e76-4af8-8604-c0714012be6c"
+        }
+      },
+      {
+        "type": "ProductTypesSection",
+        "props": {
+          "showSection": true,
+          "title": "انواع محصولات ما",
+          "productTypes": [
+            null,
+            null
+          ],
+          "id": "ProductTypesSection-0250b23d-de10-4289-9e6d-1ec65db78519"
+        }
+      },
+      {
+        "type": "CollectionsSectionWrapper",
+        "props": {
+          "showSection": true,
+          "collections": [
+            {
+              "id": "pcol_01KRC5JG1H0VKRQCTNN6TQDTAM",
+              "title": "Boho Chic",
+              "handle": "boho-chic",
+              "metadata": {
+                "image": {
+                  "id": "modern-luxe-01KRDJHE7SE1RQHAJG3FFS8W74.png",
+                  "url": "http://localhost:9090/medusa/modern-luxe-01KRDJHE7SE1RQHAJG3FFS8W74.png"
+                },
+                "description": "Infused with playful textures and vibrant patterns with eclectic vibes",
+                "product_page_image": {
+                  "id": "boho-chic-product-page-image-01KRC5JF0M0VTYYEPE5C2WT9CJ.png",
+                  "url": "http://localhost:9090/medusa/boho-chic-product-page-image-01KRC5JF0M0VTYYEPE5C2WT9CJ.png"
+                },
+                "product_page_heading": "Collection Inspired Interior",
+                "collection_page_image": {
+                  "id": "boho-chic-collection-page-image-01KRC5JF0FJNRR3DTS0T2CVYP6.png",
+                  "url": "http://localhost:9090/medusa/boho-chic-collection-page-image-01KRC5JF0FJNRR3DTS0T2CVYP6.png"
+                },
+                "product_page_cta_link": "See more out of ‘Boho Chic’ collection",
+                "product_page_cta_image": {
+                  "id": "boho-chic-product-page-cta-image-01KRC5JF0SFMKZ4A9K05BN6021.png",
+                  "url": "http://localhost:9090/medusa/boho-chic-product-page-cta-image-01KRC5JF0SFMKZ4A9K05BN6021.png"
+                },
+                "collection_page_content": "Infused with playful textures and vibrant patterns, this collection embodies relaxed, eclectic vibes. Soft fabrics and creative designs add warmth and personality to any room.\n\nIt’s comfort with a bold, carefree spirit.",
+                "collection_page_heading": "Boho Chic: Relaxed, eclectic style with a touch of free-spirited charm",
+                "product_page_wide_image": {
+                  "id": "boho-chic-product-page-wide-image-01KRC5JF0PJ5S7Y96RB8SZTSEN.png",
+                  "url": "http://localhost:9090/medusa/boho-chic-product-page-wide-image-01KRC5JF0PJ5S7Y96RB8SZTSEN.png"
+                },
+                "product_page_cta_heading": "The 'Name of sofa' captures the essence of boho style with its relaxed, oversized form and eclectic fabric choices."
+              }
+            },
+            {
+              "id": "pcol_01KRC5JG1HC2TYW7X42PHEVB6J",
+              "title": "Timeless Classics",
+              "handle": "timeless-classics",
+              "metadata": {
+                "image": {
+                  "id": "scandinavian-simplicity-01KRDJHREY5BP4M2Y62MEGAVHP.png",
+                  "url": "http://localhost:9090/medusa/scandinavian-simplicity-01KRDJHREY5BP4M2Y62MEGAVHP.png"
+                },
+                "description": "Elegant shapes and rich textures, traditional craftsmanship with modern comfort",
+                "product_page_image": {
+                  "id": "timeless-classics-product-page-image-01KRC5JF109YEQ7HX79C1SCYBN.png",
+                  "url": "http://localhost:9090/medusa/timeless-classics-product-page-image-01KRC5JF109YEQ7HX79C1SCYBN.png"
+                },
+                "product_page_heading": "Collection Inspired Interior",
+                "collection_page_image": {
+                  "id": "timeless-classics-collection-page-image-01KRC5JF0Y5WKYJFY3S817ZP8C.png",
+                  "url": "http://localhost:9090/medusa/timeless-classics-collection-page-image-01KRC5JF0Y5WKYJFY3S817ZP8C.png"
+                },
+                "product_page_cta_link": "See more out of ‘Timeless Classics’ collection",
+                "product_page_cta_image": {
+                  "id": "timeless-classics-product-page-cta-image-01KRC5JF1D2QY6CCXHX1BV8HBP.png",
+                  "url": "http://localhost:9090/medusa/timeless-classics-product-page-cta-image-01KRC5JF1D2QY6CCXHX1BV8HBP.png"
+                },
+                "collection_page_content": "Designed for those who appreciate enduring style, this collection features elegant shapes and rich textures. These sofas combine traditional craftsmanship with modern comfort.\n\nPerfect for creating a warm, inviting atmosphere that never goes out of style.",
+                "collection_page_heading": "Timeless Classics: Enduring style, crafted for comfort and lasting beauty",
+                "product_page_wide_image": {
+                  "id": "timeless-classics-product-page-wide-image-01KRC5JF12B3PVVE4Q8EETVZGD.png",
+                  "url": "http://localhost:9090/medusa/timeless-classics-product-page-wide-image-01KRC5JF12B3PVVE4Q8EETVZGD.png"
+                },
+                "product_page_cta_heading": "The 'Name of sofa' brings a touch of traditional charm with its elegant curves and classic silhouette"
+              }
+            },
+            {
+              "id": "pcol_01KRC5JG1GEHRBQ7X4Y74Y2HXZ",
+              "title": "Modern Luxe",
+              "handle": "modern-luxe",
+              "metadata": {
+                "image": {
+                  "id": "living-room7-01KRDJAACHJF7G4G4HMAAKZH7N.png",
+                  "url": "http://localhost:9090/medusa/living-room7-01KRDJAACHJF7G4G4HMAAKZH7N.png"
+                },
+                "description": "Sophisticated and sleek, these sofas blend modern design with luxurious comfort",
+                "product_page_image": {
+                  "id": "living-room2-01KRDJBZRG5GMEGQJMS8H2ABZ4.png",
+                  "url": "http://localhost:9090/medusa/living-room2-01KRDJBZRG5GMEGQJMS8H2ABZ4.png"
+                },
+                "product_page_heading": "Collection Inspired Interior",
+                "collection_page_image": {
+                  "id": "living-room-01KRDJAGX30T5P0MNSSRGKQVQA.png",
+                  "url": "http://localhost:9090/medusa/living-room-01KRDJAGX30T5P0MNSSRGKQVQA.png"
+                },
+                "product_page_cta_link": "See more out of ‘Modern Luxe’ collection",
+                "product_page_cta_image": {
+                  "id": "living-room4-01KRDJC6VXNY650VKJM2RNQ272.png",
+                  "url": "http://localhost:9090/medusa/living-room4-01KRDJC6VXNY650VKJM2RNQ272.png"
+                },
+                "collection_page_content": "Sophisticated and sleek, these sofas blend modern design with luxurious comfort. Bold lines and premium materials create the ultimate statement pieces for any contemporary home.\n\nElevate your space with timeless beauty.",
+                "collection_page_heading": "Modern Luxe: Where modern design meets luxurious living",
+                "product_page_wide_image": {
+                  "id": "living-room3-01KRDJC3HYD4CAGTDXWE5ZTTMT.png",
+                  "url": "http://localhost:9090/medusa/living-room3-01KRDJC3HYD4CAGTDXWE5ZTTMT.png"
+                },
+                "product_page_cta_heading": "The 'Name of sofa' is a masterpiece of minimalism and luxury."
+              }
+            },
+            {
+              "id": "pcol_01KRC5JG1GNXVVJ8V08Y98KK3J",
+              "title": "Scandinavian Simplicity",
+              "handle": "scandinavian-simplicity",
+              "metadata": {
+                "image": {
+                  "id": "boho-chic-01KRDJGVQB8YY65K6896428RPR.png",
+                  "url": "http://localhost:9090/medusa/boho-chic-01KRDJGVQB8YY65K6896428RPR.png"
+                },
+                "description": "Minimalistic designs, neutral colors, and high-quality textures",
+                "product_page_image": {
+                  "id": "scandinavian-simplicity-product-page-image-01KRC5JEZN9XM2070M2CBNCJG9.png",
+                  "url": "http://localhost:9090/medusa/scandinavian-simplicity-product-page-image-01KRC5JEZN9XM2070M2CBNCJG9.png"
+                },
+                "product_page_heading": "Collection Inspired Interior",
+                "collection_page_image": {
+                  "id": "scandinavian-simplicity-collection-page-image-01KRC5JEZFAR1DBFNHZC8MSP43.png",
+                  "url": "http://localhost:9090/medusa/scandinavian-simplicity-collection-page-image-01KRC5JEZFAR1DBFNHZC8MSP43.png"
+                },
+                "product_page_cta_link": "See more out of ‘Scandinavian Simplicity’ collection",
+                "product_page_cta_image": {
+                  "id": "scandinavian-simplicity-product-page-cta-image-01KRC5JEZTCBVQH31K4Z2KRHGR.png",
+                  "url": "http://localhost:9090/medusa/scandinavian-simplicity-product-page-cta-image-01KRC5JEZTCBVQH31K4Z2KRHGR.png"
+                },
+                "collection_page_content": "Minimalistic designs, neutral colors, and high-quality textures. Perfect for those who seek comfort with a clean and understated aesthetic.\n\nThis collection brings the essence of Scandinavian elegance to your living room.",
+                "collection_page_heading": "Scandinavian Simplicity: Effortless elegance, timeless comfort",
+                "product_page_wide_image": {
+                  "id": "scandinavian-simplicity-product-page-wide-image-01KRC5JEZRVM6W1RBMZF2K47T6.png",
+                  "url": "http://localhost:9090/medusa/scandinavian-simplicity-product-page-wide-image-01KRC5JEZRVM6W1RBMZF2K47T6.png"
+                },
+                "product_page_cta_heading": "The 'Name of sofa' embodies Scandinavian minimalism with clean lines and a soft, neutral palette."
+              }
+            }
+          ],
+          "id": "CollectionsSectionWrapper-95e63823-b2ec-428b-b87f-469c9a2b34fa"
+        }
+      },
+      {
+        "type": "InspirationTextSection",
+        "props": {
+          "title": "The Astrid Curve sofa is a masterpiece of minimalism and luxury.",
+          "description": "Our design philosophy revolves around creating pieces that are both beautiful and practical. Inspired by Scandinavian simplicity, modern luxury, and timeless classics.",
+          "showSection": true,
+          "id": "InspirationTextSection-63fcb8ee-bf3c-46bb-80a3-68b73b46acf2"
+        }
+      },
+      {
+        "type": "FullWidthImageSection",
+        "props": {
+          "image": "/images/content/living-room-brown-armchair-gray-corner-sofa.png",
+          "altText": "Living room with brown armchair and gray corner sofa",
+          "className": "mt-26 md:mt-36 mb-8 md:mb-26",
+          "showSection": true,
+          "id": "FullWidthImageSection-b6584b84-e41e-40cd-9bf8-b313b39dfe37"
+        }
+      },
+      {
+        "type": "FeaturedProductCard",
+        "props": {
+          "productImage": "/images/content/dark-gray-three-seater-sofa.png",
+          "imageAlt": "Dark gray three-seater sofa",
+          "productName": "Astrid Curve",
+          "productCategory": "Scandinavian Simplicity",
+          "productPrice": "1500€",
+          "productHandle": "astrid-curve",
+          "showSection": true,
+          "id": "FeaturedProductCard-071c3848-f245-4e3c-8ac6-d113ff7cd5da"
+        }
+      }
+    ],
+    "zones": {}
+  }
+}

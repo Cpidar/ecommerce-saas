@@ -1,0 +1,70 @@
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils/utils'
+import { ChevronLeftIcon } from 'lucide-react'
+import Link from 'next/link'
+import type { Route } from 'next'
+
+export function Page({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <main
+      className={cn(
+        // To vertically center the page use: my-auto
+        'marketing-container mx-auto px-6 animate-fade-in space-y-6 p-4 md:py-8 lg:py-12',
+        className,
+      )}
+    >
+      {children}
+    </main>
+  )
+}
+
+export function PageTitle({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <h1 className={cn('text-3xl leading-normal', className)}>{children}</h1>
+  )
+}
+
+export function PageDescription({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) {
+  return (
+    <p className={cn('text-sm text-muted-foreground', className)}>{children}</p>
+  )
+}
+
+type PageBackButtonProps<T extends string> = {
+  href?: Route<T>
+}
+export function PageBackButton<T extends string>({
+  href = '/dash',
+}: PageBackButtonProps<T>) {
+  return (
+    <Button
+      variant='ghost'
+      size='sm'
+      className='-ml-2 hidden text-muted-foreground has-[>svg]:pl-1 sm:inline-flex'
+      asChild
+    >
+      <Link href={href}>
+        <ChevronLeftIcon />
+        Back
+      </Link>
+    </Button>
+  )
+}

@@ -1,0 +1,58 @@
+import { Settings, Palette, ServerCog } from 'lucide-react'
+import { cn } from '@/lib/utils/utils'
+import { PageSection, PageSectionTitle } from './page-section'
+
+interface FeatureCardProps {
+  title: string
+  description: string
+  icon: React.ReactNode
+  className?: string
+}
+
+export function FeaturesSection() {
+  return (
+    <PageSection>
+      <PageSectionTitle className='mb-2 sm:mb-2'>
+        Jumpstart Your Next Project
+      </PageSectionTitle>
+      <p className='text-center text-xl text-muted-foreground'>
+        This Next.js template provides everything you need to build and launch
+        faster.
+      </p>
+      <div className='mx-auto mt-6 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
+        <FeatureCard
+          title='Batteries Included Setup'
+          description='Skip the setup fatigue. Comes pre-configured with TypeScript, Tailwind CSS, ESLint, and Prettier.'
+          icon={<Settings className='size-6' />}
+        />
+        <FeatureCard
+          title='Beautiful UI Components'
+          description='Built with Shadcn UI - copy and paste beautiful, accessible components.'
+          icon={<Palette className='size-6' />}
+        />
+        <FeatureCard
+          title='Modern Data Handling'
+          description='Leverages Next.js Server Actions for type-safe data mutations.'
+          icon={<ServerCog className='size-6' />}
+        />
+      </div>
+    </PageSection>
+  )
+}
+
+function FeatureCard({
+  title,
+  description,
+  icon,
+  className,
+}: FeatureCardProps) {
+  return (
+    <div className={cn('rounded-xl border bg-background p-6', className)}>
+      <div className='mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary'>
+        {icon}
+      </div>
+      <h3 className='mb-2 text-xl font-semibold'>{title}</h3>
+      <p className='text-muted-foreground'>{description}</p>
+    </div>
+  )
+}
