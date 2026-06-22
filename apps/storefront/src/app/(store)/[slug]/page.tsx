@@ -5,7 +5,7 @@ import { listProductsByCollection } from "@/lib/repositories/products"
 import { ProductDetailView } from "./product-detail-view"
 import { CategoryView } from "./category-view"
 import { BrandView } from "./brand-view"
-import { formatPrice } from "@/lib/utils/utils"
+import { formatPrice } from "@/lib/utils"
 import { siteConfig } from "@/lib/config"
 
 interface SlugPageProps {

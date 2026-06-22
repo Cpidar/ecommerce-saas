@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/ui/page-header"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
 import { listMyOrders } from "@/lib/customer-client"
-import { formatPrice, formatDate } from "@/lib/utils/utils"
+import { formatPrice, formatDate } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 
 type StoreOrder = HttpTypes.StoreOrder

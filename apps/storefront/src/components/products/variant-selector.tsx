@@ -3,7 +3,7 @@
 // [MY-FORK-PRODUCT] Added useState and useEffect imports for local state management
 import { useMemo } from "react"
 import type { ProductVariant } from "@/types"
-import { cn } from "@/lib/utils/utils"
+import { cn } from "@/lib/utils"
 
 interface VariantSelectorProps {
   variants: ProductVariant[]

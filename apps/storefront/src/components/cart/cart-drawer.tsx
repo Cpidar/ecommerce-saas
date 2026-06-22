@@ -15,7 +15,7 @@ import {
 import { CartItem } from "./cart-item"
 import { PromotionCodeForm } from "./promotion-code-form"
 import { useCartStore } from "@/store/cart"
-import { formatPrice } from "@/lib/utils/utils"
+import { formatPrice } from "@/lib/utils"
 import { useTranslations } from "next-intl"
 import { useMediaQuery } from "@/hooks/use-media-query"
 

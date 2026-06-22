@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { breadcrumbJsonLd } from "@/lib/structured-data"
 import { pageRepository } from "@/lib/repositories"
-import { formatDate } from "@/lib/utils/utils"
+import { formatDate } from "@/lib/utils"
 import { siteConfig } from "@/lib/config"
 
 interface PageProps {

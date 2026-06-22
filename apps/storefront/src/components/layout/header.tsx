@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { SearchModal } from "@/components/search/search-modal"
-import { cn } from "@/lib/utils/utils"
+import { cn } from "@/lib/utils"
 import { mobileMenuSections, type NavItem } from "@/lib/navigation"
 import { siteConfig } from "@/lib/config"
 import { useTranslations } from "next-intl"

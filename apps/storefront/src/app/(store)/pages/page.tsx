@@ -3,7 +3,7 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { pageRepository } from "@/lib/repositories"
-import { formatDate } from "@/lib/utils/utils"
+import { formatDate } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Pages",

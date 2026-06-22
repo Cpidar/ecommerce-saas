@@ -13,7 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { breadcrumbJsonLd } from "@/lib/structured-data"
 import { blogRepository } from "@/lib/repositories"
-import { formatDate } from "@/lib/utils/utils"
+import { formatDate } from "@/lib/utils"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
 import { siteConfig } from "@/lib/config"
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { formatPrice } from "@/lib/utils/utils"
+import { formatPrice } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { useTranslations } from "next-intl"
 import type { Cart } from "@/types"

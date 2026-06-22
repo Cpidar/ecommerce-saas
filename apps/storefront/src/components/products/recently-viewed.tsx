@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRecentlyViewedStore } from "@/store/recently-viewed"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
-import { formatPrice } from "@/lib/utils/utils"
+import { formatPrice } from "@/lib/utils"
 
 interface RecentlyViewedProps {
   excludeProductId?: string

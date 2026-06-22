@@ -3,6 +3,8 @@ import Medusa from "@medusajs/js-sdk"
 const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 
+export const STORE_COOKIE = "current_store_id";
+
 if (!backendUrl) {
   throw new Error(
     "NEXT_PUBLIC_MEDUSA_BACKEND_URL is not set. See .env.example."

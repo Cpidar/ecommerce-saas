@@ -1,6 +1,6 @@
 import * as React from "react";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 
 interface InputIconProps extends React.ComponentPropsWithoutRef<typeof InputGroupInput> {

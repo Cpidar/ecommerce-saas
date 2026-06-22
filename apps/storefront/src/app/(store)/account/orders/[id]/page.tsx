@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { PageHeader } from "@/components/ui/page-header"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
 import { retrieveMyOrder } from "@/lib/customer-client"
-import { formatPrice, formatDate } from "@/lib/utils/utils"
+import { formatPrice, formatDate } from "@/lib/utils"
 import { ReturnRequestDialog } from "./return-request-dialog"
 import { useTranslations } from "next-intl"
 

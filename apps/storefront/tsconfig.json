@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "../../packages/cms/lib/db.ts", "../../packages/cms/lib/get-db.ts", "../../packages/cms/lib/zod-factory.ts"  ],
   "exclude": ["node_modules"]
 }

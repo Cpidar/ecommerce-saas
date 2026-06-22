@@ -4,7 +4,7 @@ import Image from "next/image"
 import { PageHeader } from "@/components/ui/page-header"
 import { Pagination } from "@/components/products/pagination"
 import { blogRepository } from "@/lib/repositories"
-import { formatDate } from "@/lib/utils/utils"
+import { formatDate } from "@/lib/utils"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
 import { siteConfig } from "@/lib/config"
 

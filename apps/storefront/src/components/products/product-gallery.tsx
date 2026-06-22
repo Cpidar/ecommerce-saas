@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import type { ProductImage } from "@/types"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
-import { cn } from "@/lib/utils/utils"
+import { cn } from "@/lib/utils"
 
 interface ProductGalleryProps {
   images: ProductImage[]

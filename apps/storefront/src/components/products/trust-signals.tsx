@@ -1,5 +1,5 @@
 import { Truck, RotateCcw, Shield } from "lucide-react"
-import { formatPrice } from "@/lib/utils/utils"
+import { formatPrice } from "@/lib/utils"
 import { siteConfig } from "@/lib/config"
 
 export function TrustSignals() {

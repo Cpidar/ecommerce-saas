@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { formatPrice, formatDate } from "@/lib/utils/utils";
+import { formatPrice, formatDate } from "@/lib/utils";
 import { completeCart } from "@/lib/cart-client";
 import { useCartStore } from "@/store/cart";
 import { toast } from "sonner";

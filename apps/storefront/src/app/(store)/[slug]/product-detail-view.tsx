@@ -25,7 +25,7 @@ import { ProductGallery } from "@/components/products/product-gallery";
 import { VariantSelector } from "@/components/products/variant-selector";
 import { QuantitySelector } from "@/components/products/quantity-selector";
 import { ProductGrid } from "@/components/products/product-grid";
-import { formatPrice } from "@/lib/utils/utils";
+import { formatPrice } from "@/lib/utils";
 import { breadcrumbJsonLd } from "@/lib/structured-data";
 import type { Product, Brand, Category } from "@/types";
 

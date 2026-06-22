@@ -1,0 +1,336 @@
+// This is a sample model to get you started.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------
+// Plugin — required for @@allow / @@deny to work
+// -----------------------------------------------
+plugin policy {
+  provider = '@zenstackhq/plugin-policy'
+}
+
+// ── Auth context (from Medusa JWT, no DB table) ────────────────────
+type Auth {
+  medusaStoreId String @id
+  @@auth
+}
+
+// ── Typed JSON shapes — these replace your hand-written Zod schemas ─
+type SeoRobots {
+  index  Boolean?
+  follow Boolean?
+}
+
+type SeoOpenGraph {
+  site_name String?
+  type      String?
+  image_url String? @url
+}
+
+type SeoTwitter {
+  card String?  // 'summary' | 'summary_large_image'
+  site String?
+}
+
+type StoreSeoConfig {
+  title_template      String?
+  default_title       String?
+  default_description String?
+  default_image_url   String?       @url
+  canonical_url       String?       @url
+  robots              SeoRobots?    @json
+  open_graph          SeoOpenGraph? @json
+  twitter             SeoTwitter?   @json
+}
+
+type StoreSocialLinks {
+  instagram String? @url
+  x         String? @url
+  facebook  String? @url
+  linkedin  String? @url
+  youtube   String? @url
+  tiktok    String? @url
+}
+
+type StoreMarketingConfig {
+  google_analytics_id   String?
+  google_tag_manager_id String?
+  meta_pixel_id         String?
+  tiktok_pixel_id       String?
+  newsletter_provider   String?
+  social_links          StoreSocialLinks? @json
+}
+
+// ── Enums ──────────────────────────────────────────────────────────
+enum SubscriptionStatus {
+  PENDING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
+// ── Model ──────────────────────────────────────────────────────────
+model StoreConfig {
+  id                    String             @id @default(cuid())
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  medusaStoreId         String             @map("medusa_store_id")
+
+  title                 String?
+  handle                String?             @unique
+  domain                String?
+  description           String?             @default("")
+
+  logoUrl               String?            @map("logo_url") @url
+  logoAlt               String?            @map("logo_alt")
+  faviconUrl            String?            @map("favicon_url") @url
+
+  theme                 String?             @default("default")
+  themeOverrides        Json?               @default("{}") @map("theme_overrides")
+
+  homepageLayout        Json?               @default("{}") @map("homepage_layout")
+  aboutPageLayout       Json?               @default("{}") @map("about_page_layout")
+
+  // Typed JSON — ZenStack generates Zod for these automatically
+  seoConfig             Json?               @map("seo_config")
+  marketingConfig       Json?               @map("marketing_config")
+
+  config                Json?               @default("{}")
+  paymentConfigs        Json?               @default("{}") @map("payment_configs")
+  shippingMethodConfigs Json?               @default("{}") @map("shipping_method_configs")
+
+  subscriptionProductId String?            @unique @map("subscription_product_id")
+  subscriptionStatus    SubscriptionStatus? @default(PENDING) @map("subscription_status")
+
+  @@allow('all', auth().medusaStoreId == medusaStoreId)
+  @@map("store_config")
+}
+
+
+// ---------------------------------------------------------------------------
+// Page composition
+// ---------------------------------------------------------------------------
+
+/// A composable page (home, landing, campaign). Ordered list of sections.
+model PageLayout {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  status      Status    @default(DRAFT)
+  publishedAt DateTime?
+  sections    Section[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+/// One block on a page. `config` is validated by a Zod schema keyed on `type`.
+model Section {
+  id           String      @id @default(cuid())
+  type         SectionType
+  position     Int         @default(0)
+  config       Json        @default("{}")
+  pageLayout   PageLayout  @relation(fields: [pageLayoutId], references: [id], onDelete: Cascade)
+  pageLayoutId String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([pageLayoutId, position])
+}
+
+enum SectionType {
+  HERO
+  PRODUCT_ROW // featured / new / best-sellers (config carries source + heading)
+  CATEGORY_GRID
+  EDITORIAL // image + copy block
+  BANNER
+  MARQUEE
+}
+
+// ---------------------------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------------------------
+
+model NavMenu {
+  id        String    @id @default(cuid())
+  /// e.g. "main" | "footer"
+  key       String    @unique
+  items     NavItem[]
+  updatedAt DateTime  @updatedAt
+}
+
+model NavItem {
+  id       String    @id @default(cuid())
+  label    String
+  href     String
+  position Int       @default(0)
+  /// optional mega-menu payload (columns, featured image), validated by Zod
+  megaMenu Json?
+  menu     NavMenu   @relation(fields: [menuId], references: [id], onDelete: Cascade)
+  menuId   String
+  parent   NavItem?  @relation("NavChildren", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId String?
+  children NavItem[] @relation("NavChildren")
+
+  @@index([menuId, position])
+}
+
+// ---------------------------------------------------------------------------
+// Marketing
+// ---------------------------------------------------------------------------
+
+model Popup {
+  id        String       @id @default(cuid())
+  name      String
+  active    Boolean      @default(false)
+  trigger   PopupTrigger @default(TIMER)
+  /// trigger detail (delay ms, scroll %, exit-intent) + content, validated by Zod
+  config    Json         @default("{}")
+  startsAt  DateTime?
+  endsAt    DateTime?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+enum PopupTrigger {
+  TIMER
+  SCROLL
+  EXIT_INTENT
+  IMMEDIATE
+}
+
+/// A scheduled content/promo "run".
+model Campaign {
+  id        String         @id @default(cuid())
+  name      String
+  status    CampaignStatus @default(SCHEDULED)
+  startsAt  DateTime
+  endsAt    DateTime?
+  /// arbitrary payload: which layout/sections/popups to activate, validated by Zod
+  payload   Json           @default("{}")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([status, startsAt])
+}
+
+enum CampaignStatus {
+  SCHEDULED
+  ACTIVE
+  ENDED
+  PAUSED
+}
+
+// ---------------------------------------------------------------------------
+// Guest lead capture (abandoned info / cart, for remarketing)
+// ---------------------------------------------------------------------------
+
+model GuestLead {
+  id             String   @id @default(cuid())
+  email          String?
+  phone          String?
+  /// captured form fields (name, address, etc.)
+  capturedFields Json     @default("{}")
+  /// Medusa cart id, if any
+  cartId         String?
+  source         String? // "checkout-step" | "popup" | "newsletter"
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([email])
+  @@index([cartId])
+}
+
+// ---------------------------------------------------------------------------
+// Media
+// ---------------------------------------------------------------------------
+
+model MediaAsset {
+  id        String    @id @default(cuid())
+  url       String
+  type      MediaType @default(IMAGE)
+  alt       String?
+  width     Int?
+  height    Int?
+  /// {x,y} 0..1 focal point for art-directed crops
+  focal     Json?
+  createdAt DateTime  @default(now())
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+// ---------------------------------------------------------------------------
+// Visual search (image embeddings for "Shop Similar")
+// ---------------------------------------------------------------------------
+
+/// A product image feature vector for visual-similarity search. Vectors are
+/// computed locally (sharp) and ranked by cosine similarity in the app.
+model ProductEmbedding {
+  id        String   @id @default(cuid())
+  productId String   @unique
+  handle    String
+  title     String
+  thumbnail String
+  price     String
+  dim       Int
+  vector    Float[]
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Reviews
+// ---------------------------------------------------------------------------
+
+/// Customer product reviews (rating + text), keyed by the Medusa product handle.
+model ProductReview {
+  id            String   @id @default(cuid())
+  productHandle String
+  rating        Int
+  /// 1–5
+  author        String
+  title         String?
+  body          String
+  approved      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@index([productHandle, createdAt])
+}
+
+/// Phone OTP challenges (passwordless capture + registration phone verify).
+model OtpChallenge {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+/// Singleton-style key→JSON store for editable site settings (announcement,
+/// marquee, brand names, persona builder, delivery line, etc.).
+model SiteSetting {
+  key       String   @id
+  value     Json     @default("{}")
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Shared
+// ---------------------------------------------------------------------------
+
+enum Status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+

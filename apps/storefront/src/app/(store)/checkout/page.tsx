@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { useTranslations } from "next-intl";
 import { useCartStore } from "@/store/cart";
 import { CartSummary } from "@/components/cart/cart-summary";
-import { formatPrice } from "@/lib/utils/utils";
+import { formatPrice } from "@/lib/utils";
 import {
   type CheckoutAddress,
   type ShippingOption,

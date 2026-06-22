@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { formatPrice } from "@/lib/utils/utils";
+import { formatPrice } from "@/lib/utils";
 import { PaymentProviderInput } from "@/components/checkout/payment-provider-input";
 import { useCartStore } from "@/store/cart";
 import {
