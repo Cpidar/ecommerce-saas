@@ -20,15 +20,16 @@ import { getProductTypesList } from "@/lib/repositories/product-types";
 
 export async function generateMetadata(): Promise<Metadata> {
   const path = `/home`;
+  const data = await getPage(path);
 
   return {
-    title: getPage(path)?.root.props?.title,
+    title: data?.root.props?.title,
   };
 }
 
 export default async function Page() {
   const path = `/home`;
-  const data = getPage(path);
+  const data = await getPage(path);
   if (!data) {
     return notFound();
   }

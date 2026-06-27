@@ -1,4 +1,4 @@
-import { Data } from "@puckeditor/core";
+import { Content, Data } from "@puckeditor/core";
 import fs from "fs";
 import { sdk } from "./medusa";
 
@@ -57,7 +57,7 @@ export const getStoreConfig = async () => {
 }
 
 // Replace with call to your database
-export const getPage = async (path?: string) => {
+export const getPage = async (path?: string): Promise<any> => {
   const dbPath = `puck-data/database.json`
 
   const defaultData: Record<string, Data> | null = fs.existsSync(dbPath)
