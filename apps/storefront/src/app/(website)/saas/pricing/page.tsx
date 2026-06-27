@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { BASE_SUBSCRIPTION_OFFERS, BASE_SUBSCRIPTION_PRICE } from "@/lib/config";
+import { medusaProductRepository } from "@/lib/repositories/products";
 import { retrieveProductSubscriptionOffer } from "@/lib/repositories/subscription-offers";
 import { getSubscriptionPriceSummary } from "@/lib/utils/subscriptions";
 import { ProductSubscriptionOffer } from "@/types/subscription";
@@ -18,6 +19,7 @@ import Link from "next/link";
 import { ReactNode, useMemo, useState } from "react";
 
 export default function PricingPage() {
+  const defaultPlanProduct = medusaProductRepository.getBySlug('default-plan')
   const plans = useMemo(
     () => BASE_SUBSCRIPTION_OFFERS.subscription_offer.allowed_frequencies,
     [],

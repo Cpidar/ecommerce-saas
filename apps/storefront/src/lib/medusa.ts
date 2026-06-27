@@ -45,7 +45,7 @@ export const sdk = new Medusa({
   },
   // [MY-FORK-CONFIG] add store id headers for multi-tenancy
   globalHeaders: {
-    "x-store-id": "store_01KTK5R0R5MZZ6KSPB43M5SMPF",
+    "x-store-id": process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
   },
 })
 

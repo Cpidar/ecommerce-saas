@@ -1,4 +1,5 @@
 import type { HttpTypes } from "@medusajs/types"
+import { CartItem } from "."
 
 export type ReorderSubscriptionFrequencyInterval = "week" | "month" | "year"
 export type SubscriptionPurchaseMode = "one-time" | "subscribe"
@@ -339,8 +340,8 @@ export type ReorderCustomerSubscriptionDetail =
 export type CustomerSubscriptionDetail = ReorderCustomerSubscriptionDetail
 
 export type SubscriptionGroupedCartItems = {
-  subscriptionItems: HttpTypes.StoreCartLineItem[]
-  oneTimeItems: HttpTypes.StoreCartLineItem[]
+  subscriptionItems: CartItem[]
+  oneTimeItems: CartItem[]
 }
 
 export type SubscriptionPriceSummary = {

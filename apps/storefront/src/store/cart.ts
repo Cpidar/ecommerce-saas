@@ -1,40 +1,42 @@
-"use client"
+"use client";
 
-import { create } from "zustand"
-import type { Cart } from "@/types"
+import { create } from "zustand";
+import type { Cart } from "@/types";
 import {
   addLineItem,
   getCart,
   removeLineItem,
   updateLineItem,
   clearLocalCart,
-} from "@/lib/cart-client"
+} from "@/lib/cart-client";
+import { ReorderSubscriptionLineItemMetadataInput } from "@/types/subscription";
 
 interface CartState {
-  cart: Cart | null
-  isOpen: boolean
-  isLoading: boolean
-  hasHydrated: boolean
+  cart: Cart | null;
+  isOpen: boolean;
+  isLoading: boolean;
+  hasHydrated: boolean;
 
   // UI
-  toggleCart: () => void
-  openCart: () => void
-  closeCart: () => void
+  toggleCart: () => void;
+  openCart: () => void;
+  closeCart: () => void;
 
   // Server-backed operations
-  hydrate: () => Promise<void>
+  hydrate: () => Promise<void>;
   addItem: (
     variantId: string,
     quantity?: number,
-    countryCode?: string
-  ) => Promise<void>
-  updateQuantity: (lineItemId: string, quantity: number) => Promise<void>
-  removeItem: (lineItemId: string) => Promise<void>
-  clear: () => Promise<void>
+    countryCode?: string,
+    metadata?: ReorderSubscriptionLineItemMetadataInput,
+  ) => Promise<void>;
+  updateQuantity: (lineItemId: string, quantity: number) => Promise<void>;
+  removeItem: (lineItemId: string) => Promise<void>;
+  clear: () => Promise<void>;
 
   // Selectors (kept for backwards compat with existing UI)
-  getSubtotal: () => number
-  getItemCount: () => number
+  getSubtotal: () => number;
+  getItemCount: () => number;
 }
 
 export const useCartStore = create<CartState>()((set, get) => ({
@@ -48,51 +50,56 @@ export const useCartStore = create<CartState>()((set, get) => ({
   closeCart: () => set({ isOpen: false }),
 
   hydrate: async () => {
-    if (get().hasHydrated) return
-    set({ isLoading: true })
+    if (get().hasHydrated) return;
+    set({ isLoading: true });
     try {
-      const cart = await getCart()
-      set({ cart, hasHydrated: true })
+      const cart = await getCart();
+      set({ cart, hasHydrated: true });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
 
-  addItem: async (variantId, quantity = 1, countryCode) => {
-    set({ isLoading: true })
+  addItem: async (variantId, quantity = 1, countryCode, metadata) => {
+    set({ isLoading: true });
     try {
-      const cart = await addLineItem(variantId, quantity, countryCode)
-      set({ cart, hasHydrated: true })
+      const cart = await addLineItem(
+        variantId,
+        quantity,
+        countryCode,
+        metadata,
+      );
+      set({ cart, hasHydrated: true });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
 
   updateQuantity: async (lineItemId, quantity) => {
-    set({ isLoading: true })
+    set({ isLoading: true });
     try {
-      const cart = await updateLineItem(lineItemId, quantity)
-      set({ cart })
+      const cart = await updateLineItem(lineItemId, quantity);
+      set({ cart });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
 
   removeItem: async (lineItemId) => {
-    set({ isLoading: true })
+    set({ isLoading: true });
     try {
-      const cart = await removeLineItem(lineItemId)
-      set({ cart })
+      const cart = await removeLineItem(lineItemId);
+      set({ cart });
     } finally {
-      set({ isLoading: false })
+      set({ isLoading: false });
     }
   },
 
   clear: async () => {
-    clearLocalCart()
-    set({ cart: null })
+    clearLocalCart();
+    set({ cart: null });
   },
 
   getSubtotal: () => get().cart?.subtotal ?? 0,
   getItemCount: () => get().cart?.itemCount ?? 0,
-}))
+}));

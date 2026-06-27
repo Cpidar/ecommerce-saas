@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +20,7 @@ import citiesjson from "@/data/cities.json";
 import { CheckoutAddressStep } from "@/components/checkout/checkout-address-step";
 import { CheckoutShippingStep } from "@/components/checkout/checkout-shipping-step";
 import { CheckoutPaymentStep } from "@/components/checkout/checkout-payment-step";
+import { getCartPurchaseMode } from "@/lib/utils/subscriptions";
 
 type Step = "address" | "shipping" | "payment";
 
@@ -39,16 +40,18 @@ export default function CheckoutPage() {
   const tCheckout = useTranslations("checkout");
   const tCommon = useTranslations("common");
   const { customer, isReady } = useAuthGuard();
-
+  
   const cart = useCartStore((s) => s.cart);
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const hydrate = useCartStore((s) => s.hydrate);
+  const purchaseMode = getCartPurchaseMode(cart)
+  const isSubscripitionMode = useMemo(() => purchaseMode === "subscription", [purchaseMode])
 
   useEffect(() => {
     if (!hasHydrated) void hydrate();
   }, [hasHydrated, hydrate]);
 
-  const [step, setStep] = useState<Step>("address");
+  const [step, setStep] = useState<Step>(isSubscripitionMode ? "payment" :"address");
   const [address, setAddress] = useState<CheckoutAddress>({
     ...EMPTY_ADDRESS,
     country_code: DEFAULT_REGION.toLowerCase(),
@@ -109,7 +112,7 @@ export default function CheckoutPage() {
       <h1 className="text-3xl font-bold tracking-tight">
         {tCheckout("title")}
       </h1>
-      <StepIndicator current={step} />
+      { !isSubscripitionMode && <StepIndicator current={step} /> }
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">

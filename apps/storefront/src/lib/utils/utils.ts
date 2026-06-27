@@ -6,6 +6,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export const getPercentageDiff = (original: number, calculated: number) => {
+  const diff = original - calculated
+  const decrease = (diff / original) * 100
+
+  return decrease.toFixed()
+}
+
 export function formatPrice(
   priceInCents: number,
   currency?: string
