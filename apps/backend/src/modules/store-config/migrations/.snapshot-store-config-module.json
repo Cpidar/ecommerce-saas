@@ -214,6 +214,22 @@
           "enumItems": [],
           "mappedType": "json"
         },
+        "puck_data": {
+          "name": "puck_data",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'{}'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "json"
+        },
         "seo_config": {
           "name": "seo_config",
           "type": "jsonb",

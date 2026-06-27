@@ -18,6 +18,7 @@ const StoreConfig = model.define('store_config', {
 
   homepage_layout: model.json().default({}),
   about_page_layout: model.json().default({}),
+  puck_data: model.json().default({}),
 
   seo_config: model.json().default({}),
   marketing_config: model.json().default({}),

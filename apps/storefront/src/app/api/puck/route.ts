@@ -25,7 +25,8 @@ export async function POST(request: Request) {
   // );
 
   const existingStoreConfig = await getStoreConfig()
-console.log(existingStoreConfig)
+  const existingPuckDataForPath = existingStoreConfig?.puck_data?.[payload.path] ?? {}
+  console.log(existingStoreConfig)
   // 🟢 Write to the correct path
   // fs.writeFileSync(dbPath, JSON.stringify(updatedData, null, 2)); // Added pretty printing
   await sdk.client.fetch(
@@ -37,7 +38,7 @@ console.log(existingStoreConfig)
         puck_data: {
           ...existingStoreConfig?.puck_data,
           [payload.path]: {
-            ...existingStoreConfig?.puck_data?.[payload.path],
+            ...existingPuckDataForPath,
             ...payload.data
           }
         }
