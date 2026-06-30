@@ -1,0 +1,45 @@
+name: Build Docker Images
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.backend
+          push: true
+          tags: ghcr.io/YOUR_USER/ecommerce-saas-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.storefront
+          push: true
+          tags: ghcr.io/YOUR_USER/ecommerce-saas-storefront:latest
+          build-args: |
+            NEXT_PUBLIC_MEDUSA_BACKEND_URL=https://api.yourdomain.com
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

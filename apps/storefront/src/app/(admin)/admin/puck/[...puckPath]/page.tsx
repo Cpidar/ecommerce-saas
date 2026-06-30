@@ -49,7 +49,7 @@ export default async function Page({
       ? "/home"
       : `/${puckPath.join("/")}`;
 
-  const data = getPage(path);
+  const data = await getPage(path);
 
   if (!shouldHandleEditPath(puckPath)) {
     notFound();

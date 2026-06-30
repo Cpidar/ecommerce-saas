@@ -68,6 +68,6 @@ export default async function sendOrderConfirmationHandler({
   });
 }
 
-// export const config: SubscriberConfig = {
-//   event: 'order.placed',
-// };
+export const config: SubscriberConfig = {
+  event: 'order.placed',
+};

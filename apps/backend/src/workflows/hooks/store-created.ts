@@ -1,5 +1,5 @@
 import { asValue } from "@medusajs/framework/awilix";
-import { IStoreModuleService, Event } from "@medusajs/framework/types";
+import { IStoreModuleService, IEventBusModuleService } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
 import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { createStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflows/create-store/index"
@@ -8,7 +8,7 @@ import { createStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflo
 createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
   console.log("HOOK storeCreated", storeId);
   const storeService: IStoreModuleService = container.resolve(Modules.STORE)
-  const event = container.resolve(Modules.EVENT_BUS)
+  const event = container.resolve<IEventBusModuleService>(Modules.EVENT_BUS)
   const store = await storeService.retrieveStore(storeId)
 
   const SUPER_ADMIN_STORE_ID = process.env.SUPER_ADMIN_STORE_ID || "store_01KTJY1ZW9GNT71P3KE2DQ163D"

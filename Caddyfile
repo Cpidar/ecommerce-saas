@@ -1,0 +1,182 @@
+# ============================================
+# MULTI-TENANT CADDYFILE (NO SSL/TLS)
+# DNS resolution: Caddy uses Docker container names
+# ============================================
+# {
+# 	servers {
+# 		trusted_proxies static private_ranges
+# 	}
+# }
+# {
+# 	# Disable automatic HTTPS completely
+# 	auto_https off
+# }
+
+# ========== SUBDOMAIN TENANTS ==========
+:9852 {
+	# Enable debug logging
+	log {
+		output stdout
+		level DEBUG
+	}
+
+	# Handle exact /app path
+	handle /app {
+		reverse_proxy localhost:9000 {
+			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+		}
+	}
+
+	# Explicitly match authentication paths
+	handle /auth/* {
+		reverse_proxy localhost:9000 {
+			# Add X-Store-Id header from subdomain (or default value)
+			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+		}
+	}
+
+	# Match app paths
+	handle /app/* {
+		reverse_proxy localhost:9000 {
+			# Add X-Store-Id header from subdomain
+			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+		}
+	}
+
+	# Match admin paths
+	handle /admin/* {
+		reverse_proxy localhost:9000 {
+			# Add X-Store-Id header from subdomain
+			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+		}
+	}
+
+	# Match admin paths
+	handle {
+		reverse_proxy localhost:8000 {
+			# Add X-Store-Id header from subdomain
+			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+		}
+	}
+}
+
+:5000 {
+	reverse_proxy registry:5000
+}
+
+# store2.localhost:9852 {
+# 	# Enable debug logging
+# 	log {
+# 		output stdout
+# 		level DEBUG
+# 	}
+
+# 	# Handle exact /app path
+# 	handle /app {
+# 		reverse_proxy localhost:9000 {
+# 			header_up X-Store-Id "store_01KK114Q2MWTHX3X3HJRBB91WE"
+# 		}
+# 	}
+
+# 	# Explicitly match authentication paths
+# 	handle /auth/* {
+# 		reverse_proxy localhost:9000 {
+# 			# Add X-Store-Id header from subdomain (or default value)
+# 			header_up X-Store-Id "store_01KK114Q2MWTHX3X3HJRBB91WE"
+# 		}
+# 	}
+
+# 	# Match app paths
+# 	handle /app/* {
+# 		reverse_proxy localhost:9000 {
+# 			# Add X-Store-Id header from subdomain
+# 			header_up X-Store-Id "store_01KK114Q2MWTHX3X3HJRBB91WE"
+# 		}
+# 	}
+
+# 	# Match admin paths
+# 	handle /admin/* {
+# 		reverse_proxy localhost:9000 {
+# 			# Add X-Store-Id header from subdomain
+# 			header_up X-Store-Id "store_01KK114Q2MWTHX3X3HJRBB91WE"
+# 		}
+# 	}
+
+# 	# Match admin paths
+# 	handle {
+# 		reverse_proxy localhost:8000 {
+# 			# Add X-Store-Id header from subdomain
+# 			header_up X-Store-Id "store_01KK114Q2MWTHX3X3HJRBB91WE"
+# 		}
+# 	}
+# }
+
+# ========== CUSTOM DOMAIN TENANT EXAMPLE ==========
+# store1.com, www.store1.com {
+# 	tls off
+
+# 	handle /app* {
+# 		reverse_proxy medusa_backend:9000 {
+# 			header_up X-Store-Id store1.com
+# 			header_up Host {host}
+# 		}
+# 	}
+
+# 	handle /auth* {
+# 		reverse_proxy medusa_backend:9000 {
+# 			header_up X-Store-Id store1.com
+# 			header_up Host {host}
+# 		}
+# 	}
+
+# 	handle {
+# 		reverse_proxy medusa_storefront:8000 {
+# 			header_up X-Store-Id store1.com
+# 			header_up Host {host}
+# 		}
+# 	}
+# }
+
+# ========== CUSTOM DOMAIN TENANT TEMPLATE ==========
+# Copy this block for each custom domain tenant
+# store1.com, www.store1.com {
+#     tls off
+#     
+#     handle /app* {
+#         reverse_proxy medusa_backend:9000 {
+#             header_up X-Store-Id store1.com
+#             header_up Host {host}
+#         }
+#     }
+#     
+#     handle /auth* {
+#         reverse_proxy medusa_backend:9000 {
+#             header_up X-Store-Id store1.com
+#             header_up Host {host}
+#         }
+#     }
+#     
+#     handle {
+#         reverse_proxy medusa_storefront:8000 {
+#             header_up X-Store-Id store1.com
+#             header_up Host {host}
+#         }
+#     }
+# }
+
+# ========== MAIN PLATFORM DOMAIN ==========
+# mysaas.test, www.mysaas.test {
+# 	tls off
+
+# 	handle /app* {
+# 		reverse_proxy medusa_backend:9000
+# 	}
+
+# 	handle /auth* {
+# 		reverse_proxy medusa_backend:9000
+# 	}
+
+# 	handle {
+# 		reverse_proxy medusa_storefront:8000
+# 	}
+# }

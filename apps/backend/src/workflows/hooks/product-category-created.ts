@@ -1,4 +1,4 @@
-import { StoreDTO } from "@medusajs/framework/types";
+import { IProductModuleService, StoreDTO } from "@medusajs/framework/types";
 import { linkProductCategoryToStoreWorkflow } from "../link-product-category-to-store";
 import { Modules } from "@medusajs/framework/utils";
 import slugify from "../../utils/slugify";
@@ -6,7 +6,7 @@ import { createProductCategoriesWorkflow } from "@medusajs/medusa/core-flows";
 
 createProductCategoriesWorkflow.hooks.categoriesCreated(async ({ categories }, { container }) => {
   console.log("HOOK categoriesCreated", categories);
-    const productModuleService = container.resolve(Modules.PRODUCT)
+    const productModuleService = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
   const currentStore = container.resolve("currentStore") as Pick<StoreDTO, 'id'>;
   await Promise.all(

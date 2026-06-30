@@ -1,0 +1,267 @@
+# ============================================
+# COMPLETE PRODUCTION DOCKER COMPOSE FOR MULTI-TENANT MEDUSA
+# Includes: Medusa Backend, Storefront, PostgreSQL, Redis
+#           MinIO (file storage), Meilisearch (search)
+#           Caddy (reverse proxy with multi-tenant routing)
+# ============================================
+
+services:
+  # ========== POSTGRESQL DATABASE ==========
+  postgres:
+    image: postgres:16
+    container_name: medusa_postgres
+    restart: unless-stopped
+    mem_limit: 256M
+    cpus: "0.5"
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - medusa_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ========== REDIS (Cache & Queue) ==========
+  redis:
+    image: redis
+    container_name: medusa_redis
+    restart: unless-stopped
+    mem_limit: 128M
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - medusa_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ========== MINIO (S3-compatible Storage) ==========
+  minio:
+    image: minio/minio:RELEASE.2024-10-13T13-34-11Z
+    container_name: medusa_minio
+    restart: unless-stopped
+    mem_limit: 128M
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "127.0.0.1:9002:9000"
+      - "127.0.0.1:9001:9001"
+    networks:
+      - medusa_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ========== MINIO BUCKET CREATOR ==========
+  createbuckets:
+    image: minio/mc:RELEASE.2024-10-08T09-37-26Z
+    container_name: medusa_createbuckets
+    mem_limit: 64M
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_USER} ${MINIO_PASSWORD};
+      /usr/bin/mc mb myminio/medusa --ignore-existing;
+      /usr/bin/mc anonymous set public myminio/medusa;
+      exit 0;
+      "
+    restart: "no"
+    networks:
+      - medusa_network
+
+  # ========== MEILISEARCH (Search Engine) ==========
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    container_name: medusa_meilisearch
+    restart: unless-stopped
+    mem_limit: 256M
+    cpus: "0.5"
+    environment:
+      MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
+      MEILI_ENV: production
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meilisearch_data:/meili_data
+    ports:
+      - "127.0.0.1:7700:7700"
+    networks:
+      - medusa_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ========== MEDUSA BACKEND ==========
+  medusa:
+    image: backend-image:latest
+    container_name: medusa_backend
+    restart: no
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      meilisearch:
+        condition: service_healthy
+      createbuckets:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:5173:5173"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      S3_URL: http://minio:9000
+      S3_BUCKET: medusa
+      S3_REGION: us-east-1
+      S3_ACCESS_KEY_ID: ${MINIO_USER}
+      S3_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
+      MEILISEARCH_HOST: http://meilisearch:7700
+      MEILISEARCH_API_KEY: ${MEILISEARCH_MASTER_KEY}
+    env_file:
+      - apps/backend/.env
+    networks:
+      - medusa_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+  # ========== STOREFRONT (Next.js) ==========
+  # storefront:
+  #   image: ghcr.io/YOUR_USER/ecommerce-saas-storefront:latest
+  #   container_name: medusa_storefront
+  #   restart: unless-stopped
+  #   mem_limit: 768M
+  #   depends_on:
+  #     medusa:
+  #       condition: service_started
+  #   ports:
+  #     - "127.0.0.1:8000:8000"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
+  #   env_file:
+  #     - apps/storefront/.env
+  #   networks:
+  #     - medusa_network
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "100m"
+  #       max-file: "5"
+
+  # ========== PRIVATE DOCKER REGISTRY ==========
+  registry:
+    image: registry:2
+    container_name: docker_registry
+    restart: unless-stopped
+    mem_limit: 256M
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      - ./registry/auth:/auth:ro
+      - registry_data:/var/lib/registry
+    networks:
+      - medusa_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ========== CADDY REVERSE PROXY ==========
+  caddy:
+    image: caddy:2-alpine
+    container_name: caddy_proxy
+    restart: unless-stopped
+    mem_limit: 128M
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - ACME_AGREE=true
+    networks:
+      - medusa_network
+    depends_on:
+      - medusa
+      - registry
+      # - storefront
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+# ========== VOLUMES ==========
+volumes:
+  postgres_data:
+    name: medusa_postgres_data
+  redis_data:
+    name: medusa_redis_data
+  minio_data:
+    name: medusa_minio_data
+  meilisearch_data:
+    name: medusa_meilisearch_data
+  caddy_data:
+    name: caddy_data
+  caddy_config:
+    name: caddy_config
+  registry_data:
+    name: docker_registry_data
+
+# ========== NETWORKS ==========
+networks:
+  medusa_network:
+    name: medusa_network
+    driver: bridge
