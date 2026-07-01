@@ -1,17 +1,29 @@
-import { loadEnv, defineConfig, Modules, ContainerRegistrationKeys } from '@medusajs/framework/utils'
+import {
+  loadEnv,
+  defineConfig,
+  Modules,
+  ContainerRegistrationKeys,
+} from "@medusajs/framework/utils";
 
-loadEnv(process.env.NODE_ENV || 'development', process.cwd())
+loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    redisUrl: process.env.REDIS_URL,
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
       authCors: process.env.AUTH_CORS!,
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
-    }
+    },
+  },
+  admin: {
+    backendUrl: process.env.MEDUSA_BACKEND_URL,
+    vite: (config) => {
+      config.define["__VITE_DISABLE_SIGNUP_WIDGET__"] = JSON.stringify(true);
+    },
   },
   modules: [
     {
@@ -49,49 +61,10 @@ module.exports = defineConfig({
             // if module provider is in a plugin, use `plugin-name/providers/my-payment`
             resolve: "./src/modules/behpardakht",
             id: "behpardakht",
-            options: {
-              terminalId: process.env.BEHPARDAKHT_TERMINAL_ID || "",
-              username: process.env.BEHPARDAKHT_USERNAME || "",
-              password: process.env.BEHPARDAKHT_PASSWORD || "",
-              wsdlUrl: process.env.BEHPARDAKHT_WSDL_URL || "",
-              gatewayUrl: process.env.BEHPARDAKHT_GATEWAY_URL || "",
-              backendUrl: process.env.BEHPARDAKHT_BACKEND_URL || "",
-            }
           },
-          // {
-          //   id: "stripe",
-          //   resolve: "@medusajs/medusa/payment-stripe",
-          //   options: {
-          //     apiKey: process.env.STRIPE_API_KEY,
-          //     webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
-          //   },
-          // },
         ],
       },
     },
-    // {
-    //   resolve: "@medusajs/medusa/file",
-    //   options: {
-    //     providers: [
-    //       {
-    //         resolve: "@medusajs/medusa/file-s3",
-    //         id: "s3",
-    //         options: {
-    //           file_url: process.env.S3_FILE_URL,
-    //           access_key_id: process.env.S3_ACCESS_KEY_ID,
-    //           secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
-    //           region: process.env.S3_REGION,
-    //           bucket: process.env.S3_BUCKET,
-    //           endpoint: process.env.S3_ENDPOINT,
-    //           additional_client_config: {
-    //             forcePathStyle:
-    //               process.env.S3_FORCE_PATH_STYLE === "true" ? true : undefined,
-    //           },
-    //         },
-    //       },
-    //     ],
-    //   },
-    // },
     {
       resolve: "@medusajs/medusa/notification",
       options: {
@@ -104,35 +77,79 @@ module.exports = defineConfig({
               channels: ["feed"],
             },
           },
-          // {
-          //   resolve: "./src/modules/resend",
-          //   id: "resend",
-          //   options: {
-          //     channels: ["email"],
-          //     api_key: process.env.RESEND_API_KEY,
-          //     from: process.env.RESEND_FROM,
-          //     siteTitle: "SofaSocietyCo.",
-          //     companyName: "Sofa Society",
-          //     footerLinks: [
-          //       {
-          //         url: "https://agilo.com",
-          //         label: "Agilo",
-          //       },
-          //       {
-          //         url: "https://www.instagram.com/agiloltd/",
-          //         label: "Instagram",
-          //       },
-          //       {
-          //         url: "https://www.linkedin.com/company/agilo/",
-          //         label: "LinkedIn",
-          //       },
-          //     ],
-          //   },
-          // },
         ],
       },
     },
 
+    // Production Modules
+    {
+      resolve: "@medusajs/medusa/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/file-s3",
+            id: "s3",
+            options: {
+              file_url: process.env.S3_FILE_URL,
+              access_key_id: process.env.S3_ACCESS_KEY_ID,
+              secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
+              region: process.env.S3_REGION,
+              bucket: process.env.S3_BUCKET,
+              endpoint: process.env.S3_ENDPOINT,
+              additional_client_config: {
+                forcePathStyle: true,
+              },
+            },
+          },
+        ],
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/caching",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/caching-redis",
+            id: "caching-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.CACHE_REDIS_URL || process.env.REDIS_URL,
+            },
+          },
+        ],
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/event-bus-redis",
+      options: {
+        redisUrl: process.env.REDIS_URL,
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/workflow-engine-redis",
+      options: {
+        redis: {
+          // Note: This was `url` before v2.12.2
+          // It's now deprecated in favor of `redisUrl`
+          redisUrl: process.env.REDIS_URL,
+        },
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/locking",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/locking-redis",
+            id: "locking-redis",
+            is_default: true,
+            options: {
+              redisUrl: process.env.LOCKING_REDIS_URL || process.env.REDIS_URL,
+            },
+          },
+        ],
+      },
+    },
     // {
     //   resolve: "./src/modules/meilisearch",
     //   options: {
@@ -209,23 +226,6 @@ module.exports = defineConfig({
     //     },
     //   },
     // },
-    // {
-    //   resolve: "@medusajs/medusa/caching",
-    //   options: {
-    //     providers: [
-    //       {
-    //         resolve: "@medusajs/caching-redis",
-    //         id: "caching-redis",
-    //         // Optional, makes this the default caching provider
-    //         is_default: true,
-    //         options: {
-    //           redisUrl: process.env.REDIS_URL,
-    //           // more options...
-    //         },
-    //       },
-    //     ],
-    //   },
-    // },
   ],
 
   plugins: [
@@ -237,5 +237,5 @@ module.exports = defineConfig({
       resolve: "@techlabi/medusa-marketplace-plugin",
       options: {},
     },
-  ]
-})  
+  ],
+});

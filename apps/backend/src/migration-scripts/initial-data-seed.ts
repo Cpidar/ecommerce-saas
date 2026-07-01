@@ -1,4 +1,5 @@
 import { MedusaContainer } from "@medusajs/framework";
+import { IStoreModuleService } from "@medusajs/framework/types";
 import {
   ContainerRegistrationKeys,
   ModuleRegistrationName,
@@ -34,7 +35,7 @@ export default async function initial_data_seed({
     ModuleRegistrationName.FULFILLMENT
   );
 
-  const countries = ["gb", "de", "dk", "se", "fr", "es", "it"];
+  const countries = ["ir"];
 
   logger.info("Seeding store data...");
   const {
@@ -71,38 +72,92 @@ export default async function initial_data_seed({
     },
   });
 
-  const {
-    result: [store],
-  } = await createStoresWorkflow(container).run({
-    input: {
-      stores: [
-        {
-          name: "Default Store",
-          supported_currencies: [
-            {
-              currency_code: "eur",
-              is_default: true,
-            },
-            {
-              currency_code: "usd",
-              is_default: false,
-            },
-          ],
-          default_sales_channel_id: defaultSalesChannel.id,
-        },
-      ],
-    },
-  });
+  // ////////////////////////////////////////////////////////
+  // Add Store Scope
+  // /////////////////////////////////////////////////////
+
+  // ✅ STEP 1: Create or retrieve the store for multi-tenant context
+  const storeModuleService: IStoreModuleService = container.resolve(Modules.STORE);
+
+  // Check if store already exists, or create a new one
+  let stores = await storeModuleService.listStores();
+  let currentStore: any;
+
+  if (stores.length === 0) {
+    // Create a store if none exists (first-time seeding)
+    logger.info('No store found. Creating a new store...');
+    const {
+      result: [store],
+    } = await createStoresWorkflow(container).run({
+      input: {
+        stores: [
+          {
+            name: "فروشگاه پیش‌فرض",
+            supported_currencies: [
+              {
+                currency_code: "irr",
+                is_default: true,
+              }
+            ],
+            default_sales_channel_id: defaultSalesChannel.id,
+          },
+        ],
+      },
+    });
+    currentStore = store;
+    logger.info(`Created new store with ID: ${currentStore.id}`);
+  } else {
+    // Use existing store (for multi-tenant, you might want to select a specific one)
+    // In a true multi-tenant setup, you would identify the store by subdomain or header
+    currentStore = stores[stores.length - 1];
+    logger.info(`Using existing store with ID: ${currentStore.id}`);
+  }
+
+  // ✅ STEP 2: Register currentStore in the request scope
+  // This replicates the middleware behavior for the seed script
+  // Note: The ExecArgs doesn't have req.scope directly, so we register in container
+  // with a scoped lifetime to simulate request-scoped behavior
+
+  // CRITICAL: For the seed script, we need to make currentStore available
+  // to all services that expect it via req.scope.resolve('currentStore')
+
+  // Method 1: Register as a scoped dependency in the container
+  // The seed runs in a single "request" context, so we can register it globally for the script
+  if (!container.hasRegistration('currentStore')) {
+    container.register({
+      currentStore: {
+        resolve: () => currentStore,
+        lifetime: 'SCOPED', // This makes it behave like a request-scoped dependency
+      },
+    });
+    logger.info('Registered currentStore in container');
+  }
+
+  // Method 2: If your services expect currentStore via req.scope directly,
+  // and you have access to the Express request object, you would do:
+  // req.scope.register({ currentStore: { resolve: () => currentStore } })
+  // Since seed script doesn't have req, we use container registration above
+
+  // Verify registration works
+  try {
+    const resolvedStore = container.resolve('currentStore') as any;
+    logger.info(`✅ currentStore resolved successfully: ${resolvedStore.id}`);
+  } catch (err) {
+
+    logger.warn('Could not resolve currentStore from container - services may need manual injection');
+  }
+
+
 
   logger.info("Seeding region data...");
   const { result: regionResult } = await createRegionsWorkflow(container).run({
     input: {
       regions: [
         {
-          name: "Europe",
-          currency_code: "eur",
+          name: "Iran",
+          currency_code: "irr",
           countries,
-          payment_providers: ["pp_system_default"],
+          payment_providers: ["pp_system_default", "pp_behpardakht_behpardakht"],
         },
       ],
     },
@@ -126,10 +181,10 @@ export default async function initial_data_seed({
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: "انبار اصفهان",
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
+            city: "Isfahan",
+            country_code: "IR",
             address_1: "",
           },
         },
@@ -156,38 +211,14 @@ export default async function initial_data_seed({
   const shippingProfile = shippingProfileResult[0];
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
+    name: "Iranian Warehouse delivery",
     type: "shipping",
     service_zones: [
       {
-        name: "Europe",
+        name: "Iran",
         geo_zones: [
           {
-            country_code: "gb",
-            type: "country",
-          },
-          {
-            country_code: "de",
-            type: "country",
-          },
-          {
-            country_code: "dk",
-            type: "country",
-          },
-          {
-            country_code: "se",
-            type: "country",
-          },
-          {
-            country_code: "fr",
-            type: "country",
-          },
-          {
-            country_code: "es",
-            type: "country",
-          },
-          {
-            country_code: "it",
+            country_code: "ir",
             type: "country",
           },
         ],
@@ -207,28 +238,24 @@ export default async function initial_data_seed({
   await createShippingOptionsWorkflow(container).run({
     input: [
       {
-        name: "Standard Shipping",
+        name: "پست عادی",
         price_type: "flat",
         provider_id: "manual_manual",
         service_zone_id: fulfillmentSet.service_zones[0].id,
         shipping_profile_id: shippingProfile.id,
         type: {
-          label: "Standard",
-          description: "Ship in 2-3 days.",
+          label: "عادی",
+          description: "ارسال در ۲ تا ۳ روز.",
           code: "standard",
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "irr",
+            amount: 1000000,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 1000000,
           },
         ],
         rules: [
@@ -245,28 +272,24 @@ export default async function initial_data_seed({
         ],
       },
       {
-        name: "Express Shipping",
+        name: "پست پیشتاز",
         price_type: "flat",
         provider_id: "manual_manual",
         service_zone_id: fulfillmentSet.service_zones[0].id,
         shipping_profile_id: shippingProfile.id,
         type: {
-          label: "Express",
-          description: "Ship in 24 hours.",
+          label: "پیشتاز",
+          description: "ارسال در ۲۴ ساعت.",
           code: "express",
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
-            amount: 10,
+            currency_code: "irr",
+            amount: 1500000,
           },
           {
             region_id: region.id,
-            amount: 10,
+            amount: 1500000,
           },
         ],
         rules: [
@@ -302,19 +325,19 @@ export default async function initial_data_seed({
     input: {
       product_categories: [
         {
-          name: "Shirts",
+          name: "تی‌شرت",
           is_active: true,
         },
         {
-          name: "Sweatshirts",
+          name: "سویشرت‌",
           is_active: true,
         },
         {
-          name: "Pants",
+          name: "شلوار",
           is_active: true,
         },
         {
-          name: "Merch",
+          name: "محصولات جانبی",
           is_active: true,
         },
       ],
@@ -325,12 +348,12 @@ export default async function initial_data_seed({
     input: {
       products: [
         {
-          title: "Medusa T-Shirt",
+          title: "تی‌شرت مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Shirts")!.id,
+            categoryResult.find((cat) => cat.name === "تی‌شرت‌")!.id,
           ],
           description:
-            "Reimagine the feeling of a classic T-shirt. With our cotton T-shirts, everyday essentials no longer have to be ordinary.",
+            "حس یک تی‌شرت کلاسیک را دوباره تجربه کنید. با تی‌شرت‌های نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
           handle: "t-shirt",
           weight: 400,
           status: ProductStatus.PUBLISHED,
@@ -351,12 +374,12 @@ export default async function initial_data_seed({
           ],
           options: [
             {
-              title: "Size",
+              title: "سایز",
               values: ["S", "M", "L", "XL"],
             },
             {
-              title: "Color",
-              values: ["Black", "White"],
+              title: "رنگ",
+              values: ["مشکی", "سفید"],
             },
           ],
           variants: [
@@ -365,17 +388,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-S-BLACK",
               options: {
                 Size: "S",
-                Color: "Black",
+                Color: "مشکی",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -383,17 +402,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-S-WHITE",
               options: {
                 Size: "S",
-                Color: "White",
+                Color: "سفید",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -401,17 +416,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-M-BLACK",
               options: {
                 Size: "M",
-                Color: "Black",
+                Color: "مشکی",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -419,17 +430,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-M-WHITE",
               options: {
                 Size: "M",
-                Color: "White",
+                Color: "سفید",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -437,17 +444,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-L-BLACK",
               options: {
                 Size: "L",
-                Color: "Black",
+                Color: "مشکی",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -455,17 +458,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-L-WHITE",
               options: {
                 Size: "L",
-                Color: "White",
+                Color: "سفید",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -473,17 +472,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-XL-BLACK",
               options: {
                 Size: "XL",
-                Color: "Black",
+                Color: "مشکی",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -491,17 +486,13 @@ export default async function initial_data_seed({
               sku: "SHIRT-XL-WHITE",
               options: {
                 Size: "XL",
-                Color: "White",
+                Color: "سفید",
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
           ],
@@ -512,12 +503,12 @@ export default async function initial_data_seed({
           ],
         },
         {
-          title: "Medusa Sweatshirt",
+          title: "سویشرت مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Sweatshirts")!.id,
+            categoryResult.find((cat) => cat.name === "سویشرت‌")!.id,
           ],
           description:
-            "Reimagine the feeling of a classic sweatshirt. With our cotton sweatshirt, everyday essentials no longer have to be ordinary.",
+            "حس یک سویشرت کلاسیک را دوباره تجربه کنید. با سویشرت نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
           handle: "sweatshirt",
           weight: 400,
           status: ProductStatus.PUBLISHED,
@@ -532,7 +523,7 @@ export default async function initial_data_seed({
           ],
           options: [
             {
-              title: "Size",
+              title: "سایز",
               values: ["S", "M", "L", "XL"],
             },
           ],
@@ -545,13 +536,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -562,13 +549,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -579,13 +562,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -596,13 +575,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
           ],
@@ -613,12 +588,12 @@ export default async function initial_data_seed({
           ],
         },
         {
-          title: "Medusa Sweatpants",
+          title: "شلوار اسلش مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Pants")!.id,
+            categoryResult.find((cat) => cat.name === "شلوار")!.id,
           ],
           description:
-            "Reimagine the feeling of classic sweatpants. With our cotton sweatpants, everyday essentials no longer have to be ordinary.",
+            "حس یک شلوار اسلش کلاسیک را دوباره تجربه کنید. با شلوار اسلش نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
           handle: "sweatpants",
           weight: 400,
           status: ProductStatus.PUBLISHED,
@@ -633,7 +608,7 @@ export default async function initial_data_seed({
           ],
           options: [
             {
-              title: "Size",
+              title: "سایز",
               values: ["S", "M", "L", "XL"],
             },
           ],
@@ -646,13 +621,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -663,13 +634,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -680,13 +647,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -697,13 +660,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
           ],
@@ -714,12 +673,12 @@ export default async function initial_data_seed({
           ],
         },
         {
-          title: "Medusa Shorts",
+          title: "شلوارک مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.name === "Merch")!.id,
+            categoryResult.find((cat) => cat.name === "محصولات جانبی")!.id,
           ],
           description:
-            "Reimagine the feeling of classic shorts. With our cotton shorts, everyday essentials no longer have to be ordinary.",
+            "حس یک شلوارک کلاسیک را دوباره تجربه کنید. با شلوارک نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
           handle: "shorts",
           weight: 400,
           status: ProductStatus.PUBLISHED,
@@ -734,7 +693,7 @@ export default async function initial_data_seed({
           ],
           options: [
             {
-              title: "Size",
+              title: "سایز",
               values: ["S", "M", "L", "XL"],
             },
           ],
@@ -747,13 +706,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -764,13 +719,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -781,13 +732,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
             {
@@ -798,13 +745,9 @@ export default async function initial_data_seed({
               },
               prices: [
                 {
-                  amount: 10,
-                  currency_code: "eur",
-                },
-                {
-                  amount: 15,
-                  currency_code: "usd",
-                },
+                  amount: 15000000,
+                  currency_code: "irr",
+                }
               ],
             },
           ],

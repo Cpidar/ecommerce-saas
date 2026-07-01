@@ -2,6 +2,7 @@
 node_modules
 apps/backend/node_modules
 apps/storefront/node_modules
+**/node_modules/
 .yarn/cache
 .yarn/unplugged
 .yarn/install-state.gz
@@ -35,3 +36,6 @@ yarn-error.log*
 README.md
 .dockerignore
 Dockerfile*
+*.md
+.DS_Store
+Thumbs.db

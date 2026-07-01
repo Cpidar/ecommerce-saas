@@ -1,7 +1,6 @@
 import { AbstractPaymentProvider, Modules, PaymentActions, PaymentSessionStatus, } from "@medusajs/framework/utils";
 import { MedusaError } from "@medusajs/framework/utils";
 import { AdminStore, AuthorizePaymentInput, AuthorizePaymentOutput, CancelPaymentInput, CancelPaymentOutput, CapturePaymentInput, CapturePaymentOutput, DeletePaymentInput, DeletePaymentOutput, GetPaymentStatusInput, GetPaymentStatusOutput, InitiatePaymentInput, InitiatePaymentOutput, Logger, ProviderWebhookPayload, RefundPaymentInput, RefundPaymentOutput, RetrievePaymentInput, RetrievePaymentOutput, UpdatePaymentInput, UpdatePaymentOutput, WebhookActionResult } from "@medusajs/framework/types"
-import { BehpardakhtDriver, getPaymentDriver } from "monopay";
 
 
 type Options = {
