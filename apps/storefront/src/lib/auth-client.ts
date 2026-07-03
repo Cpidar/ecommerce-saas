@@ -1,9 +1,17 @@
-"use client"
+"use server"
 
 import type { HttpTypes } from "@medusajs/types"
 import { sdk } from "./medusa"
 import { AuthRedirectResponse } from "@medusajs/js-sdk"
-import { getCart } from "./cart-client"
+import { revalidateTag } from "next/cache"
+import {
+  getAuthHeaders,
+  getCacheTag,
+  getCartId,
+  removeAuthToken,
+  removeCartId,
+  setAuthToken,
+} from "./cookies"
 
 type Customer = HttpTypes.StoreCustomer
 
@@ -12,6 +20,9 @@ export class AuthError extends Error { }
 /**
  * Register a new customer with email/password. Returns the created customer
  * record. Throws AuthError if the email is already taken or password rejected.
+ *
+ * On success the customer is also logged in (the auth cookie is set) so
+ * subsequent requests in this request/response cycle are authenticated.
  */
 export async function register(args: {
   email: string
@@ -42,22 +53,36 @@ export async function register(args: {
       undefined,
       { Authorization: `Bearer ${registrationToken}` }
     )
-    // After creating the customer, the registration_token is no longer needed.
-    // Log the user in with the same credentials so subsequent calls are authed.
-    await sdk.auth.login("customer", "emailpass", {
+
+    // After creating the customer, the registration_token is no longer
+    // bound to a customer record. Log in again with the same credentials
+    // to obtain a customer-bound token, then persist it as the auth cookie.
+    const loginResult = await sdk.auth.login("customer", "emailpass", {
       email: args.email,
       password: args.password,
     })
+
+    if (typeof loginResult !== "string") {
+      throw new AuthError("Authentication requires additional steps that aren't supported.")
+    }
+
+    await setAuthToken(loginResult)
+
+    const customerCacheTag = await getCacheTag("customers")
+    revalidateTag(customerCacheTag, "max")
+
     return customer
   } catch (err) {
+    if (err instanceof AuthError) throw err
     const message = (err as { message?: string })?.message ?? "Could not create customer record"
     throw new AuthError(message)
   }
 }
 
 /**
- * Log in with email/password. Token is stored automatically by the SDK
- * (jwtTokenStorageMethod: "local").
+ * Log in with email/password. On success the auth token is persisted via
+ * the `_medusa_jwt` cookie (see cookies.ts) rather than the SDK's own
+ * local-storage token handling.
  */
 export async function login(args: {
   email: string
@@ -67,10 +92,16 @@ export async function login(args: {
     const result = (await sdk.auth.login("customer", "emailpass", args)) as
       | string
       | { location: string }
+
     if (typeof result !== "string" && "location" in result) {
       // Third-party auth flow — not supported in this v1.
       throw new AuthError("Third-party login is not configured.")
     }
+
+    await setAuthToken(result)
+
+    const customerCacheTag = await getCacheTag("customers")
+    revalidateTag(customerCacheTag, "max")
 
     await transferCart()
 
@@ -86,8 +117,18 @@ export async function logout(): Promise<void> {
   try {
     await sdk.auth.logout()
   } catch {
-    // Even if the API call fails, the local token is cleared by the SDK.
+    // Even if the API call fails, we still clear the local cookie below.
   }
+
+  await removeAuthToken()
+
+  const customerCacheTag = await getCacheTag("customers")
+  revalidateTag(customerCacheTag, "max")
+
+  await removeCartId()
+
+  const cartCacheTag = await getCacheTag("carts")
+  revalidateTag(cartCacheTag, "max")
 }
 
 /**
@@ -96,7 +137,9 @@ export async function logout(): Promise<void> {
  */
 export async function getCurrentCustomer(): Promise<Customer> {
   try {
-    const { customer } = await sdk.store.customer.retrieve()
+    const headers = await getAuthHeaders()
+
+    const { customer } = await sdk.store.customer.retrieve({}, headers)
     if (!customer) throw new AuthError("Not authenticated")
     return customer
   } catch (err) {
@@ -107,7 +150,7 @@ export async function getCurrentCustomer(): Promise<Customer> {
 
 /**
  * Same as getCurrentCustomer but returns null on auth failure instead of
- * throwing. Useful for "am I logged in?" checks in client components.
+ * throwing. Useful for "am I logged in?" checks.
  */
 export async function tryGetCurrentCustomer(): Promise<Customer | null> {
   try {
@@ -149,18 +192,23 @@ export async function completePasswordReset(args: {
     throw new AuthError(message)
   }
 }
-// [MY-FORK-AUTH] Transfer Cart
-export async function transferCart() {
-  const cart = await getCart()
 
-  if (!cart?.id) {
+// [MY-FORK-AUTH] Transfer Cart
+// Uses the cart id persisted in the `_medusa_cart_id` cookie and the current
+// auth headers, matching the pattern used in customer.ts.
+export async function transferCart() {
+  const cartId = await getCartId()
+
+  if (!cartId) {
     return
   }
 
-  // const headers = await getAuthHeaders()
+  const headers = await getAuthHeaders()
 
-  await sdk.store.cart.transferCart(cart.id, {})
+  await sdk.store.cart.transferCart(cartId, {}, headers)
 
+  const cartCacheTag = await getCacheTag("carts")
+  revalidateTag(cartCacheTag, "max")
 }
 
 // [MY-FORK-AUTH] Phone auth methods
@@ -191,7 +239,6 @@ export const verifyOtp = async ({
   otp,
   phone,
   email,
-  registerData
 }: {
   otp: string
   phone: string
@@ -199,11 +246,16 @@ export const verifyOtp = async ({
   registerData?: Record<string, string>
 }) => {
   try {
-    await sdk.auth.callback("customer", "phone-auth", {
+    const token = (await sdk.auth.callback("customer", "phone-auth", {
       phone,
       otp,
       email
-    })
+    })) as string
+
+    await setAuthToken(token)
+
+    const customerCacheTag = await getCacheTag("customers")
+    revalidateTag(customerCacheTag, "max")
 
     await transferCart()
 
@@ -252,23 +304,18 @@ export const registerWithPhone = async (args: {
     )
 
 
-    const { token } = await sdk.client.fetch<
+    await sdk.client.fetch<
       { token: string }
     >(`/auth/customer/phone-auth/register`, {
       method: "POST",
       body: { phone, email, customer_id },
     })
 
-
-
-    // await setAuthToken(refreshToken as string)
-
+    // The OTP flow finishes (and the auth cookie gets set) in verifyOtp,
+    // once the customer enters the code they receive.
     return await authenticateWithPhone({ email, phone })
-    // return true
   } catch (err) {
     const message = (err as { message?: string })?.message ?? "Could not create customer record"
     throw new AuthError(message)
   }
 }
-
-

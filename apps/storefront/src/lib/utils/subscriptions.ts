@@ -1,6 +1,3 @@
-import { convertToLocale } from "@lib/util/money"
-import { getPercentageDiff } from "@lib/util/get-percentage-diff"
-import type { HttpTypes } from "@medusajs/types"
 import type {
   CartPurchaseMode,
   ReorderSubscriptionFrequencyInterval,
@@ -13,6 +10,8 @@ import type {
   SubscriptionPriceSummary,
   SubscriptionPurchaseMode,
 } from "../../types/subscription"
+import { Cart, CartItem, Order } from "@/types"
+import { formatPrice, getPercentageDiff } from "./utils"
 
 const DEFAULT_LOCALE = "en-US"
 
@@ -69,7 +68,7 @@ export function parseSubscriptionLineItemPricingMetadata(
 }
 
 export function getSubscriptionPurchaseMode(
-  item: HttpTypes.StoreCartLineItem
+  item: CartItem
 ): SubscriptionPurchaseMode {
   return parseSubscriptionLineItemMetadata(item.metadata).is_subscription
     ? "subscribe"
@@ -156,71 +155,49 @@ export function getSubscriptionPriceSummary({
       subscriptionAmount < amount
         ? getPercentageDiff(amount, subscriptionAmount)
         : null,
-    formattedOriginalAmount: convertToLocale({
-      amount,
-      currency_code: currencyCode,
-      locale,
-    }),
-    formattedSubscriptionAmount: convertToLocale({
-      amount: subscriptionAmount,
-      currency_code: currencyCode,
-      locale,
-    }),
+    formattedOriginalAmount: formatPrice(amount, currencyCode),
+    formattedSubscriptionAmount: formatPrice(subscriptionAmount, currencyCode),
   }
 }
 
 export function getDisplayCartTotals(
-  cart?: Pick<
-    HttpTypes.StoreCart | HttpTypes.StoreOrder,
-    | "items"
-    | "item_subtotal"
-    | "subtotal"
-    | "shipping_subtotal"
-    | "shipping_total"
-    | "tax_total"
-    | "discount_subtotal"
-    | "discount_total"
-    | "total"
-    | "currency_code"
-  > | null
+  cart?: Cart
 ) {
   const items = cart?.items ?? []
 
   const adjustedItemSubtotal = items.reduce((sum, item) => {
     const pricingMetadata = parseSubscriptionLineItemPricingMetadata(item.metadata)
-    const baseAmount = item.original_total ?? item.total ?? 0
+    const baseAmount = item.price ?? item.price ?? 0
     const displayAmount = parseSubscriptionLineItemMetadata(item.metadata)
       .is_subscription && pricingMetadata
       ? getSubscriptionPriceSummary({
           amount: baseAmount,
-          currencyCode: cart?.currency_code ?? "",
+          currencyCode: cart?.currency ?? "",
           pricingSnapshot: pricingMetadata,
         }).subscriptionAmount
-      : item.total ?? 0
+      : item.lineTotal ?? 0
 
     return sum + displayAmount
   }, 0)
 
   const rawItemSubtotal =
-    cart?.item_subtotal ??
+    // cart?.item_subtotal ??
     cart?.subtotal ??
-    items.reduce((sum, item) => sum + (item.total ?? 0), 0)
+    items.reduce((sum, item) => sum + (item.lineTotal ?? 0), 0)
   const subscriptionDiscountDelta = Math.max(
     0,
     rawItemSubtotal - adjustedItemSubtotal
   )
   const baseDiscountSubtotal =
-    cart?.discount_subtotal ??
-    cart?.discount_total ??
+    // cart?.discount_subtotal ??
+    cart?.discount ??
     0
   const rawTotal =
     cart?.total ??
     Math.max(
       0,
       rawItemSubtotal +
-        (cart?.shipping_subtotal ?? cart?.shipping_total ?? 0) +
-        (cart?.tax_total ?? 0) -
-        baseDiscountSubtotal
+        (cart?.shipping ?? 0) - baseDiscountSubtotal
     )
 
   return {
@@ -232,7 +209,7 @@ export function getDisplayCartTotals(
 }
 
 export function groupCartItemsBySubscription(
-  items: HttpTypes.StoreCartLineItem[] = []
+  items: CartItem[] = []
 ): SubscriptionGroupedCartItems {
   return items.reduce<SubscriptionGroupedCartItems>(
     (result, item) => {
@@ -252,7 +229,7 @@ export function groupCartItemsBySubscription(
 }
 
 export function hasMixedSubscriptionCart(
-  items: HttpTypes.StoreCartLineItem[] = []
+  items: CartItem[] = []
 ) {
   const groupedItems = groupCartItemsBySubscription(items)
 
@@ -263,7 +240,7 @@ export function hasMixedSubscriptionCart(
 }
 
 export function getCartPurchaseMode(
-  cart?: Pick<HttpTypes.StoreCart, "items"> | null
+  cart?: Pick<Cart, "items"> | null
 ): CartPurchaseMode {
   const groupedItems = groupCartItemsBySubscription(cart?.items ?? [])
 
@@ -286,7 +263,7 @@ export function getCartPurchaseMode(
 }
 
 export function hasSubscriptionAgreement(
-  cart?: Pick<HttpTypes.StoreCart, "metadata"> | null
+  cart?: Pick<Cart, "metadata"> | null
 ) {
   const metadata = cart?.metadata as SubscriptionCartMetadata | null | undefined
 

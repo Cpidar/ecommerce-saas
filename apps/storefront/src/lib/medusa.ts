@@ -39,14 +39,37 @@ export const sdk = new Medusa({
   baseUrl: backendUrl,
   publishableKey,
   debug: process.env.NODE_ENV === "development",
-  auth: {
-    type: "jwt",
-    jwtTokenStorageMethod: isBrowser ? "local" : "memory",
-  },
+  // auth: {
+  //   type: "jwt",
+  //   jwtTokenStorageMethod: isBrowser ? "local" : "memory",
+  // },
   // [MY-FORK-CONFIG] add store id headers for multi-tenancy
   globalHeaders: {
-    "x-store-id": "store_01KTK5R0R5MZZ6KSPB43M5SMPF",
+    "x-store-id": process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
   },
 })
 
 export const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION ?? "ir"
+
+export function medusaError(error: any): never {
+  if (error.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    const u = new URL(error.config.url, error.config.baseURL)
+    console.error("Resource:", u.toString())
+    console.error("Response data:", error.response.data)
+    console.error("Status code:", error.response.status)
+    console.error("Headers:", error.response.headers)
+
+    // Extracting the error message from the response data
+    const message = error.response.data.message || error.response.data
+
+    throw new Error(message.charAt(0).toUpperCase() + message.slice(1) + ".")
+  } else if (error.request) {
+    // The request was made but no response was received
+    throw new Error("No response received: " + error.request)
+  } else {
+    // Something happened in setting up the request that triggered an Error
+    throw new Error("Error setting up the request: " + error.message)
+  }
+}

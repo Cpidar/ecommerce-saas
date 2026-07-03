@@ -1,10 +1,10 @@
-import type { HttpTypes } from "@medusajs/types"
 import type {
   ProductSubscriptionOffer,
   ReorderStoreProductSubscriptionOfferResponse,
   SubscriptionOfferDiscount,
   SubscriptionOfferFrequencyOption,
 } from "../../types/subscription"
+import { Product } from "@/types"
 
 const DEFAULT_ONE_TIME_LABEL = "Buy once"
 const DEFAULT_SUBSCRIBE_LABEL = "Subscribe & save"
@@ -56,7 +56,7 @@ export function mapStoreSubscriptionOffer(
 }
 
 export function getProductSubscriptionOffer(
-  product: HttpTypes.StoreProduct,
+  product: Product,
   variantId?: string
 ): ProductSubscriptionOffer | null {
   const variantOffer = parseSubscriptionOfferMetadata(
@@ -83,7 +83,7 @@ export function getProductSubscriptionOffer(
 }
 
 export function hasProductSubscriptionOffer(
-  product: HttpTypes.StoreProduct,
+  product: Product,
   variantId?: string
 ) {
   return !!getProductSubscriptionOffer(product, variantId)

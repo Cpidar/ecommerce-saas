@@ -3,6 +3,7 @@
 import type { HttpTypes } from "@medusajs/types"
 import { sdk, DEFAULT_REGION } from "./medusa"
 import type { Cart, CartItem } from "@/types"
+import { ReorderSubscriptionLineItemMetadataInput } from "@/types/subscription"
 
 const CART_COOKIE = "lumen_cart_id"
 const CART_FIELDS =
@@ -46,12 +47,14 @@ async function regionIdFor(countryCode: string): Promise<string | null> {
 
 function transform(c: StoreCart): Cart {
   const currency = (c.currency_code ?? "usd").toLowerCase()
+  const metadata = c.metadata ?? {}
   const items: CartItem[] = (c.items ?? []).map((li) => {
     const variant = (li as { variant?: HttpTypes.StoreProductVariant }).variant
     const product = variant?.product
     const firstImage = product?.images?.[0]?.url ?? product?.thumbnail ?? li.thumbnail ?? ""
     const quantity = li.quantity ?? 0
     const unit = li.unit_price ?? 0
+    const metadata = li.metadata ?? {}
     return {
       id: li.id,
       lineItemId: li.id,
@@ -65,6 +68,7 @@ function transform(c: StoreCart): Cart {
       quantity,
       lineTotal: li.subtotal ?? unit * quantity,
       currency,
+      metadata
     }
   })
 
@@ -75,8 +79,10 @@ function transform(c: StoreCart): Cart {
     tax: c.tax_total ?? 0,
     shipping: c.shipping_total ?? 0,
     total: c.total ?? 0,
+    discount: c.discount_total ?? 0,
     itemCount: items.reduce((n, i) => n + i.quantity, 0),
     currency,
+    metadata
   }
 }
 
@@ -126,12 +132,14 @@ export async function ensureCart(countryCode?: string): Promise<Cart> {
 export async function addLineItem(
   variantId: string,
   quantity = 1,
-  countryCode?: string
+  countryCode?: string,
+  metadata?: ReorderSubscriptionLineItemMetadataInput
 ): Promise<Cart> {
   const cart = await ensureCart(countryCode)
   const { cart: updated } = await sdk.store.cart.createLineItem(cart.id, {
     variant_id: variantId,
     quantity,
+    metadata
   })
   const fresh = await fetchExistingCart(updated.id)
   return transform(fresh ?? updated)
