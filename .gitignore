@@ -54,3 +54,6 @@ yarn-error.log*
 ehthumbs.db
 Thumbs.db
 **/.DS_Store
+
+registry/**
+rustfs_data

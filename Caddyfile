@@ -2,18 +2,18 @@
 # MULTI-TENANT CADDYFILE (NO SSL/TLS)
 # DNS resolution: Caddy uses Docker container names
 # ============================================
-# {
-# 	servers {
-# 		trusted_proxies static private_ranges
-# 	}
-# }
+{
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
 # {
 # 	# Disable automatic HTTPS completely
 # 	auto_https off
 # }
 
 # ========== SUBDOMAIN TENANTS ==========
-:9852 {
+https://localhost:9852 {
 	# Enable debug logging
 	log {
 		output stdout
@@ -49,6 +49,14 @@
 			# Add X-Store-Id header from subdomain
 			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
 		}
+	}
+
+	handle /s3/* {
+		reverse_proxy localhost:3900
+	}
+
+	handle /upload/* {
+		reverse_proxy localhost:3902
 	}
 
 	# Match admin paths

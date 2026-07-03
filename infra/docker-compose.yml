@@ -46,9 +46,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - medusa_network
-    #  Only for developement 
-    # ports:
-    #   - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
@@ -77,8 +74,6 @@ services:
       - redis_data:/data
     networks:
       - medusa_network
-    ports:
-      - "6379:6379"
     healthcheck:
       # FIX: must pass -a flag; without it the check always returned healthy
       # even when the server required a password and was rejecting connections.
@@ -107,7 +102,7 @@ services:
     container_name: rustfs
     restart: unless-stopped
     ports:
-      - "3900:3900" # S3 API (was 9000)
+      # - "3900:3900" # S3 API (was 9000)
       - "3901:3901" # Console (was 9001)
     networks:
       - medusa_network
