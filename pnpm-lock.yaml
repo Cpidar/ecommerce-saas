@@ -56,7 +56,7 @@ importers:
         version: 2.17.1(react@18.3.1)
       '@medusajs/js-sdk':
         specifier: ^2.17.1
-        version: 2.17.1
+        version: 2.17.2
       '@medusajs/medusa':
         specifier: 2.17.1
         version: 2.17.1(@medusajs/admin-sdk@2.17.1)(@medusajs/cli@2.17.1(@types/node@20.19.42))(@medusajs/dashboard@2.17.1(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(typescript@5.9.3))(@medusajs/framework@2.17.1(@medusajs/cli@2.17.1(@types/node@20.19.42))(@types/node@20.19.42)(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))(zod@4.2.0))(@medusajs/icons@2.17.1(react@18.3.1))(@medusajs/test-utils@2.17.1)(@medusajs/ui@4.1.15(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.40(@swc/helpers@0.5.23))(@types/node@20.19.42)(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(awilix@8.0.1)(lightningcss@1.32.0)(posthog-node@5.36.4(rxjs@7.8.2))(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.30.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)(yaml@2.9.0)
@@ -1663,6 +1663,10 @@ packages:
 
   '@medusajs/js-sdk@2.17.1':
     resolution: {integrity: sha512-WO6hZlhvXU0O6v6W6VA/cWIJlRO46c91mLYLPEdE9+giCsnAIZQJEsd3b8x6ixAlQiEBlG8phQrHGFr+0W8m9g==}
+    engines: {node: '>=20'}
+
+  '@medusajs/js-sdk@2.17.2':
+    resolution: {integrity: sha512-7NeHXfgCfC2m1Wyuvjh+oTVC/U1iJRKhgsvEFJj43jXXHWl2Yno+1d86SH3M18WlKlswv11EqE1gB7q7rSPsmg==}
     engines: {node: '>=20'}
 
   '@medusajs/link-modules@2.17.1':
@@ -11353,6 +11357,11 @@ snapshots:
       fetch-event-stream: 0.1.6
       qs: 6.15.2
 
+  '@medusajs/js-sdk@2.17.2':
+    dependencies:
+      fetch-event-stream: 0.1.6
+      qs: 6.15.2
+
   '@medusajs/link-modules@2.17.1(@medusajs/framework@2.17.1(@medusajs/cli@2.17.1(@types/node@20.19.42))(@types/node@20.19.42)(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))(zod@4.2.0))':
     dependencies:
       '@medusajs/framework': 2.17.1(@medusajs/cli@2.17.1(@types/node@20.19.42))(@types/node@20.19.42)(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))(zod@4.2.0)
@@ -14634,7 +14643,7 @@ snapshots:
       '@medusajs/cli': 2.17.1(@types/node@20.19.42)
       '@medusajs/framework': 2.17.1(@medusajs/cli@2.17.1(@types/node@20.19.42))(@types/node@20.19.42)(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))(zod@4.2.0)
       '@medusajs/icons': 2.13.6(react@18.3.1)
-      '@medusajs/js-sdk': 2.17.1
+      '@medusajs/js-sdk': 2.17.2
       '@medusajs/medusa': 2.17.1(@medusajs/admin-sdk@2.17.1)(@medusajs/cli@2.17.1(@types/node@20.19.42))(@medusajs/dashboard@2.17.1(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(typescript@5.9.3))(@medusajs/framework@2.17.1(@medusajs/cli@2.17.1(@types/node@20.19.42))(@types/node@20.19.42)(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))(zod@4.2.0))(@medusajs/icons@2.17.1(react@18.3.1))(@medusajs/test-utils@2.17.1)(@medusajs/ui@4.1.15(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.9.3))(@swc/core@1.15.40(@swc/helpers@0.5.23))(@types/node@20.19.42)(@types/react-dom@19.0.5(@types/react@19.0.5))(@types/react@19.0.5)(awilix@8.0.1)(lightningcss@1.32.0)(posthog-node@5.36.4(rxjs@7.8.2))(react-dom@18.3.1(react@18.3.1))(react-router-dom@6.30.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(typescript@5.9.3)(yalc@1.0.0-pre.53)(yaml@2.9.0)
       '@medusajs/test-utils': 2.17.1(@medusajs/core-flows@2.17.1(@medusajs/framework@2.17.1(@medusajs/cli@2.17.1(@types/node@20.19.42))(@types/node@20.19.42)(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))(zod@4.2.0)))(@medusajs/framework@2.17.1(@medusajs/cli@2.17.1(@types/node@20.19.42))(@types/node@20.19.42)(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))(zod@4.2.0))(@medusajs/medusa@2.17.1)
       '@medusajs/types': 2.15.5(ioredis@5.11.1)(vite@5.4.21(@types/node@20.19.42)(lightningcss@1.32.0))

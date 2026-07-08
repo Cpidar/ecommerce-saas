@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { phoneAuthSchema } from "@/lib/validators";
 import { toast } from "sonner";
-import { AuthError } from "@/lib/auth-client";
+import { AuthError } from "@/lib/auth-server";
 import { useAuthStore } from "@/store/auth";
 
 const PageLogin = () => {

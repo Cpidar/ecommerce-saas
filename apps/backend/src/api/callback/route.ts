@@ -3,15 +3,15 @@ import { ContainerRegistrationKeys, Modules, PaymentSessionStatus } from "@medus
 import { PaymentSessionDTO } from "@medusajs/framework/types";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
-    const params = req.query;
-    const { RefId, ResCode, saleOrderId, SaleReferenceId, CardHolderPan } = params;;
+    // const params = req.query;
+    // const { RefId, ResCode, saleOrderId, SaleReferenceId, CardHolderPan } = params;;
 
-    if (ResCode !== "0") {
-        console.error("Missing SaleOrderId in callback");
-        return res.redirect(302, "/order/failed");
-    }
+    // if (ResCode !== "0") {
+    //     console.error("Missing SaleOrderId in callback");
+    //     return res.redirect(302, "/order/failed");
+    // }
 
-    res.redirect(`http://localhost:8000/checkout/success?saleOrderId=${RefId}&saleReferenceId=${RefId}`)
+    // res.redirect(`http://localhost:8000/checkout/success?saleOrderId=${RefId}&saleReferenceId=${RefId}`)
 
     // try {
     //     const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -58,4 +58,5 @@ export async function GET(req: MedusaRequest, res: MedusaResponse) {
     //     console.error("Callback error:", error);
     //     return res.redirect(302, "/order/failed");
     // }
+    res.sendStatus(200);
 }

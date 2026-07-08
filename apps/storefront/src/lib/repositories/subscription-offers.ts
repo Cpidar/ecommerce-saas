@@ -1,4 +1,3 @@
-import { cookies as nextCookies } from "next/headers"
 import type { ReorderStoreProductSubscriptionOfferResponse } from "../../types/subscription"
 import { sdk } from "../medusa"
 import { medusaProductRepository } from "./products"

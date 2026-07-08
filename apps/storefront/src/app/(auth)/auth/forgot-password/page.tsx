@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AuthCardLayout } from "@/components/auth/auth-card-layout"
-import { requestPasswordReset } from "@/lib/auth-client"
+import { requestPasswordReset } from "@/lib/auth-server"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")

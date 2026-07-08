@@ -25,7 +25,6 @@ module.exports = defineConfig({
 
   },
   admin: {
-    backendUrl: process.env.MEDUSA_BACKEND_URL,
     vite: (config) => {
       config.define["__VITE_DISABLE_SIGNUP_WIDGET__"] = JSON.stringify(true);
     },

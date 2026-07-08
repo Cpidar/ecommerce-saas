@@ -3,19 +3,19 @@
 import { create } from "zustand"
 import type { HttpTypes } from "@medusajs/types"
 import {
-  AuthError,
   getCurrentCustomer,
   login as authLogin,
   logout as authLogout,
   register as authRegister,
   tryGetCurrentCustomer,
-} from "@/lib/auth-client"
+} from "@/lib/auth-server"
 import {
   updateProfile as updateProfileApi,
 } from "@/lib/customer-client"
 import { sdk } from "@/lib/medusa"
 import { AuthRedirectResponse } from "@medusajs/js-sdk"
-import { verifyOtp } from "../lib/auth-client"
+import { verifyOtp } from "../lib/auth-server"
+import { AuthError } from "@/lib/auth-error"
 
 type Customer = HttpTypes.StoreCustomer
 

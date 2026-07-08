@@ -270,7 +270,24 @@ export const medusaProductRepository: ProductRepository = {
       const { products } = await sdk.store.product.list({
         handle: slug,
         region_id: region.id,
-        fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail,+metadata",
+        fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail",
+        limit: 1,
+      })
+      return products[0]
+        ? transformProduct(products[0], region.currency)
+        : null
+    } catch {
+      return null
+    }
+  },
+
+    async getSubscriptionProduct() {
+    const region = await resolveRegion()
+    try {
+      const { products } = await sdk.store.product.list({
+        handle: process.env.NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG || "subscription-product",
+        region_id: region.id,
+        fields: "*variants,*variants.calculated_price,+metadata",
         limit: 1,
       })
       return products[0]

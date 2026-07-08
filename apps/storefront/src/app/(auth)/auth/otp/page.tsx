@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "sonner";
-import { AuthError } from "@/lib/auth-client";
+import { AuthError } from "@/lib/auth-server";
 import { otpSchema } from "@/lib/validators";
 import { notFound, useRouter } from "next/navigation";
 import {

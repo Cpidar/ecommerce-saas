@@ -375,40 +375,40 @@ services:
   #   being silently ignored this whole time.
   # FIX: added healthcheck
   # FIX: updated depends_on caddy → medusa to use service_healthy condition
-  # caddy:
-  #   image: caddy:2.11.3-alpine
-  #   container_name: caddy_proxy
-  #   restart: unless-stopped
-  #   mem_limit: 128M
-  #   cpus: "0.3"
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #     - "443:443/udp"
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile:ro
-  #     - caddy_data:/data
-  #     - caddy_config:/config
-  #   networks:
-  #     - medusa_network
-  #   depends_on:
-  #     medusa:
-  #       condition: service_healthy
-  #     registry:
-  #       condition: service_healthy
-  #     # storefront:
-  #     #   condition: service_healthy
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 5s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "50m"
-  #       max-file: "3"
+  caddy:
+    image: caddy:2.11.3-alpine
+    container_name: caddy_proxy
+    restart: unless-stopped
+    mem_limit: 128M
+    cpus: "0.3"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - medusa_network
+    depends_on:
+      medusa:
+        condition: service_healthy
+      registry:
+        condition: service_healthy
+      # storefront:
+      #   condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
 
 # ========== VOLUMES ==========
 volumes:

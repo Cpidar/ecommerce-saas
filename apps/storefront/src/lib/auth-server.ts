@@ -12,10 +12,9 @@ import {
   removeCartId,
   setAuthToken,
 } from "./cookies"
+import { AuthError } from "./auth-error"
 
 type Customer = HttpTypes.StoreCustomer
-
-export class AuthError extends Error { }
 
 /**
  * Register a new customer with email/password. Returns the created customer

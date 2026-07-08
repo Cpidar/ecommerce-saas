@@ -111,7 +111,7 @@ export const BASE_SUBSCRIPTION_OFFERS: ReorderStoreProductSubscriptionOfferRespo
       },
       {
         frequency_interval: "year",
-        frequency_value: 1,
+        frequency_value: 12,
         label: "یک ساله",
         discount: {
           type: "percentage",

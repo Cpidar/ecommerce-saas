@@ -68,7 +68,7 @@ const nextConfig: NextConfig = {
       // DigitalOcean Spaces
       { protocol: "https", hostname: "*.digitaloceanspaces.com" },
       // [MY-FORK-CONFIG]
-      { protocol: "http", hostname: "localhost", port: "9090" },
+      { protocol: "http", hostname: "localhost", port: "3900" },
       { protocol: "http", hostname: "localhost", port: "9000" },
     ],
   },
