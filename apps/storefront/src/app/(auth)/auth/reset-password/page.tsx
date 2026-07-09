@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AuthCardLayout } from "@/components/auth/auth-card-layout"
 import { toast } from "sonner"
-import { AuthError, completePasswordReset } from "@/lib/auth-server"
+import { completePasswordReset } from "@/lib/auth-server"
+import { AuthError } from "@/lib/auth-error"
 
 export default function ResetPasswordPage() {
   return (
@@ -22,8 +23,8 @@ function ResetPasswordContent() {
   const params = useParams<{ countryCode: string }>()
   const countryCode = params?.countryCode ?? "us"
   const searchParams = useSearchParams()
-  const token = searchParams.get("token") ?? ""
-  const emailFromLink = searchParams.get("email") ?? ""
+  const token = searchParams?.get("token") ?? ""
+  const emailFromLink = searchParams?.get("email") ?? ""
 
   const [email, setEmail] = useState(emailFromLink)
   const [password, setPassword] = useState("")

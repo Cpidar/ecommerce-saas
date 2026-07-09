@@ -41,7 +41,7 @@ async function setToken(token: string) {
 
 export async function loginAdmin(email: string, password: string) {
   const res = await fetch(
-    `http://localhost:9000/auth/user/emailpass`,
+    `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/auth/user/emailpass`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

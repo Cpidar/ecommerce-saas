@@ -2,7 +2,7 @@
 
 import { FC, useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { SectionHeroProps } from ".";
+import { SectionHeroProps } from "./config";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, LeafIcon } from "lucide-react";
 
@@ -16,14 +16,13 @@ const SectionHero: FC<SectionHeroProps> = ({
   rightSection: { image: rightMedia, text: rightColumnText },
   leftSection: { text: richText, image: sliderMedia },
 }) => {
-  console.log(rightMedia, sliderMedia)
   const slides = [{ sliderMedia, richText }];
 
   // Right media with fallback
   const rightMediaSrc =
     rightMedia && typeof rightMedia === "object" && (rightMedia.src)
       ? `${/* getClientSideURL() */ ""}${rightMedia.src}`
-      : PLACEHOLDER_IMAGE;
+      : rightMedia;
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -89,7 +88,7 @@ const SectionHero: FC<SectionHeroProps> = ({
     currentSlide?.sliderMedia && typeof currentSlide.sliderMedia === "object" && 
     (currentSlide.sliderMedia.src)
       ? `${/* getClientSideURL() */ ""}${currentSlide.sliderMedia.src}`
-      : PLACEHOLDER_IMAGE;
+      : currentSlide.sliderMedia;
 
   return (
     <section className="bg-muted bg-opacity-90 py-10">
@@ -98,7 +97,7 @@ const SectionHero: FC<SectionHeroProps> = ({
         <div className="lg:w-2/3 relative overflow-hidden rounded-2xl">
           <div
             className="relative min-h-130 lg:min-h-155 bg-cover bg-center flex flex-col justify-center p-8 md:p-16"
-            style={{ backgroundImage: `url(${leftMediaSrc})` }}
+            style={{ backgroundImage: `url(${leftMediaSrc || PLACEHOLDER_IMAGE})` }}
           >
             {/* Optional dark overlay for better text readability */}
             <div className="absolute inset-0 bg-black/30 rounded-2xl" />
@@ -149,7 +148,7 @@ const SectionHero: FC<SectionHeroProps> = ({
         {/* Right Column */}
         <div
           className="lg:w-1/3 rounded-2xl bg-cover bg-center p-8 md:p-16 flex items-center min-h-[520px] lg:min-h-[620px]"
-          style={{ backgroundImage: `url(${rightMediaSrc})` }}
+          style={{ backgroundImage: `url(${rightMediaSrc || PLACEHOLDER_IMAGE})` }}
         >
           <div className="relative z-10 max-w-sm">
             {rightColumnText ? (

@@ -22,7 +22,7 @@ export const HeroSection03: ComponentConfig<SectionHeroProps> = {
     rightSection: {
       type: "object",
       objectFields: {
-        text: { type: "richtext" },
+        text: { type: "richtext", contentEditable: true },
         image: {
           label: "Image",
           ...imagePickerField,

@@ -68,8 +68,15 @@ export async function POST(
                 redirect(`${baseUrl}/checkout/success?saleReferenceId=${encodeURIComponent(SaleReferenceId)}`);
             } catch (e) {
                 // Only catch real errors, ignore NEXT_REDIRECT
-                if (e.digest?.includes('NEXT_REDIRECT')) {
-                    throw e; // Let Next.js handle the redirect
+                // `e` is unknown here; narrow its type before accessing properties
+                if (
+                    typeof e === "object" &&
+                    e !== null &&
+                    "digest" in e &&
+                    typeof (e as any).digest === "string" &&
+                    (e as any).digest.includes("NEXT_REDIRECT")
+                ) {
+                    throw e as any; // Let Next.js handle the redirect
                 }
 
                 console.error("Payment callback error:", e);

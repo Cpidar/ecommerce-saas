@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AuthCardLayout } from "@/components/auth/auth-card-layout"
 import { useAuthStore } from "@/store/auth"
-import { AuthError } from "@/lib/auth-server"
+import { AuthError } from "@/lib/auth-error"
 import { toast } from "sonner"
 import { registerSchema } from "@/lib/validators"
 

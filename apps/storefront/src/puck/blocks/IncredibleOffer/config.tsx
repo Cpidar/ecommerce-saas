@@ -31,6 +31,7 @@ export const IncredibleOffersSection: ComponentConfig<Props> = {
     },
     heading: {
       type: "textarea",
+      contentEditable: true
     },
     subHeading: {
       type: "textarea",

@@ -354,7 +354,7 @@ export interface ProductRepository {
     pagination?: PaginationParams,
   ): Promise<PaginatedResult<Product>>;
   getBySlug(slug: string): Promise<Product | null>;
-  getSubscriptionProduct(): Promise<Product | null>;
+  getSubscriptionProduct?(): Promise<Product | null>;
   getById(id: string): Promise<Product | null>;
   getFeatured(limit?: number): Promise<Product[]>;
   getByCategory(

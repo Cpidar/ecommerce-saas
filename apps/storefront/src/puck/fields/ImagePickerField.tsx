@@ -1,78 +1,101 @@
 // fields/imagePicker.tsx
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import type { StaticImageData } from "next/image"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import Image from "next/image";
+import type { StaticImageData } from "next/image";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ImageIcon, Upload, Link2, Trash2 } from "lucide-react"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ImageIcon, Upload, Link2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
-export type ImageSource = string | StaticImageData
+export type ImageSource = string | StaticImageData;
 
 interface ImagePickerFieldProps {
-  label?: string
-  value?: ImageSource
-  onChange: (value: ImageSource | undefined) => void
-  placeholder?: string
-  name: string
-  field?: { label: string }
+  label?: string;
+  value?: ImageSource;
+  onChange: (value: ImageSource | undefined) => void;
+  placeholder?: string;
+  name: string;
+  field?: { label: string };
 }
 
-export const ImagePickerField = ({ 
+export const ImagePickerField = ({
   label,
-  value, 
-  onChange, 
-  name, 
+  value,
+  onChange,
+  name,
   field,
-  placeholder = "Click to select an image"
+  placeholder = "Click to select an image",
 }: ImagePickerFieldProps) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [urlInput, setUrlInput] = useState("")
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+
+  const uploadAdminFile = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append("files", file);
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/admin/uploads`, {
+      method: "POST",
+      body: formData,
+      credentials: "include", // sends admin_session cookie
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || "Unable to upload file");
+    }
+
+    const data = await response.json();
+
+    return data.files[0].url;
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    setUploading(true)
+    try {
+      setUploading(true);
 
-    // Simulate upload - replace with your actual upload logic
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const result = e.target?.result as string
-      onChange(result)
-      setUploading(false)
-      setIsDialogOpen(false)
+      const imageUrl = await uploadAdminFile(file);
+
+      onChange(imageUrl);
+      setIsDialogOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast.error("Image upload failed");
+    } finally {
+      setUploading(false);
     }
-    reader.readAsDataURL(file)
-  }
+  };
 
   const handleUrlSubmit = () => {
-    if (!urlInput) return
-    onChange(urlInput)
-    setUrlInput("")
-    setIsDialogOpen(false)
-  }
+    if (!urlInput) return;
+    onChange(urlInput);
+    setUrlInput("");
+    setIsDialogOpen(false);
+  };
 
   const handleRemove = () => {
-    onChange(undefined)
-  }
+    onChange(undefined);
+  };
 
   // Helper to get string src from value
   const getImageSrc = (img: ImageSource): string => {
-    if (typeof img === 'string') return img
-    return img.src
-  }
+    if (typeof img === "string") return img;
+    return img.src;
+  };
 
   return (
     <div className="space-y-4">
@@ -195,7 +218,7 @@ export const ImagePickerField = ({
         </DialogContent>
       </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default ImagePickerField
+export default ImagePickerField;

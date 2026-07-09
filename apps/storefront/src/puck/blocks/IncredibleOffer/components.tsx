@@ -27,14 +27,14 @@ function IncredibleOffers({
             size="lg"
             className="h-full flex-1 max-md:hidden md:h-auto text-primary-foreground"
           >
-            <Link href={"/shop"}>View All</Link>
+            <Link href={"/shop"}>مشاهده همه</Link>
           </Button>
           <Button
             asChild
             size="sm"
             className="md:hidden text-primary-foreground"
           >
-            <Link href={"/shop"}>View All</Link>
+            <Link href={"/shop"}>مشاهده همه</Link>
           </Button>
         </>
       }

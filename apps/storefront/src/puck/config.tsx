@@ -2,7 +2,7 @@
 
 import { Config } from "@puckeditor/core";
 import { HeroSection } from "./blocks/HeroSection01";
-import { HeroSection03 } from "./blocks/hero-sections/TwoColumn";
+import { HeroSection03 } from "./blocks/hero-sections/TwoColumn/config";
 import { IntroSection } from "./blocks/IntroSection01";
 import { ProductTypesSection } from "./blocks/ProductTypeSection01";
 import { CollectionsSectionWrapper } from "./blocks/collection-slider/CollectionsSliderSection";

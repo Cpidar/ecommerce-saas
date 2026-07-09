@@ -10,8 +10,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { phoneAuthSchema } from "@/lib/validators";
 import { toast } from "sonner";
-import { AuthError } from "@/lib/auth-server";
 import { useAuthStore } from "@/store/auth";
+import { AuthError } from "@/lib/auth-error";
 
 const PageLogin = () => {
   const router = useRouter();

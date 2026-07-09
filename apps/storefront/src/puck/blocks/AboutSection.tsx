@@ -1,21 +1,21 @@
 // configs/components/AboutSection.ts
-import { ComponentConfig } from "@puckeditor/core"
-import Image, { StaticImageData } from "next/image"
-import { Layout, LayoutColumn } from "@/components/layout/Layout"
-import { Link } from "@/components/ui/Link"
-import { checkboxField } from "../fields/checkbox"
-import { imagePickerField } from "../fields/image-picker"
+import { ComponentConfig } from "@puckeditor/core";
+import Image, { StaticImageData } from "next/image";
+import { Layout, LayoutColumn } from "@/components/layout/Layout";
+import { Link } from "@/components/ui/Link";
+import { checkboxField } from "../fields/checkbox";
+import { imagePickerField } from "../fields/image-picker";
 
 interface AboutSection {
-  showSection: boolean
-  title: string
-  mainImage: string | StaticImageData
-  mainImageAlt: string
-  heading: string
-  paragraph1: string
-  paragraph2: string
-  linkText: string
-  linkHref: string
+  showSection: boolean;
+  title: string;
+  mainImage: string | StaticImageData;
+  mainImageAlt: string;
+  heading: string;
+  paragraph1: string;
+  paragraph2: string;
+  linkText: string;
+  linkHref: string;
 }
 
 export const AboutSection: ComponentConfig<AboutSection> = {
@@ -42,6 +42,7 @@ export const AboutSection: ComponentConfig<AboutSection> = {
     title: {
       type: "text",
       label: "Section Title",
+      contentEditable: true,
     },
     mainImage: {
       label: "Main Image",
@@ -54,22 +55,27 @@ export const AboutSection: ComponentConfig<AboutSection> = {
     heading: {
       type: "textarea",
       label: "Heading",
+      contentEditable: true,
     },
     paragraph1: {
       type: "textarea",
       label: "First Paragraph",
+      contentEditable: true,
     },
     paragraph2: {
       type: "textarea",
       label: "Second Paragraph",
+      contentEditable: true,
     },
     linkText: {
       type: "text",
       label: "Link Text",
+      contentEditable: true,
     },
     linkHref: {
       type: "text",
       label: "Link Href",
+      contentEditable: true,
     },
   },
   render: ({
@@ -83,7 +89,7 @@ export const AboutSection: ComponentConfig<AboutSection> = {
     linkText,
     linkHref,
   }: AboutSection) => {
-    if (!showSection) return <></>
+    if (!showSection) return <></>;
 
     return (
       <Layout>
@@ -114,6 +120,6 @@ export const AboutSection: ComponentConfig<AboutSection> = {
           </div>
         </LayoutColumn>
       </Layout>
-    )
+    );
   },
-}
+};
