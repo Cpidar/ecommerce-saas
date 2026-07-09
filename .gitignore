@@ -57,3 +57,5 @@ Thumbs.db
 
 registry
 rustfs_data
+infra/*
+infra/docker-compose.yml

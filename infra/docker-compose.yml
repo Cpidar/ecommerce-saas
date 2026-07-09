@@ -1,34 +1,3 @@
-# ============================================
-# COMPLETE PRODUCTION DOCKER COMPOSE FOR MULTI-TENANT MEDUSA
-# Includes: Medusa Backend, Storefront, PostgreSQL, Redis
-#           MinIO (file storage), Meilisearch (search)
-#           Caddy (reverse proxy with multi-tenant routing)
-#
-# UPGRADED: 2026-07-01
-#   - redis:        (untagged/latest) → redis:8.8-alpine
-#   - minio/minio:  RELEASE.2024-10-13 → quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-#   - minio/mc:     RELEASE.2024-10-08 → quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
-#   - meilisearch:  v1.12             → getmeili/meilisearch:v1.37
-#   - caddy:        2-alpine           → caddy:2.11.3-alpine
-#   - registry:     registry:2         → registry:3
-#
-# FIXES APPLIED:
-#   - redis: added auth to healthcheck (was silently passing without password)
-#   - minio: migrated from docker hub (abandoned Oct 2025) to quay.io mirror
-#   - minio: mem_limit raised 128M→256M (was OOM-killing under load)
-#   - minio: healthcheck updated to new /minio/health/live endpoint style
-#   - medusa: restart:no → restart:unless-stopped (was not recovering on crash)
-#   - medusa: added missing restart policy after first successful startup
-#   - caddy: pinned to exact patch version (2.11.3) for reproducibility
-#   - caddy: removed non-standard ACME_AGREE env var (not used by Caddy v2)
-#   - caddy: added healthcheck
-#   - registry: pinned to registry:3 (v2 is EOL as of 2025-Q2)
-#   - registry: added healthcheck
-#   - postgres: kept at :16 per user request (no upgrade)
-#   - all services: added missing cpus limits where absent
-#   - networks: added explicit healthcheck for createbuckets dependency chain
-# ============================================
-
 services:
   # ========== POSTGRESQL DATABASE ==========
   # NOTE: Kept at postgres:16 per user request. Latest LTS is postgres:17.
@@ -59,10 +28,6 @@ services:
         max-file: "5"
 
   # ========== REDIS (Cache & Queue) ==========
-  # UPGRADED: (untagged) → redis:8.8-alpine
-  # FIX: healthcheck now authenticates with password (was a false-positive before)
-  # NOTE: Redis 8.x re-licensed under AGPLv3/RSALv2/SSPLv1 triple license.
-  #       This is acceptable for self-hosted internal use.
   redis:
     image: redis:8.8-alpine
     container_name: medusa_redis
@@ -102,23 +67,23 @@ services:
     container_name: rustfs
     restart: unless-stopped
     ports:
-      # - "3900:3900" # S3 API (was 9000)
-      - "3901:3901" # Console (was 9001)
+      - "3900:3900"
+      - "3901:3901"
     networks:
       - medusa_network
     environment:
       - RUSTFS_ACCESS_KEY=${RUSTFS_ACCESS_KEY:-minioadmin}
       - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY:-minioadmin}
       - RUSTFS_REGION=${RUSTFS_REGION:-us-east-1}
-      - RUSTFS_CONSOLE_ADDRESS=:3901
-      - RUSTFS_ADDRESS=:3900
+      - RUSTFS_CONSOLE_ADDRESS=${RUSTFS_CONSOLE_ADDRESS:-http://rustfs:3901}
+      - RUSTFS_ADDRESS=${RUSTFS_ENDPOINT:-http://rustfs:3900}
     volumes:
-      - ./rustfs_data:/data
+      - rustfs_data:/data  # CHANGED: Use named volume instead of bind mount
     command: server /data --address ":3900" --console-address ":3901"
     mem_limit: 256M
     cpus: "0.5"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3900/minio/health/ready"]
+      test: ["CMD", "curl", "-f", "http://localhost:3900/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -129,122 +94,7 @@ services:
         max-size: "50m"
         max-file: "3"
 
-  # ========== MINIO (S3-compatible Storage) ==========
-  # UPGRADED: minio/minio:RELEASE.2024-10-13T13-34-11Z
-  #        → quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-  #
-  # IMPORTANT: MinIO stopped publishing to Docker Hub on Oct 23, 2025.
-  # After RELEASE.2025-10-15T17-29-55Z (a critical CVE fix), no new images
-  # will appear on hub.docker.com/r/minio/minio. This compose now pulls from
-  # quay.io which still has the last known stable release before that cutoff.
-  # The April 2025 release is the last version with the full unrestricted
-  # console UI before the "Community Edition" console restrictions were added.
-  #
-  # Alternatives if you want the absolute latest:
-  #   - Build from source: github.com/minio/minio
-  #   - Use Chainguard image: cgr.dev/chainguard/minio:latest (free tier)
-  #   - Use alpine/minio: alpine/minio:RELEASE.2025-10-15T17-29-55Z
-  #
-  # FIX: mem_limit raised 128M → 256M (MinIO's own docs recommend ≥256M minimum)
-  # minio:
-  #   image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-  #   container_name: medusa_minio
-  #   restart: unless-stopped
-  #   mem_limit: 256M
-  #   cpus: "0.5"
-  #   command: server /data --console-address ":9001"
-  #   environment:
-  #     MINIO_ROOT_USER: ${MINIO_USER}
-  #     MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
-  #   volumes:
-  #     - minio_data:/data
-  #   ports:
-  #     - "127.0.0.1:9002:9000"
-  #     - "127.0.0.1:9001:9001"
-  #   networks:
-  #     - medusa_network
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-  #     interval: 30s
-  #     timeout: 20s
-  #     retries: 3
-  #     start_period: 10s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "50m"
-  #       max-file: "3"
-
-  # ========== MINIO BUCKET CREATOR ==========
-  # UPGRADED: minio/mc:RELEASE.2024-10-08T09-37-26Z
-  #        → quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
-  # (last stable mc release on quay.io before Docker Hub abandonment)
-  # createbuckets:
-  #   image: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
-  #   container_name: medusa_createbuckets
-  #   mem_limit: 64M
-  #   depends_on:
-  #     minio:
-  #       condition: service_healthy
-  #   entrypoint: >
-  #     /bin/sh -c "
-  #     /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_USER} ${MINIO_PASSWORD};
-  #     /usr/bin/mc mb myminio/medusa --ignore-existing;
-  #     /usr/bin/mc anonymous set public myminio/medusa;
-  #     exit 0;
-  #     "
-  #   restart: "no"
-  #   networks:
-  #     - medusa_network
-
-  # ========== MEILISEARCH (Search Engine) ==========
-  # UPGRADED: getmeili/meilisearch:v1.12 → getmeili/meilisearch:v1.37
-  #
-  # WARNING: Meilisearch requires a dump-and-reimport when upgrading across
-  # minor versions. If you have existing indexed data in the meilisearch_data
-  # volume, follow the migration steps before deploying:
-  #   1. POST http://localhost:7700/dumps  (create a dump)
-  #   2. Stop the old container
-  #   3. Deploy with the new image tag
-  #   4. Add --import-dump /meili_data/dumps/<file>.dump to command temporarily
-  #   5. Remove the --import-dump flag after successful import
-  # See: https://www.meilisearch.com/docs/learn/update_and_migration/updating
-  # meilisearch:
-  #   image: getmeili/meilisearch:v1.37
-  #   container_name: medusa_meilisearch
-  #   restart: unless-stopped
-  #   mem_limit: 256M
-  #   cpus: "0.5"
-  #   environment:
-  #     MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
-  #     MEILI_ENV: production
-  #     MEILI_NO_ANALYTICS: "true"
-  #   volumes:
-  #     - meilisearch_data:/meili_data
-  #   ports:
-  #     - "127.0.0.1:7700:7700"
-  #   networks:
-  #     - medusa_network
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 15s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "100m"
-  #       max-file: "5"
-
   # ========== MEDUSA BACKEND ==========
-  # FIX: restart:no → restart:unless-stopped
-  #   The previous value meant the backend container would NEVER restart
-  #   after a crash (OOM, unhandled exception, etc), silently going down.
-  #   unless-stopped means it auto-recovers but still stops cleanly on
-  #   `docker compose down` or manual `docker stop`.
-  # FIX: added start_period to healthchecks in dependencies so Medusa
-  #   doesn't start before its deps are truly ready.
   medusa:
     image: backend-image:latest
     container_name: medusa_backend
@@ -254,17 +104,13 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      # minio:
-      #   condition: service_healthy
       # meilisearch:
       #   condition: service_healthy
-      # createbuckets:
-      #   condition: service_completed_successfully
       rustfs:
         condition: service_healthy
     ports:
-      - "127.0.0.1:9000:9000"
-      - "127.0.0.1:5173:5173"
+      - "9000:9000"
+      - "5173:5173"
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
@@ -274,10 +120,10 @@ services:
       # S3_REGION: us-east-1
       # S3_ACCESS_KEY_ID: ${MINIO_USER}
       # S3_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
-      S3_ENDPOINT: http://localhost:3900
+      S3_ENDPOINT: ${RUSTFS_ENDPOINT}
       S3_FILE_URL: http://localhost:3900/${RUSTFS_BUCKET}
       S3_BUCKET: ${RUSTFS_BUCKET}
-      S3_REGION: "us-east-1"
+      S3_REGION: ${RUSTFS_REGION:-us-east-1}
       S3_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY}
       S3_SECRET_ACCESS_KEY: ${RUSTFS_SECRET_KEY}
       MEILISEARCH_HOST: http://meilisearch:7700
@@ -287,7 +133,7 @@ services:
     networks:
       - medusa_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9000/health', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -299,7 +145,6 @@ services:
         max-file: "5"
 
   # ========== STOREFRONT (Next.js) ==========
-  # Uncomment and update the image name when your storefront image is ready.
   # storefront:
   #   image: ghcr.io/YOUR_USER/ecommerce-saas-storefront:latest
   #   container_name: medusa_storefront
@@ -331,50 +176,35 @@ services:
   #       max-file: "5"
 
   # ========== PRIVATE DOCKER REGISTRY ==========
-  # UPGRADED: registry:2 → registry:3
-  # registry:2 has been in maintenance-only mode since early 2025 and the
-  # registry:3 image (based on distribution/distribution) is the current
-  # supported release with active security patches.
-  # API is fully backward-compatible — no config changes needed.
-  # FIX: added healthcheck (was absent, making depends_on unreliable)
-  registry:
-    image: registry:3
-    container_name: docker_registry
-    restart: unless-stopped
-    mem_limit: 256M
-    cpus: "0.3"
-    environment:
-      REGISTRY_AUTH: htpasswd
-      REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
-      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-      REGISTRY_STORAGE_DELETE_ENABLED: "true"
-    volumes:
-      - ./registry/auth:/auth:ro
-      - registry_data:/var/lib/registry
-    networks:
-      - medusa_network
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/v2/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "50m"
-        max-file: "3"
+  # registry:
+  #   image: registry:3
+  #   container_name: docker_registry
+  #   restart: unless-stopped
+  #   mem_limit: 256M
+  #   cpus: "0.3"
+  #   environment:
+  #     REGISTRY_AUTH: htpasswd
+  #     REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
+  #     REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+  #     REGISTRY_STORAGE_DELETE_ENABLED: "true"
+  #   volumes:
+  #     - ./registry/auth:/auth:ro
+  #     - registry_data:/var/lib/registry
+  #   networks:
+  #     - medusa_network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/v2/"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 5s
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "50m"
+  #       max-file: "3"
 
   # ========== CADDY REVERSE PROXY ==========
-  # UPGRADED: caddy:2-alpine → caddy:2.11.3-alpine
-  # Pinned to the exact patch version for reproducible builds.
-  # caddy:2-alpine is a floating tag — it silently changes on every Caddy release
-  # which can break your proxy config without warning.
-  # FIX: removed ACME_AGREE=true env var — this is not a valid Caddy v2 variable.
-  #   In Caddy v2, ACME agreement is implicit. The env var was a v1 leftover
-  #   being silently ignored this whole time.
-  # FIX: added healthcheck
-  # FIX: updated depends_on caddy → medusa to use service_healthy condition
   caddy:
     image: caddy:2.11.3-alpine
     container_name: caddy_proxy
@@ -394,8 +224,8 @@ services:
     depends_on:
       medusa:
         condition: service_healthy
-      registry:
-        condition: service_healthy
+      # registry:
+      #   condition: service_healthy
       # storefront:
       #   condition: service_healthy
     healthcheck:
@@ -416,20 +246,17 @@ volumes:
     name: medusa_postgres_data
   redis_data:
     name: medusa_redis_data
-  # minio_data:
-  #   name: medusa_minio_data
-  meilisearch_data:
-    name: medusa_meilisearch_data
+  # meilisearch_data:
+  #   name: medusa_meilisearch_data
   caddy_data:
     name: caddy_data
   caddy_config:
     name: caddy_config
-  registry_data:
-    name: docker_registry_data
-  garage_meta:
-    name: medusa_garage_meta
-  garage_data:
-    name: medusa_garage_data
+  # registry_data:
+  #   name: docker_registry_data
+  rustfs_data:
+      name: medusa_rustfs_data
+
 # ========== NETWORKS ==========
 networks:
   medusa_network:
