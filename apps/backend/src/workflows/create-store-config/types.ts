@@ -4,8 +4,8 @@ export type StoreSeoConfigInput = {
   title_template?: string
   default_title?: string
   default_description?: string
-  default_image_url?: string
-  canonical_url?: string
+  default_image_url?: string | null
+  canonical_url?: string | null
   robots?: {
     index?: boolean
     follow?: boolean
@@ -13,7 +13,7 @@ export type StoreSeoConfigInput = {
   open_graph?: {
     site_name?: string
     type?: string
-    image_url?: string
+    image_url?: string | null
   }
   twitter?: {
     card?: 'summary' | 'summary_large_image'

@@ -7,7 +7,7 @@ export const storeSeoConfigSchema = z
         title_template: z.string().optional(),
         default_title: z.string().optional(),
         default_description: z.string().optional(),
-        default_image_url: z.string().url().optional(),
+        default_image_url: z.string().url().nullable().optional(),
         canonical_url: z.string().url().optional(),
         robots: z
             .object({
@@ -19,7 +19,7 @@ export const storeSeoConfigSchema = z
             .object({
                 site_name: z.string().optional(),
                 type: z.string().optional(),
-                image_url: z.string().url().optional(),
+                image_url: z.string().url().nullable().optional(),
             })
             .optional(),
         twitter: z

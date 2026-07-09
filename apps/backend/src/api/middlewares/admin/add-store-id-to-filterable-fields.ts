@@ -49,7 +49,7 @@ export async function addStoreIdToFilterableFields(
     const currentStore = req.scope.resolve("currentStore", {
       allowUnregistered: true,
     }) as StoreDTO;
-    console.log(req.url, req.method, currentStore)
+
     if (currentStore) {
       if (req.url.includes("/admin/stores") && req.method === "GET") {
         req.filterableFields["id"] = currentStore.id;

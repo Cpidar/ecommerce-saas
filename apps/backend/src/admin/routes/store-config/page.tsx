@@ -77,7 +77,6 @@ const StoreConfigPage = () => {
 
   const uploadAdminFile = async (file: File) => {
     const body = new FormData();
-
     body.append("files", file, file.name);
 
     const response = await fetch("/admin/uploads", {
@@ -86,14 +85,9 @@ const StoreConfigPage = () => {
       credentials: "include",
     });
 
-    if (!response.ok) {
-      throw new Error("Unable to upload file");
-    }
+    if (!response.ok) throw new Error("Unable to upload file");
 
-    const data = (await response.json()) as {
-      files: { url: string }[];
-    };
-
+    const data = (await response.json()) as { files: { url: string }[] };
     return data.files[0]?.url;
   };
 
@@ -103,7 +97,6 @@ const StoreConfigPage = () => {
     getStoreConfig()
       .then((storeConfig) => {
         if (!storeConfig) return;
-        
         setForm({ ...emptyStoreConfig, ...storeConfig });
         setSeoConfigJson(JSON.stringify(storeConfig.seo_config ?? {}, null, 2));
         setMarketingConfigJson(
@@ -113,14 +106,12 @@ const StoreConfigPage = () => {
       })
       .catch(() => toast.error(t("storeConfig.actions.saveError")))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [t]);
 
   const setField = <TKey extends keyof StoreConfigInput>(
     key: TKey,
     value: StoreConfigInput[TKey],
-  ) => {
-    setForm((current) => ({ ...current, [key]: value }));
-  };
+  ) => setForm((current) => ({ ...current, [key]: value }));
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -164,39 +155,38 @@ const StoreConfigPage = () => {
   }
 
   return (
-    <Container className="divide-y p-0 max-w-[1200px]">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-3 px-6 py-4">
-        <div>
-          <Heading level="h1">{t("storeConfig.title")}</Heading>
-          <Text className="text-ui-fg-subtle" size="small">
-            {t("storeConfig.subtitle")}
-          </Text>
+    <div className="max-w-[1200px]">
+      <Container className="p-6 my-3">
+        {/* Header */}
+        <div className="flex items-center justify-between gap-3 px-6 py-4">
+          <div>
+            <Heading level="h1">{t("storeConfig.title")}</Heading>
+            <Text className="text-ui-fg-subtle" size="small">
+              {t("storeConfig.subtitle")}
+            </Text>
+          </div>
+          <Badge color={form.id ? "green" : "grey"}>
+            {t(`storeConfig.mode.${mode}`)}
+          </Badge>
         </div>
-        <Badge color={form.id ? "green" : "grey"}>
-          {t(`storeConfig.mode.${mode}`)}
-        </Badge>
-      </div>
 
-      {/* Quick Links */}
-      <div className="flex flex-wrap gap-2 px-6 py-4">
-        <Button asChild size="small" variant="secondary">
-          <Link to="/store-config/payment-configs">
-            <CreditCard className="mr-2" />
-            Payment Configs
-          </Link>
-        </Button>
-        <Button asChild size="small" variant="secondary">
-          <Link to="/store-config/shipping-method-configs">
-            <Truck className="mr-2" />
-            Shipping Methods
-          </Link>
-        </Button>
-      </div>
-
-      <form className="p-6 space-y-10" onSubmit={handleSubmit}>
-        {/* Basic Information */}
-        <div className="bg-ui-bg-base border border-ui-border-base rounded-lg p-6">
+        {/* Quick Links */}
+        <div className="flex flex-wrap gap-2 px-6 py-4">
+          <Button asChild size="small" variant="secondary">
+            <Link to="/store-config/payment-configs">
+              <CreditCard className="mr-2" /> Payment Configs
+            </Link>
+          </Button>
+          <Button asChild size="small" variant="secondary">
+            <Link to="/store-config/shipping-method-configs">
+              <Truck className="mr-2" /> Shipping Methods
+            </Link>
+          </Button>
+        </div>
+      </Container>
+      {/* ==================== BASIC ==================== */}
+      <Container className="p-6 my-3">
+        <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <Heading level="h2">{t("storeConfig.basic.title")}</Heading>
             <Text size="small" className="text-ui-fg-subtle mt-1">
@@ -235,6 +225,18 @@ const StoreConfigPage = () => {
                 placeholder="https://example.com"
               />
             </div>
+            <div className="grid gap-2">
+              {/* <Label htmlFor="medusa_store_id">
+                {t("storeConfig.basic.medusaStoreId")}
+              </Label> */}
+              <Input
+                id="medusa_store_id"
+                value={form.medusa_store_id}
+                onChange={(e) => setField("medusa_store_id", e.target.value)}
+                required
+                hidden
+              />
+            </div>
             <div className="md:col-span-2 grid gap-2">
               <Label htmlFor="description">
                 {t("storeConfig.basic.description")}
@@ -248,10 +250,20 @@ const StoreConfigPage = () => {
               />
             </div>
           </div>
-        </div>
 
-        {/* Brand Assets */}
-        <div className="bg-ui-bg-base border border-ui-border-base rounded-lg p-6">
+          <div className="flex justify-end mt-8">
+            <Button isLoading={isSaving} type="submit" size="large">
+              {isSaving
+                ? t("storeConfig.actions.saving")
+                : t("storeConfig.actions.save")}
+            </Button>
+          </div>
+        </form>
+      </Container>
+
+      {/* ==================== BRAND ASSETS ==================== */}
+      <Container className="p-6 my-3">
+        <form onSubmit={handleSubmit}>
           <div className="mb-6 flex items-center gap-2">
             <ImageIcon />
             <Heading level="h2">{t("storeConfig.brand.title")}</Heading>
@@ -261,7 +273,6 @@ const StoreConfigPage = () => {
           </Text>
 
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-            {/* Logo */}
             <div className="space-y-6">
               <div className="grid gap-2">
                 <Label>{t("storeConfig.brand.logoUrl")}</Label>
@@ -331,7 +342,6 @@ const StoreConfigPage = () => {
               )}
             </div>
 
-            {/* Favicon */}
             <div className="space-y-6">
               <div className="grid gap-2">
                 <Label>{t("storeConfig.brand.faviconUrl")}</Label>
@@ -393,10 +403,20 @@ const StoreConfigPage = () => {
               {t("storeConfig.brand.moreSettings")}
             </div>
           </div>
-        </div>
 
-        {/* SEO */}
-        <div className="bg-ui-bg-base border border-ui-border-base rounded-lg p-6">
+          <div className="flex justify-end mt-8">
+            <Button isLoading={isSaving} type="submit" size="large">
+              {isSaving
+                ? t("storeConfig.actions.saving")
+                : t("storeConfig.actions.save")}
+            </Button>
+          </div>
+        </form>
+      </Container>
+
+      {/* ==================== SEO ==================== */}
+      <Container className="p-6 my-3">
+        <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <Heading level="h2">{t("storeConfig.seo.title")}</Heading>
             <Text size="small" className="text-ui-fg-subtle mt-1">
@@ -405,6 +425,7 @@ const StoreConfigPage = () => {
           </div>
 
           <div className="space-y-8">
+            {/* SEO fields - same as before */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               <div className="grid gap-2">
                 <Label>{t("storeConfig.seo.defaultTitle")}</Label>
@@ -534,10 +555,20 @@ const StoreConfigPage = () => {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Marketing */}
-        <div className="bg-ui-bg-base border border-ui-border-base rounded-lg p-6">
+          <div className="flex justify-end mt-8">
+            <Button isLoading={isSaving} type="submit" size="large">
+              {isSaving
+                ? t("storeConfig.actions.saving")
+                : t("storeConfig.actions.save")}
+            </Button>
+          </div>
+        </form>
+      </Container>
+
+      {/* ==================== MARKETING ==================== */}
+      <Container className="p-6 my-3">
+        <form onSubmit={handleSubmit}>
           <div className="mb-6">
             <Heading level="h2">{t("storeConfig.marketing.title")}</Heading>
             <Text size="small" className="text-ui-fg-subtle mt-1">
@@ -618,10 +649,19 @@ const StoreConfigPage = () => {
               </div>
             </div>
           </div>
-        </div>
+          <div className="flex justify-end mt-8">
+            <Button isLoading={isSaving} type="submit" size="large">
+              {isSaving
+                ? t("storeConfig.actions.saving")
+                : t("storeConfig.actions.save")}
+            </Button>
+          </div>
+        </form>
+      </Container>
 
-        {/* Advanced */}
-        <div className="bg-ui-bg-base border border-ui-border-base rounded-lg p-6">
+      {/* ==================== ADVANCED ==================== */}
+      <Container className="p-6 my-3">
+        <form onSubmit={handleSubmit}>
           <div className="flex items-center justify-between mb-6">
             <div>
               <Heading level="h2">{t("storeConfig.advanced.title")}</Heading>
@@ -652,7 +692,6 @@ const StoreConfigPage = () => {
                   rows={8}
                 />
               </div>
-
               <div>
                 <Label>{t("storeConfig.advanced.marketingJson")}</Label>
                 <Textarea
@@ -674,18 +713,17 @@ const StoreConfigPage = () => {
               </div>
             </div>
           )}
-        </div>
 
-        {/* Submit */}
-        <div className="flex justify-end pt-4">
-          <Button isLoading={isSaving} type="submit" size="large">
-            {isSaving
-              ? t("storeConfig.actions.saving")
-              : t("storeConfig.actions.save")}
-          </Button>
-        </div>
-      </form>
-    </Container>
+          <div className="flex justify-end mt-8">
+            <Button isLoading={isSaving} type="submit" size="large">
+              {isSaving
+                ? t("storeConfig.actions.saving")
+                : t("storeConfig.actions.save")}
+            </Button>
+          </div>
+        </form>
+      </Container>
+    </div>
   );
 };
 
@@ -697,5 +735,4 @@ export const config = defineRouteConfig({
 export const handle = {
   breadcrumb: () => "Store Config",
 };
-
 export default StoreConfigPage;
