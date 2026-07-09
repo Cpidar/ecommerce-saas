@@ -33,7 +33,7 @@ export const CollectionsSection: React.FC<{
           className="w-[70%] sm:w-[60%] lg:w-full max-w-124 flex-shrink-0"
           key={collection.id}
         >
-          <Link href={`/collections/${collection.handle}`}>
+          <Link href={`/collections/collections/${collection.handle}`}>
             {typeof collection.metadata?.image === "object" &&
               collection.metadata.image &&
               "url" in collection.metadata.image &&

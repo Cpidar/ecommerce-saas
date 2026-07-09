@@ -171,7 +171,7 @@ export function Header({ categories = [] }: HeaderProps) {
             .map((cat) => (
               <Link
                 key={cat.id}
-                href={(`/${cat.slug}`)}
+                href={(`/categories/${cat.slug}`)}
                 className="text-sm font-medium text-foreground transition-colors hover:text-foreground/70"
               >
                 {cat.name}

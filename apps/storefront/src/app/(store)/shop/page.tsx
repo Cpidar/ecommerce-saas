@@ -109,7 +109,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           return (
             <Link
               key={cat.id}
-              href={`/${cat.slug}`}
+              href={`/categories/${cat.slug}`}
               className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
                 categorySlug === cat.slug
                   ? "border-foreground bg-foreground text-background"

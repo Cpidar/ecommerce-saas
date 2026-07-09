@@ -169,7 +169,7 @@ export default async function HomePage() {
           >
             <Link
               key={category.id}
-              href={`/${category.slug}`}
+              href={`/categories/${category.slug}`}
               className="group"
             >
               <div className="relative w-full aspect-3/4 overflow-hidden rounded-lg bg-neutral-100">
@@ -238,7 +238,7 @@ export default async function HomePage() {
             {topCategories.map((category) => (
               <Link
                 key={category.id}
-                href={`/${category.slug}`}
+                href={`/categories/${category.slug}`}
                 className="group"
               >
                 <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">

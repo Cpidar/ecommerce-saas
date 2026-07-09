@@ -21,7 +21,7 @@ export default async function BrandsPage() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {brands.map((brand) => (
-          <Link key={brand.id} href={`/${brand.slug}`}>
+          <Link key={brand.id} href={`/brands/${brand.slug}`}>
             <Card className="h-full transition-shadow hover:shadow-md">
               <CardContent className="pt-6">
                 <h2 className="text-lg font-semibold">{brand.name}</h2>

@@ -47,7 +47,7 @@ export function BrandView({ brand, products, pagination }: BrandViewProps) {
       </div>
 
       <div className="mt-12">
-        <Pagination pagination={pagination} basePath={`/${brand.slug}`} />
+        <Pagination pagination={pagination} basePath={`/brands/${brand.slug}`} />
       </div>
     </div>
   )

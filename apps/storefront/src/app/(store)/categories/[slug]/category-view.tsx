@@ -68,7 +68,7 @@ export function CategoryView({
                   {isLast ? (
                     <BreadcrumbPage>{cat.name}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink render={<Link href={`/${cat.slug}`} />}>
+                    <BreadcrumbLink render={<Link href={`/categories/${cat.slug}`} />}>
                       {cat.name}
                     </BreadcrumbLink>
                   )}
@@ -115,7 +115,7 @@ export function CategoryView({
       <div className="mt-12">
         <Pagination
           pagination={pagination}
-          basePath={`/${category.slug}`}
+          basePath={`/categories/${category.slug}`}
         />
       </div>
     </div>

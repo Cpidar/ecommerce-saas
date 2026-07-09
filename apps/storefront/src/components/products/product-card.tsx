@@ -56,7 +56,7 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <Link href={(`/${product.slug}`)} className="group">
+    <Link href={(`/products/${product.slug}`)} className="group">
       <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
         <Image
           src={image?.url ?? PLACEHOLDER_IMAGE}
