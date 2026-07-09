@@ -19,7 +19,7 @@ export async function listMyOrders(args: {
   limit?: number
   offset?: number
 } = {}): Promise<{ orders: StoreOrder[]; count: number }> {
-  const { orders, count } = await sdk.store.order.list({
+  const { orders, count } = await (await sdk()).store.order.list({
     limit: args.limit ?? 20,
     offset: args.offset ?? 0,
     fields: ORDER_FIELDS,
@@ -29,7 +29,7 @@ export async function listMyOrders(args: {
 
 export async function retrieveMyOrder(id: string): Promise<StoreOrder | null> {
   try {
-    const { order } = await sdk.store.order.retrieve(id, {
+    const { order } = await (await sdk()).store.order.retrieve(id, {
       fields: ORDER_FIELDS,
     })
     return order ?? null
@@ -54,15 +54,15 @@ export interface ReturnItemInput {
  * return in Medusa Admin; this just creates the request.
  *
  * The Medusa JS SDK (v2.14.x) doesn't wrap the store/return endpoint yet —
- * we call it directly via the client. Update once `sdk.store.return.initiate`
- * lands in the SDK.
+ * we call it directly via the client. Update once `(await sdk()).store.return.initiate`
+ * lands in the (await sdk()).
  */
 export async function requestReturn(args: {
   order_id: string
   items: ReturnItemInput[]
   note?: string
 }): Promise<void> {
-  await sdk.client.fetch("/store/return", {
+  await (await sdk()).client.fetch("/store/return", {
     method: "POST",
     body: {
       order_id: args.order_id,
@@ -81,7 +81,7 @@ export async function updateProfile(args: {
   last_name?: string
   phone?: string
 }): Promise<Customer> {
-  const { customer } = await sdk.store.customer.update(args)
+  const { customer } = await (await sdk()).store.customer.update(args)
   return customer
 }
 
@@ -90,14 +90,14 @@ export async function updateProfile(args: {
 // ---------------------------------------------------------------------------
 
 export async function listMyAddresses(): Promise<CustomerAddress[]> {
-  const { addresses } = await sdk.store.customer.listAddress({ limit: 100 })
+  const { addresses } = await (await sdk()).store.customer.listAddress({ limit: 100 })
   return addresses
 }
 
 export async function addMyAddress(
   address: CheckoutAddress & { is_default_shipping?: boolean; is_default_billing?: boolean }
 ): Promise<CustomerAddress[]> {
-  const { customer } = await sdk.store.customer.createAddress(address)
+  const { customer } = await (await sdk()).store.customer.createAddress(address)
   return customer.addresses ?? []
 }
 
@@ -105,10 +105,10 @@ export async function updateMyAddress(
   id: string,
   address: Partial<CheckoutAddress & { is_default_shipping?: boolean; is_default_billing?: boolean }>
 ): Promise<CustomerAddress[]> {
-  const { customer } = await sdk.store.customer.updateAddress(id, address)
+  const { customer } = await (await sdk()).store.customer.updateAddress(id, address)
   return customer.addresses ?? []
 }
 
 export async function deleteMyAddress(id: string): Promise<void> {
-  await sdk.store.customer.deleteAddress(id)
+  await (await sdk()).store.customer.deleteAddress(id)
 }

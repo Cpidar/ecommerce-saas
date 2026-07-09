@@ -27,7 +27,7 @@ let listCache: Promise<Category[]> | null = null
 
 async function fetchAll(): Promise<Category[]> {
   if (!listCache) {
-    listCache = sdk.store.category
+    listCache = (await sdk()).store.category
       .list({
         limit: 200,
         fields: "id,name,handle,description,parent_category_id,rank,metadata",

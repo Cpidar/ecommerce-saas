@@ -17,7 +17,7 @@ import { medusaProductRepository } from "./products"
 //     return null
 //   }
 
-//   return sdk.client.fetch<ReorderStoreProductSubscriptionOfferResponse>(
+//   return (await sdk()).client.fetch<ReorderStoreProductSubscriptionOfferResponse>(
 //     `/store/products/${product.id}/subscription-offer`,
 //     {
 //       method: "GET",
@@ -30,7 +30,7 @@ export async function retrieveProductSubscriptionOffer(
   productId: string,
   variantId?: string | null
 ) {
-  return sdk.client.fetch<ReorderStoreProductSubscriptionOfferResponse>(
+  return (await sdk()).client.fetch<ReorderStoreProductSubscriptionOfferResponse>(
     `/store/products/${productId}/subscription-offer`,
     {
       method: "GET",

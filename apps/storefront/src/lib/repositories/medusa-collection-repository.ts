@@ -23,7 +23,7 @@ let cache: Promise<Collection[]> | null = null
 
 async function fetchAll(): Promise<Collection[]> {
   if (!cache) {
-    cache = sdk.store.collection
+    cache = (await sdk()).store.collection
       .list({ limit: 200, fields: "id,handle,title,metadata" })
       .then(({ collections }) => collections.map(transform))
   }
@@ -34,7 +34,7 @@ export const getCollectionByHandle = async function (
   handle: string,
   fields?: (keyof HttpTypes.StoreCollection)[]
 ): Promise<HttpTypes.StoreCollection> {
-  return sdk.client
+  return (await sdk()).client
     .fetch<HttpTypes.StoreCollectionListResponse>(`/store/collections`, {
       query: {
         handle,

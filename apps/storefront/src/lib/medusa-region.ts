@@ -15,7 +15,7 @@ interface ResolvedRegion {
 const regionsByCountry = new Map<string, Promise<ResolvedRegion | null>>()
 
 async function fetchAllRegions() {
-  const { regions } = await sdk.store.region.list({})
+  const { regions } = await (await sdk()).store.region.list({})
   return regions
 }
 

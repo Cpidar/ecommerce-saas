@@ -6,7 +6,7 @@ export const getProductTypesList = async function (
   limit: number = 100,
   fields?: (keyof HttpTypes.StoreProductType)[]
 ): Promise<{ productTypes: HttpTypes.StoreProductType[]; count: number }> {
-  return sdk.client
+  return (await sdk()).client
     .fetch<
       PaginatedResponse<{
         product_types: HttpTypes.StoreProductType[]
@@ -26,7 +26,7 @@ export const getProductTypesList = async function (
 export const getProductTypeByHandle = async function (
   handle: string
 ): Promise<HttpTypes.StoreProductType> {
-  return sdk.client
+  return (await sdk()).client
     .fetch<
       PaginatedResponse<{
         product_types: HttpTypes.StoreProductType[]

@@ -24,7 +24,7 @@ let cache: Promise<Brand[]> | null = null
 
 async function fetchAll(): Promise<Brand[]> {
   if (!cache) {
-    cache = sdk.store.product
+    cache = (await sdk()).store.product
       .list({ fields: "id,type", limit: 200 })
       .then(({ products }) => {
         const seen = new Map<string, Brand>()

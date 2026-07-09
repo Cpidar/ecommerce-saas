@@ -27,7 +27,7 @@ const STATIC_PATHS = [
 
 async function getCountryCodes(): Promise<string[]> {
   try {
-    const { regions } = await sdk.store.region.list({})
+    const { regions } = await (await sdk()).store.region.list({})
     const codes = new Set<string>()
     for (const r of regions) {
       for (const c of r.countries ?? []) {

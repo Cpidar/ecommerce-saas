@@ -32,7 +32,7 @@ let regionsPromise: Promise<HttpTypes.StoreRegion[]> | null = null
 
 async function fetchRegions(): Promise<HttpTypes.StoreRegion[]> {
   if (!regionsPromise) {
-    regionsPromise = sdk.store.region.list({}).then((r) => r.regions)
+    regionsPromise = (await sdk()).store.region.list({}).then((r) => r.regions)
   }
   return regionsPromise
 }
@@ -88,7 +88,7 @@ function transform(c: StoreCart): Cart {
 
 async function fetchExistingCart(cartId: string): Promise<StoreCart | null> {
   try {
-    const { cart } = await sdk.store.cart.retrieve(cartId, {
+    const { cart } = await (await sdk()).store.cart.retrieve(cartId, {
       fields: CART_FIELDS,
     })
     return cart ?? null
@@ -122,7 +122,7 @@ export async function ensureCart(countryCode?: string): Promise<Cart> {
       "No Medusa region available. Configure at least one region in your backend."
     )
   }
-  const { cart } = await sdk.store.cart.create({ region_id: regionId })
+  const { cart } = await (await sdk()).store.cart.create({ region_id: regionId })
   writeCookie(CART_COOKIE, cart.id)
   // Re-fetch with fields so we get the standard shape
   const fresh = await fetchExistingCart(cart.id)
@@ -136,7 +136,7 @@ export async function addLineItem(
   metadata?: ReorderSubscriptionLineItemMetadataInput
 ): Promise<Cart> {
   const cart = await ensureCart(countryCode)
-  const { cart: updated } = await sdk.store.cart.createLineItem(cart.id, {
+  const { cart: updated } = await (await sdk()).store.cart.createLineItem(cart.id, {
     variant_id: variantId,
     quantity,
     metadata
@@ -152,7 +152,7 @@ export async function updateLineItem(
   const id = readCookie(CART_COOKIE)
   if (!id) throw new Error("No cart")
   if (quantity <= 0) return removeLineItem(lineItemId)
-  const { cart } = await sdk.store.cart.updateLineItem(id, lineItemId, {
+  const { cart } = await (await sdk()).store.cart.updateLineItem(id, lineItemId, {
     quantity,
   })
   const fresh = await fetchExistingCart(cart.id)
@@ -162,7 +162,7 @@ export async function updateLineItem(
 export async function removeLineItem(lineItemId: string): Promise<Cart> {
   const id = readCookie(CART_COOKIE)
   if (!id) throw new Error("No cart")
-  const { parent } = (await sdk.store.cart.deleteLineItem(id, lineItemId)) as {
+  const { parent } = (await (await sdk()).store.cart.deleteLineItem(id, lineItemId)) as {
     parent: StoreCart
   }
   const fresh = await fetchExistingCart(id)
@@ -187,7 +187,7 @@ export const CART_COOKIE_NAME = CART_COOKIE
  */
 export async function applyPromotionCodes(codes: string[]): Promise<Cart> {
   const id = requireCartId()
-  const { cart } = await sdk.store.cart.update(id, {
+  const { cart } = await (await sdk()).store.cart.update(id, {
     promo_codes: codes,
   } as Partial<HttpTypes.StoreUpdateCart>)
   const fresh = await fetchExistingCart(cart.id)
@@ -240,7 +240,7 @@ export async function updateCartContact(args: {
   billing_address?: CheckoutAddress
 }): Promise<Cart> {
   const id = requireCartId()
-  const { cart } = await sdk.store.cart.update(id, {
+  const { cart } = await (await sdk()).store.cart.update(id, {
     email: args.email,
     shipping_address: args.shipping_address,
     billing_address: args.billing_address ?? args.shipping_address,
@@ -258,7 +258,7 @@ export interface ShippingOption {
 
 export async function listShippingOptions(): Promise<ShippingOption[]> {
   const id = requireCartId()
-  const { shipping_options } = await sdk.store.fulfillment.listCartOptions({
+  const { shipping_options } = await (await sdk()).store.fulfillment.listCartOptions({
     cart_id: id,
   })
   return shipping_options.map((o) => ({
@@ -271,7 +271,7 @@ export async function listShippingOptions(): Promise<ShippingOption[]> {
 
 export async function addShippingMethod(optionId: string): Promise<Cart> {
   const id = requireCartId()
-  const { cart } = await sdk.store.cart.addShippingMethod(id, {
+  const { cart } = await (await sdk()).store.cart.addShippingMethod(id, {
     option_id: optionId,
   })
   const fresh = await fetchExistingCart(cart.id)
@@ -289,7 +289,7 @@ export async function listPaymentProviders(): Promise<PaymentProviderInfo[]> {
   const cart = await fetchExistingCart(id)
   const regionId = cart?.region_id
   if (!regionId) return []
-  const { payment_providers } = await sdk.store.payment.listPaymentProviders({
+  const { payment_providers } = await (await sdk()).store.payment.listPaymentProviders({
     region_id: regionId,
   })
   return payment_providers.map((p) => ({
@@ -323,7 +323,7 @@ export async function initiatePaymentSession(
   const cart = await fetchExistingCart(id)
   if (!cart) throw new Error("Cart not found")
 
-  await sdk.store.payment.initiatePaymentSession(
+  await (await sdk()).store.payment.initiatePaymentSession(
     cart as HttpTypes.StoreCart,
     { provider_id: providerId, data }
   )
@@ -361,7 +361,7 @@ export async function completeCart(): Promise<
   | { type: "cart"; cart: Cart; error?: string }
 > {
   const id = requireCartId()
-  const result = await sdk.store.cart.complete(id)
+  const result = await (await sdk()).store.cart.complete(id)
   if (result.type === "order") {
     clearCookie(CART_COOKIE)
     return { type: "order", order: result.order }
@@ -381,7 +381,7 @@ export async function retrieveOrder(
   orderId: string
 ): Promise<HttpTypes.StoreOrder | null> {
   try {
-    const { order } = await sdk.store.order.retrieve(orderId, {
+    const { order } = await (await sdk()).store.order.retrieve(orderId, {
       fields: "*items,*items.variant,*items.variant.product,*shipping_address,*billing_address",
     })
     return order

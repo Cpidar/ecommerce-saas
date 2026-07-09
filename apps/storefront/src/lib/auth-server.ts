@@ -32,7 +32,7 @@ export async function register(args: {
 }): Promise<Customer> {
   let registrationToken: string
   try {
-    registrationToken = (await sdk.auth.register("customer", "emailpass", {
+    registrationToken = (await (await sdk()).auth.register("customer", "emailpass", {
       email: args.email,
       password: args.password,
     })) as string
@@ -42,7 +42,7 @@ export async function register(args: {
   }
 
   try {
-    const { customer } = await sdk.store.customer.create(
+    const { customer } = await (await sdk()).store.customer.create(
       {
         email: args.email,
         first_name: args.first_name,
@@ -56,7 +56,7 @@ export async function register(args: {
     // After creating the customer, the registration_token is no longer
     // bound to a customer record. Log in again with the same credentials
     // to obtain a customer-bound token, then persist it as the auth cookie.
-    const loginResult = await sdk.auth.login("customer", "emailpass", {
+    const loginResult = await (await sdk()).auth.login("customer", "emailpass", {
       email: args.email,
       password: args.password,
     })
@@ -88,7 +88,7 @@ export async function login(args: {
   password: string
 }): Promise<Customer> {
   try {
-    const result = (await sdk.auth.login("customer", "emailpass", args)) as
+    const result = (await (await sdk()).auth.login("customer", "emailpass", args)) as
       | string
       | { location: string }
 
@@ -114,7 +114,7 @@ export async function login(args: {
 
 export async function logout(): Promise<void> {
   try {
-    await sdk.auth.logout()
+    await (await sdk()).auth.logout()
   } catch {
     // Even if the API call fails, we still clear the local cookie below.
   }
@@ -138,7 +138,7 @@ export async function getCurrentCustomer(): Promise<Customer> {
   try {
     const headers = await getAuthHeaders()
 
-    const { customer } = await sdk.store.customer.retrieve({}, headers)
+    const { customer } = await (await sdk()).store.customer.retrieve({}, headers)
     if (!customer) throw new AuthError("Not authenticated")
     return customer
   } catch (err) {
@@ -161,7 +161,7 @@ export async function tryGetCurrentCustomer(): Promise<Customer | null> {
 
 export async function requestPasswordReset(email: string): Promise<void> {
   try {
-    await sdk.auth.resetPassword("customer", "emailpass", { identifier: email })
+    await (await sdk()).auth.resetPassword("customer", "emailpass", { identifier: email })
   } catch (err) {
     // Most reset-password endpoints intentionally return 200 even on unknown
     // emails to avoid user enumeration. Treat all responses as success.
@@ -179,7 +179,7 @@ export async function completePasswordReset(args: {
   token: string
 }): Promise<void> {
   try {
-    await sdk.auth.updateProvider(
+    await (await sdk()).auth.updateProvider(
       "customer",
       "emailpass",
       { email: args.email, password: args.password },
@@ -204,7 +204,7 @@ export async function transferCart() {
 
   const headers = await getAuthHeaders()
 
-  await sdk.store.cart.transferCart(cartId, {}, headers)
+  await (await sdk()).store.cart.transferCart(cartId, {}, headers)
 
   const cartCacheTag = await getCacheTag("carts")
   revalidateTag(cartCacheTag, "max")
@@ -213,7 +213,7 @@ export async function transferCart() {
 // [MY-FORK-AUTH] Phone auth methods
 export const authenticateWithPhone = async ({ phone, email }: { phone: string; email: string }): Promise<{ location: string }> => {
   try {
-    const response = await sdk.auth.login("customer", "phone-auth", {
+    const response = await (await sdk()).auth.login("customer", "phone-auth", {
       phone,
       email
     }) as AuthRedirectResponse
@@ -245,7 +245,7 @@ export const verifyOtp = async ({
   registerData?: Record<string, string>
 }) => {
   try {
-    const token = (await sdk.auth.callback("customer", "phone-auth", {
+    const token = (await (await sdk()).auth.callback("customer", "phone-auth", {
       phone,
       otp,
       email
@@ -279,7 +279,7 @@ export const registerWithPhone = async (args: {
   try {
     const { firstName, lastName, phone, email, password } = args
 
-    const { token: regToken } = await sdk.client.fetch<
+    const { token: regToken } = await (await sdk()).client.fetch<
       { token: string }
     >(`/auth/customer/emailpass/register`, {
       method: "POST",
@@ -296,14 +296,14 @@ export const registerWithPhone = async (args: {
       phone,
     }
 
-    const { customer: { id: customer_id } } = await sdk.store.customer.create(
+    const { customer: { id: customer_id } } = await (await sdk()).store.customer.create(
       customerData,
       {},
       { authorization: `Bearer ${regToken}` }
     )
 
 
-    await sdk.client.fetch<
+    await (await sdk()).client.fetch<
       { token: string }
     >(`/auth/customer/phone-auth/register`, {
       method: "POST",

@@ -73,12 +73,11 @@ export async function proxy(request: NextRequest) {
   // Check if header was added to response
   // console.log("📤 Incomming Request headers:", Object.fromEntries(request.headers))
 
-  let storeId = request.headers.get('x-store-id')
+  let storeId = request.headers.get('x-store-id') || process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!
   // TODO: Also check Store subscription status and redirect to better place
   if (!storeId) {
     // Optionally redirect or return error 
-    // throw new Error('Store id not found!')
-    storeId = process.env.DEFAULT_STORE_ID || 'default-store'
+    throw new Error('Store id not found!')
   }
 
   // Add store ID to headers

@@ -7,7 +7,7 @@ let regionIdPromise: Promise<string | null> | null = null
 
 async function resolveRegionId(): Promise<string | null> {
   if (!regionIdPromise) {
-    regionIdPromise = sdk.store.region
+    regionIdPromise = (await sdk()).store.region
       .list({})
       .then(({ regions }) => {
         const match = regions.find((r) =>
@@ -33,7 +33,7 @@ export async function searchProductsClient(
   if (!regionId) return []
 
   try {
-    const { products } = await sdk.store.product.list({
+    const { products } = await (await sdk()).store.product.list({
       q: query,
       region_id: regionId,
       fields: "id,handle,title,subtitle,thumbnail,*variants,*variants.calculated_price",
@@ -98,7 +98,7 @@ export async function fetchProductsByIdClient(
   if (!regionId) return []
 
   try {
-    const { products } = await sdk.store.product.list({
+    const { products } = await (await sdk()).store.product.list({
       id: ids,
       region_id: regionId,
       fields: "id,handle,title,subtitle,thumbnail,*variants,*variants.calculated_price",

@@ -148,7 +148,7 @@ function applyClientSort(items: Product[], sort?: SortOption): Product[] {
 }
 
 async function resolveCategoryIdBySlug(slug: string): Promise<string | null> {
-  const { product_categories } = await sdk.store.category.list({
+  const { product_categories } = await (await sdk()).store.category.list({
     handle: slug,
     limit: 1,
   })
@@ -156,7 +156,7 @@ async function resolveCategoryIdBySlug(slug: string): Promise<string | null> {
 }
 
 async function resolveCollectionIdBySlug(handle: string): Promise<string | null> {
-  const { collections } = await sdk.store.collection.list({
+  const { collections } = await (await sdk()).store.collection.list({
     handle,
     limit: 1,
   })
@@ -188,7 +188,7 @@ export async function listProductsByCollection(
       },
     }
   }
-  const { products, count } = await sdk.store.product.list({
+  const { products, count } = await (await sdk()).store.product.list({
     region_id: region.id,
     collection_id: [collectionId],
     fields:
@@ -245,7 +245,7 @@ export const medusaProductRepository: ProductRepository = {
     const order = buildOrderParam(sort)
     if (order) params.order = order
 
-    const { products, count } = await sdk.store.product.list(params)
+    const { products, count } = await (await sdk()).store.product.list(params)
     let items = products.map((p) => transformProduct(p, region.currency))
     items = applyClientFilters(items, filters)
     items = applyClientSort(items, sort)
@@ -267,7 +267,7 @@ export const medusaProductRepository: ProductRepository = {
   async getBySlug(slug) {
     const region = await resolveRegion()
     try {
-      const { products } = await sdk.store.product.list({
+      const { products } = await (await sdk()).store.product.list({
         handle: slug,
         region_id: region.id,
         fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail",
@@ -284,7 +284,7 @@ export const medusaProductRepository: ProductRepository = {
     async getSubscriptionProduct() {
     const region = await resolveRegion()
     try {
-      const { products } = await sdk.store.product.list({
+      const { products } = await (await sdk()).store.product.list({
         handle: process.env.NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG || "subscription-product",
         region_id: region.id,
         fields: "*variants,*variants.calculated_price,+metadata",
@@ -301,7 +301,7 @@ export const medusaProductRepository: ProductRepository = {
   async getById(id) {
     const region = await resolveRegion()
     try {
-      const { product } = await sdk.store.product.retrieve(id, {
+      const { product } = await (await sdk()).store.product.retrieve(id, {
         region_id: region.id,
         fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail,+metadata",
       })
@@ -315,7 +315,7 @@ export const medusaProductRepository: ProductRepository = {
     // No native "featured" — use products with metadata.featured === true.
     // Falls back to first N products if none are explicitly featured.
     const region = await resolveRegion()
-    const { products } = await sdk.store.product.list({
+    const { products } = await (await sdk()).store.product.list({
       region_id: region.id,
       fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail,+metadata",
       limit: 50,

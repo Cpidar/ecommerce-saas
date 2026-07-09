@@ -78,7 +78,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   authenticate: async ({ phone, email }) => {
     set({ isLoading: true })
     try {
-      const response = await sdk.auth.login("customer", "phone-auth", {
+      const response = await (await sdk()).auth.login("customer", "phone-auth", {
         phone,
         email
       }) as AuthRedirectResponse

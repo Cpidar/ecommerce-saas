@@ -1,7 +1,10 @@
 import Medusa from "@medusajs/js-sdk"
+import { notFound, redirect } from "next/navigation"
 
 const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+
+export const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION ?? "ir"
 
 if (!backendUrl) {
   throw new Error(
@@ -15,41 +18,68 @@ if (!publishableKey) {
   )
 }
 
-// export async function getMedusaHeaders() {
-//   const headerList = await headers();
-  
-//   const storeId = headerList.get('x-store-id');        // your incoming header
-//   const publishableKey = headerList.get('x-publishable-key') || 
-//                          process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY; // fallback
+let storeIdCache: string | null = null
+const isBrowser = typeof window !== "undefined"
 
-//   return {
-//     'x-publishable-api-key': publishableKey || '',
-//     'x-store-id': storeId || '',           // if your backend uses this for scoping
-//     // Add any other dynamic headers
-//   };
-// }
+async function getCurrentStoreId(): Promise<string> {
+  if (storeIdCache) return storeIdCache
+
+  // Server side
+  if (!isBrowser) {
+    try {
+      const { headers } = await import('next/headers')
+      const headersList = await headers()
+      storeIdCache = headersList.get('x-store-id') || 'trestsd'
+      console.log('sdk hit from server', storeIdCache)
+      return storeIdCache!
+    } catch {
+      redirect('/404')
+    }
+  }
+  
+  // Client side - read from cookie
+  const match = document.cookie.match(/current_store_id=([^;]+)/)  
+  storeIdCache = match && match[1]
+  console.log('sdk hit from client', document.cookie)
+  if(!storeIdCache) {
+    notFound()
+  }
+  return storeIdCache
+}
 
 // Auth storage: localStorage in the browser (persistent across refreshes),
 // in-memory on the server (no localStorage available there). The SDK module
 // is loaded separately in each environment, so each evaluates this branch
 // once at boot.
-const isBrowser = typeof window !== "undefined"
 
-export const sdk = new Medusa({
-  baseUrl: backendUrl,
-  publishableKey,
-  debug: process.env.NODE_ENV === "development",
-  // auth: {
-  //   type: "jwt",
-  //   jwtTokenStorageMethod: isBrowser ? "local" : "memory",
-  // },
-  // [MY-FORK-CONFIG] add store id headers for multi-tenancy
-  globalHeaders: {
-    "x-store-id": process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
-  },
-})
+// export const sdk = new Medusa({
+//   baseUrl: backendUrl,
+//   publishableKey,
+//   debug: process.env.NODE_ENV === "development",
+//   // auth: {
+//   //   type: "jwt",
+//   //   jwtTokenStorageMethod: isBrowser ? "local" : "memory",
+//   // },
+//   // [MY-FORK-CONFIG] add store id headers for multi-tenancy
+//   globalHeaders: {
+//     "x-store-id": process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
+//   },
+// })
 
-export const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION ?? "ir"
+export async function sdk() {
+  const storeId = await getCurrentStoreId();
+  return new Medusa({
+    baseUrl: backendUrl!,
+    // debug: process.env.NODE_ENV === "development",
+    debug: false,
+    publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+    globalHeaders: {
+      "x-store-id": storeId || process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
+    },
+  })
+}
+
+
 
 export function medusaError(error: any): never {
   if (error.response) {

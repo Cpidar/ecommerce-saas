@@ -43,7 +43,7 @@ export async function listCustomerSubscriptions(): Promise<
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionsResponse>(
       "/store/customers/me/subscriptions",
       {
@@ -63,7 +63,7 @@ export async function retrieveCustomerSubscription(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${id}`,
       {
@@ -84,7 +84,7 @@ export async function startSubscriptionCancellation(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreStartCancellationResponse>(
       `/store/customers/me/subscriptions/${id}/cancellation`,
       {
@@ -109,7 +109,7 @@ export async function pauseCustomerSubscription(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${id}/pause`,
       {
@@ -134,7 +134,7 @@ export async function resumeCustomerSubscription(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${id}/resume`,
       {
@@ -156,7 +156,7 @@ export async function skipNextDelivery(_id: string) {
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${_id}/skip-next-delivery`,
       {
@@ -180,7 +180,7 @@ export async function changeSubscriptionFrequency(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${id}/change-frequency`,
       {
@@ -205,7 +205,7 @@ export async function swapSubscriptionProduct(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${id}/swap-product`,
       {
@@ -227,7 +227,7 @@ export async function retrySubscriptionPayment(_id: string) {
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${_id}/retry-payment`,
       {
@@ -252,7 +252,7 @@ export async function updateSubscriptionAddress(
     ...(await getAuthHeaders()),
   }
 
-  return sdk.client
+  return (await sdk()).client
     .fetch<ReorderStoreCustomerSubscriptionDetailResponse>(
       `/store/customers/me/subscriptions/${id}/change-address`,
       {
@@ -277,7 +277,7 @@ export async function completeSubscriptionCheckout(
     ...(await getAuthHeaders()),
   }
 
-  const response = await sdk.client
+  const response = await (await sdk()).client
     .fetch<ReorderStoreSubscriptionCheckoutResponse>(
       `/store/carts/${cartId}/subscribe`,
       {
