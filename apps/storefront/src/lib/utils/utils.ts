@@ -14,13 +14,21 @@ export const getPercentageDiff = (original: number, calculated: number) => {
 }
 
 export function formatPrice(
-  priceInCents: number,
+  priceInToman: number,
   currency?: string
 ): string {
-  return new Intl.NumberFormat(siteConfig.locale, {
-    style: "currency",
-    currency: currency ?? siteConfig.currency,
-  }).format(priceInCents / 100)
+  const formattedNumber = new Intl.NumberFormat('fa-IR', {
+    maximumFractionDigits: 0,
+    // Use 'currency' style for proper number formatting
+    style: 'currency',
+    currency: 'IRR',
+    // Hide the IRR symbol, we'll add our own
+    currencyDisplay: 'code',
+  }).format(priceInToman * 10)
+    .replace('IRR', '') // Remove IRR code
+    .trim();
+  
+  return `${formattedNumber} تومان`;
 }
 
 export function formatDate(date: string | Date): string {

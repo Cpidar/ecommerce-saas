@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { ShoppingBag, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { useCartStore } from "@/store/cart";
@@ -58,6 +59,10 @@ export function ProductDetailView({
 
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addItem);
 
+  const tProduct = useTranslations("product");
+  const tCommon = useTranslations("common");
+  const tShop = useTranslations("shop");
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const isWishlisted =
@@ -102,14 +107,14 @@ export function ProductDetailView({
       openCart();
     } catch (err) {
       console.error("Add to cart failed", err);
-      toast.error("Couldn't add to cart. Please try again.");
+      toast.error(tProduct("couldntAddToCart"));
     }
   }
 
   function handleToggleWishlist() {
     if (isWishlisted) {
       removeFromWishlist(product.id);
-      toast("Removed from wishlist");
+      toast(tProduct("removedFromWishlist"));
     } else {
       addToWishlist({
         productId: product.id,
@@ -118,7 +123,7 @@ export function ProductDetailView({
         price: selectedVariant!.price,
         image: product.images[0] ?? { url: "", alt: product.name },
       });
-      toast.success("Added to wishlist");
+      toast.success(tProduct("addedToWishlist"));
     }
   }
 
@@ -163,7 +168,9 @@ export function ProductDetailView({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/shop" />}>Shop</BreadcrumbLink>
+            <BreadcrumbLink render={<Link href="/shop" />}>
+              {tShop("title")}
+            </BreadcrumbLink>
           </BreadcrumbItem>
           {categoryAncestors.map((cat, idx) => {
             const isLast = idx === categoryAncestors.length - 1;
@@ -192,12 +199,12 @@ export function ProductDetailView({
 
         {/* Info */}
         <div className="flex flex-col">
-          <div>
+          {/* <div>
             <StarRating
               rating={product.rating}
               reviewCount={product.reviewCount}
             />
-          </div>
+          </div> */}
 
           <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
             {product.name}
@@ -230,7 +237,7 @@ export function ProductDetailView({
                       selectedVariant.price / selectedVariant.compareAtPrice!) *
                       100,
                   )}
-                  % off
+                  % {tCommon("off")}
                 </Badge>
               </>
             )}
@@ -261,7 +268,9 @@ export function ProductDetailView({
                 variant="outline"
                 size="icon"
                 aria-label={
-                  isWishlisted ? "Remove from wishlist" : "Add to wishlist"
+                  isWishlisted
+                    ? tProduct("removeFromWishlist")
+                    : tProduct("addToWishlist")
                 }
                 onClick={handleToggleWishlist}
               >
@@ -277,13 +286,13 @@ export function ProductDetailView({
               onClick={handleAddToCart}
             >
               <ShoppingBag className="mr-2 h-4 w-4" />
-              {inStock ? "Add to Cart" : "Out of Stock"}
+              {inStock ? tCommon("addToCart") : tCommon("outOfStock")}
             </Button>
           </div>
 
           {!inStock && (
             <p className="mt-2 text-sm text-destructive">
-              This item is currently out of stock.
+              {tProduct("outOfStockMessage")}
             </p>
           )}
 
@@ -309,7 +318,7 @@ export function ProductDetailView({
       {relatedProducts.length > 0 && (
         <section className="mt-16">
           <h2 className="text-xl font-bold tracking-tight">
-            You may also like
+            {tProduct("youMayAlsoLike")}
           </h2>
           <div className="mt-6">
             <ProductGrid products={relatedProducts} />

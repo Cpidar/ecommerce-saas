@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,6 +13,9 @@ import { toast } from "sonner"
 import { contactFormSchema } from "@/lib/validators"
 
 export default function ContactPage() {
+  const tContact = useTranslations("contact")
+  const tCommon = useTranslations("common")
+
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
     name: "",
@@ -31,14 +35,20 @@ export default function ContactPage() {
 
     const result = contactFormSchema.safeParse(form)
     if (!result.success) {
-      toast.error(result.error.issues[0].message)
+      const issue = result.error.issues[0]
+      const message =
+        issue.path[0] === "message"
+          ? tContact("messageMinLength")
+          : tContact("fillAllFields")
+
+      toast.error(message)
       return
     }
 
     setLoading(true)
     // In production, send to support@epicdesignlabs.com via API route or form service
     setTimeout(() => {
-      toast.success("Message sent! We'll get back to you soon.")
+      toast.success(tContact("messageSent"))
       setForm({ name: "", email: "", subject: "", message: "" })
       setLoading(false)
     }, 500)
@@ -47,8 +57,8 @@ export default function ContactPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-16 sm:px-6 lg:px-8">
       <PageHeader
-        title="Contact Us"
-        description="Have a question about the starter template, need help with customization, or want to work with our team? We'd love to hear from you."
+        title={tContact("title")}
+        description={tContact("description")}
       />
 
       <div className="mt-12 grid gap-8 lg:grid-cols-3">
@@ -58,7 +68,7 @@ export default function ContactPage() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4" />
-                Email
+                {tContact("email")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -74,7 +84,7 @@ export default function ContactPage() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Globe className="h-4 w-4" />
-                Website
+                {tContact("website")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -92,7 +102,7 @@ export default function ContactPage() {
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-sm">
                 <GitFork className="h-4 w-4" />
-                GitHub
+                {tContact("github")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -102,7 +112,7 @@ export default function ContactPage() {
                 rel="noopener"
                 className="text-sm text-muted-foreground hover:text-foreground hover:underline"
               >
-                View on GitHub
+                {tContact("viewOnGithub")}
               </a>
             </CardContent>
           </Card>
@@ -114,11 +124,11 @@ export default function ContactPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name">{tContact("name")}</Label>
                   <Input
                     id="name"
                     name="name"
-                    placeholder="Your name"
+                    placeholder={tContact("yourName")}
                     value={form.name}
                     onChange={handleChange}
                     required
@@ -126,12 +136,12 @@ export default function ContactPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">{tContact("email")}</Label>
                   <Input
                     id="email"
                     name="email"
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder={tContact("emailPlaceholder")}
                     value={form.email}
                     onChange={handleChange}
                     required
@@ -140,11 +150,11 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="subject">Subject</Label>
+                <Label htmlFor="subject">{tContact("subject")}</Label>
                 <Input
                   id="subject"
                   name="subject"
-                  placeholder="Template question, customization help, or project inquiry"
+                  placeholder={tContact("subjectPlaceholder")}
                   value={form.subject}
                   onChange={handleChange}
                   required
@@ -152,11 +162,11 @@ export default function ContactPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="message">Message</Label>
+                <Label htmlFor="message">{tContact("message")}</Label>
                 <Textarea
                   id="message"
                   name="message"
-                  placeholder="Tell us about your project or question..."
+                  placeholder={tContact("messagePlaceholder")}
                   rows={5}
                   value={form.message}
                   onChange={handleChange}
@@ -165,7 +175,7 @@ export default function ContactPage() {
                 />
               </div>
               <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
-                {loading ? "Sending..." : "Send Message"}
+                {loading ? tCommon("sending") : tCommon("sendMessage")}
               </Button>
             </form>
           </CardContent>

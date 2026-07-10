@@ -1,5 +1,5 @@
 import type { CmsPage } from "@/types"
-import data from "@/data/pages.json"
+import data from "@/lib/static-data/pages.json"
 
 const pages = data.pages as CmsPage[]
 

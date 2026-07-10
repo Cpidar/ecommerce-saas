@@ -82,7 +82,8 @@ export function Client({
                       body: JSON.stringify({ data, path }),
                     });
                     toast.info("اطلاعات با موفقیت ذخیره شد", {
-                      position: "bottom-left",
+                      position: "top-center",
+                      closeButton: true,
                     });
                   }}
                 >

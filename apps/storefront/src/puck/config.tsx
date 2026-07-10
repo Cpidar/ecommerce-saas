@@ -5,7 +5,7 @@ import { HeroSection } from "./blocks/HeroSection01";
 import { HeroSection03 } from "./blocks/hero-sections/TwoColumn/config";
 import { IntroSection } from "./blocks/IntroSection01";
 import { ProductTypesSection } from "./blocks/ProductTypeSection01";
-import { CollectionsSectionWrapper } from "./blocks/collection-slider/CollectionsSliderSection";
+import { CollectionsSectionWrapper } from "./blocks/collection-slider/config";
 import { AboutSection } from "./blocks/AboutSection";
 import { ProductTypeCard } from "./blocks/ProductTypeCard01";
 import { InspirationTextSection } from "./blocks/InspirationTextSection";
@@ -13,6 +13,7 @@ import { FeaturedProductCard } from "./blocks/FeaturedProductCard";
 import { FullWidthImageSection } from "./blocks/FullWidthImageSection";
 import { IncredibleOffersSection } from "./blocks/IncredibleOffer/config";
 import { Space } from "./blocks/Space";
+import { CategoriesSlider } from "./blocks/CategorySlider/config";
 
 // Define the root categories for better organization in the editor
 export const config: Config = {
@@ -23,6 +24,7 @@ export const config: Config = {
     IntroSection,
     ProductTypesSection,
     CollectionsSectionWrapper,
+    CategoriesSlider,
     AboutSection,
     InspirationTextSection,
     IncredibleOffersSection,
@@ -53,6 +55,7 @@ export const config: Config = {
         "IntroSection",
         "ProductTypesSection",
         "CollectionsSectionWrapper",
+        "CategoriesSlider",
         "AboutSection",
         "IncredibleOffersSection",
       ],

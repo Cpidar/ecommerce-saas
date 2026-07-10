@@ -14,7 +14,10 @@ import { Client } from "./client";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { Data } from "@puckeditor/core";
-import { getCollectionByHandle, medusaCollectionRepository } from "@/lib/repositories/medusa-collection-repository";
+import {
+  getCollectionByHandle,
+  medusaCollectionRepository,
+} from "@/lib/repositories/medusa-collection-repository";
 import { getPage } from "@/lib/get-page";
 import { getProductTypesList } from "@/lib/repositories/product-types";
 
@@ -34,56 +37,58 @@ export default async function Page() {
     return notFound();
   }
 
-
   // const productTypes = await getProductTypesList(0, 20, [
   //   "id",
   //   "value",
   //   "metadata",
   // ]);
 
-  // const collections = await medusaCollectionRepository.list();
+  //   if (!productTypes) {
+  //   return null;
+  // }
 
-  // const incredibleOffersCollection =
-  //   await getCollectionByHandle("incredible_offers", ["id", "metadata", "*products"]);
-  // // if (!productTypes || !collections) {
-  // //   return null;
-  // // }
+  const collections = await medusaCollectionRepository.list();
 
-  // const pageData: Data = {
-  //   ...data,
-  //   content: data.content.map((item: Data["content"][number]) => {
-  //     if (item.type === "ProductTypesSection") {
-  //       return {
-  //         ...item,
-  //         props: {
-  //           ...item.props,
-  //           productTypes: productTypes?.productTypes, // 👈 Live data
-  //         },
-  //       };
-  //     }
-  //     if (item.type === "CollectionsSectionWrapper") {
-  //       return {
-  //         ...item,
-  //         props: {
-  //           ...item.props,
-  //           collections: collections.filter(
-  //             (c) => c.handle !== "incredible_offers",
-  //           ), // 👈 Live data
-  //         },
-  //       };
-  //     }
-  //     if (item.type === "IncredibleOffersSection") {
-  //       return {
-  //         ...item,
-  //         props: {
-  //           ...item.props,
-  //           data: incredibleOffersCollection?.products, // 👈 Live data
-  //         },
-  //       };
-  //     }
-  //     return item;
-  //   }),
-  // };
+  const incredibleOffersCollection = await getCollectionByHandle(
+    process.env.NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE || "incredible_offers",
+    ["id", "metadata", "products"],
+  );
+
+  const pageData: Data = {
+    ...data,
+    content: data.content.map((item: Data["content"][number]) => {
+      // if (item.type === "ProductTypesSection" && productTypes) {
+      //   return {
+      //     ...item,
+      //     props: {
+      //       ...item.props,
+      //       productTypes: productTypes?.productTypes, // 👈 Live data
+      //     },
+      //   };
+      // }
+      if (item.type === "CollectionsSectionWrapper" && collections) {
+        return {
+          ...item,
+          props: {
+            ...item.props,
+            collections: collections.filter(
+              (c) => c.handle !== "incredible_offers",
+            ), // 👈 Live data
+          },
+        };
+      }
+      if (item.type === "IncredibleOffersSection" && incredibleOffersCollection) {
+        return {
+          ...item,
+          props: {
+            ...item.props,
+            data: incredibleOffersCollection?.products, // 👈 Live data
+          },
+        };
+      }
+      return item;
+    }),
+  };
 
   return <Client data={data} path={path} />;
 }

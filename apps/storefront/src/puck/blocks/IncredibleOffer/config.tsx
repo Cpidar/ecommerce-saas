@@ -1,6 +1,6 @@
 import { ComponentConfig } from "@puckeditor/core";
 import IncredibleOffers from "./components";
-import mockData from "@/data/products.json";
+import mockData from "@/lib/static-data/products.json";
 import { Product } from "@/types";
 
 

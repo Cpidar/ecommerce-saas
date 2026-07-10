@@ -23,7 +23,7 @@ export function RecentlyViewed({ excludeProductId }: RecentlyViewedProps) {
 
   return (
     <section className="mt-16">
-      <h2 className="text-xl font-bold tracking-tight">Recently Viewed</h2>
+      <h2 className="text-xl font-bold tracking-tight">اخیرا مشاهده کردید</h2>
       <div className="mt-6 flex gap-4 overflow-x-auto pb-2">
         {items.map((item) => (
           <Link

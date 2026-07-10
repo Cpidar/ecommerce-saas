@@ -26,7 +26,7 @@ export const Space: ComponentConfig<SpaceProps> = {
   },
   defaultProps: {
     direction: "",
-    size: "24px",
+    size: "12",
   },
   inline: true,
   render: ({ direction, size, puck }) => {

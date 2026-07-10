@@ -1,5 +1,5 @@
 import type { BlogPost, PaginatedResult, PaginationParams } from "@/types"
-import data from "@/data/blog.json"
+import data from "@/lib/static-data/blog.json"
 
 const posts = data.posts as BlogPost[]
 

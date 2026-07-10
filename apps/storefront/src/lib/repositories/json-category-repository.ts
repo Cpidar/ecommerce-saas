@@ -1,5 +1,5 @@
 import type { Category, CategoryRepository } from "@/types"
-import data from "@/data/products.json"
+import data from "@/lib/static-data/products.json"
 
 const categories = data.categories as Category[]
 

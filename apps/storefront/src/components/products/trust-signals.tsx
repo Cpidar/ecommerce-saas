@@ -7,15 +7,15 @@ export function TrustSignals() {
     <div className="space-y-3">
       <div className="flex items-center gap-3 text-sm text-muted-foreground">
         <Truck className="h-4 w-4" />
-        <span>Free shipping on orders over {formatPrice(siteConfig.freeShippingThreshold)}</span>
+        <span>ارسال رایگان بالای {formatPrice(siteConfig.freeShippingThreshold)}</span>
       </div>
       <div className="flex items-center gap-3 text-sm text-muted-foreground">
         <RotateCcw className="h-4 w-4" />
-        <span>30-day hassle-free returns</span>
+        <span>بازگرداندن بدون مشکل در مدت 7 روز</span>
       </div>
       <div className="flex items-center gap-3 text-sm text-muted-foreground">
         <Shield className="h-4 w-4" />
-        <span>Secure checkout</span>
+        <span>پرداخت امن</span>
       </div>
     </div>
   )
