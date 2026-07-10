@@ -16,7 +16,7 @@ import {
 } from "@/lib/cart-client";
 import { DEFAULT_REGION } from "@/lib/medusa";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
-import citiesjson from "@/data/cities.json";
+import citiesjson from "@/lib/static-data/cities.json";
 import { CheckoutAddressStep } from "@/components/checkout/checkout-address-step";
 import { CheckoutShippingStep } from "@/components/checkout/checkout-shipping-step";
 import { CheckoutPaymentStep } from "@/components/checkout/checkout-payment-step";

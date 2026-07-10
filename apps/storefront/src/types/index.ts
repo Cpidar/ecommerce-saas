@@ -107,10 +107,19 @@ export interface Category {
   name: string;
   slug: string;
   description: string;
-  image?: ProductImage;
+  image?: ProductImage[];
+  thumbnail?: ProductImage;
   parentId?: string;
   order: number;
 }
+
+export type CategoryImage = {
+  id?: string
+  url: string
+  type: "thumbnail" | "image"
+  category_id?: string
+}
+
 
 // --- Cart ---
 

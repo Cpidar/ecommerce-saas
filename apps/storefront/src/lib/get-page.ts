@@ -66,7 +66,7 @@ export const getPage = async (path?: string): Promise<any> => {
 
   const storeConfig = await getStoreConfig()
   if (!storeConfig || !storeConfig.puck_data) return (path && defaultData) ? defaultData[path] : defaultData
-  console.log(storeConfig)
+
   const puckData = storeConfig.puck_data
 
   return path ? puckData[path] : puckData;

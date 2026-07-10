@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   // 🟢 Create directory if it doesn't exist
   const dirPath = path.dirname(dbPath);
   if (!fs.existsSync(dirPath)) {
-    console.log(`Creating directory: ${dirPath}`);
+
     fs.mkdirSync(dirPath, { recursive: true });
   }
 
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
   const existingStoreConfig = await getStoreConfig()
   const existingPuckDataForPath = existingStoreConfig?.puck_data?.[payload.path] ?? {}
-  console.log(existingStoreConfig)
+
   // 🟢 Write to the correct path
   // fs.writeFileSync(dbPath, JSON.stringify(updatedData, null, 2)); // Added pretty printing
   await (await sdk()).client.fetch(

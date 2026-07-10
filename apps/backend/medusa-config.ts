@@ -55,6 +55,9 @@ module.exports = defineConfig({
       },
     },
     {
+      resolve: "./src/modules/product-media",
+    },
+    {
       resolve: "./src/modules/store-config",
     },
     {

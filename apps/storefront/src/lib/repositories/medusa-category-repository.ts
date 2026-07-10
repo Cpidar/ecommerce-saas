@@ -1,20 +1,26 @@
-import type { HttpTypes } from "@medusajs/types"
-import type { Category, CategoryRepository } from "@/types"
-import { sdk } from "@/lib/medusa"
+import "server-only"
 
-type StoreCategory = HttpTypes.StoreProductCategory
+import type { HttpTypes } from "@medusajs/types"
+import type { Category, CategoryImage, CategoryRepository } from "@/types"
+import { getCurrentStoreId, sdk } from "@/lib/medusa"
+import { cacheTag } from "next/cache"
+
+type StoreCategory = HttpTypes.StoreProductCategory & {
+  product_category_image?: CategoryImage[]
+}
 
 function transformCategory(c: StoreCategory, order = 0): Category {
+
   const metadata = (c.metadata ?? {}) as Record<string, unknown>
+  const thumbnail = c.product_category_image?.filter((img) => img.type === "thumbnail")[0]
+  const images = c.product_category_image?.filter((img) => img.type === "image")
   return {
     id: c.id,
     name: c.name ?? "",
     slug: c.handle ?? c.id,
     description: c.description ?? "",
-    image:
-      typeof metadata.imageUrl === "string"
-        ? { url: metadata.imageUrl, alt: c.name ?? "" }
-        : undefined,
+    image: images && images.map(img => ({ url: img.url, alt: c.name ?? "" })),
+    thumbnail: thumbnail && { url: thumbnail.url, alt: c.name ?? "" },
     parentId: c.parent_category_id ?? undefined,
     order:
       typeof metadata.order === "number"
@@ -23,22 +29,21 @@ function transformCategory(c: StoreCategory, order = 0): Category {
   }
 }
 
-let listCache: Promise<Category[]> | null = null
-
 async function fetchAll(): Promise<Category[]> {
-  if (!listCache) {
-    listCache = (await sdk()).store.category
-      .list({
-        limit: 200,
-        fields: "id,name,handle,description,parent_category_id,rank,metadata",
-      })
-      .then(({ product_categories }) =>
-        product_categories
-          .map((c, idx) => transformCategory(c, idx))
-          .sort((a, b) => a.order - b.order)
-      )
-  }
-  return listCache
+  "use cache"
+
+  const storeId = await getCurrentStoreId()
+  cacheTag(`categories:${storeId}`)
+
+
+  const { product_categories } = await (await sdk()).store.category.list({
+    limit: 200,
+    fields:
+      "id,name,handle,description,parent_category_id,rank,metadata,*product_category_image",
+  })
+  return product_categories
+    .map((c, idx) => transformCategory(c, idx))
+    .sort((a, b) => a.order - b.order)
 }
 
 export const medusaCategoryRepository: CategoryRepository & {

@@ -58,4 +58,4 @@ export default async function Page({
   return <Client path={path} data={data || {}} countryCode={countryCode} />;
 }
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";

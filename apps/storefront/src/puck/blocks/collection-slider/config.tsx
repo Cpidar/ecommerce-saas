@@ -6,7 +6,7 @@ import { StoreCollection } from "@medusajs/types"
 
 interface CollectionsSectionWrapper {
   showSection: boolean
-  collections?: StoreCollection[]
+  data?: StoreCollection[]
 }
 
 const mockCollections: StoreCollection[] = [
@@ -61,7 +61,7 @@ export const CollectionsSectionWrapper: ComponentConfig<CollectionsSectionWrappe
     label: "نمایش مجموعه ها",
     defaultProps: {
       showSection: true,
-      collections: mockCollections,
+      data: mockCollections,
     },
     fields: {
       showSection: {
@@ -69,11 +69,11 @@ export const CollectionsSectionWrapper: ComponentConfig<CollectionsSectionWrappe
         ...checkboxField,
       },
     },
-    render: ({ showSection, collections, puck: { isEditing } }) => {
+    render: ({ showSection, data, puck: { isEditing } }) => {
       if (!showSection) return <></>
       return (
         <CollectionsSection
-          collections={collections ? collections : mockCollections}
+          collections={data ? data : mockCollections}
           className="mb-22 md:mb-36"
         />
       )

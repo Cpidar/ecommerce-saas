@@ -1,74 +1,101 @@
 import { ComponentConfig } from "@puckeditor/core";
 import CategoryShowcase from "./component.client";
-import { 
-  Laptop, 
-  Shirt, 
-  Home, 
-  Book, 
-  Sparkles, 
-  Bike,
-  ToyBrick, 
-     
-} from 'lucide-react';
-import { StaticImageData } from "next/dist/shared/lib/image-external";
-
-export interface CardCategoryData {
-  name: string;
-  description: string;
-  icon: string | StaticImageData;
-  color?: string;
-}
+import { Category } from "@/types";
+import { Carousel } from "@/components/layout/Carousel";
 
 type Props = {
   categoryCardType: string;
   heading: string;
   subHeading: string;
-  data?: CardCategoryData[];
+  data?: Category[];
+  className?: string;
 };
 
-const mockProductCategories: CardCategoryData[] = [
+export const mockProductCategories: Category[] = [
   {
+    id: "cat_001",
     name: "الکترونیک و دیجیتال",
+    slug: "electronics-digital",
     description: "محصولات دیجیتال، لوازم جانبی و گجت‌های هوشمند",
-    icon: "https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons/laptop.svg",
-    color: "#3B82F6"
+    thumbnail: {
+      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      alt: "",
+    },
+    parentId: undefined,
+    order: 1,
   },
   {
+    id: "cat_002",
     name: "مد و پوشاک",
+    slug: "fashion-clothing",
     description: "پوشاک زنانه، مردانه و کودک، اکسسوری و کیف",
-    icon: "https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons/shirt.svg",
-    color: "#EC4899"
+    thumbnail: {
+      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      alt: "",
+    },
+    parentId: undefined,
+    order: 2,
   },
   {
+    id: "cat_003",
     name: "خانه و آشپزخانه",
+    slug: "home-kitchen",
     description: "لوازم خانگی، دکوراسیون، ظروف و مبلمان",
-    icon: "https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons/home.svg",
-    color: "#F59E0B"
+    thumbnail: {
+      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      alt: "",
+    },
+    parentId: undefined,
+    order: 3,
   },
   {
+    id: "cat_004",
     name: "کتاب و محصولات فرهنگی",
+    slug: "books-culture",
     description: "کتاب، مجله، نوشت‌افزار و لوازم تحریر",
-    icon: "https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons/book.svg",
-    color: "#8B5CF6"
+    thumbnail: {
+      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      alt: "",
+    },
+    parentId: undefined,
+    order: 4,
   },
   {
+    id: "cat_005",
     name: "زیبایی و سلامت",
+    slug: "beauty-health",
     description: "لوازم آرایشی، بهداشتی و مراقبت شخصی",
-    icon: "https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons/sparkles.svg",
-    color: "#EF4444"
+    thumbnail: {
+      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      alt: "",
+    },
+    parentId: undefined,
+    order: 5,
   },
   {
+    id: "cat_006",
     name: "ورزش و سفر",
+    slug: "sports-travel",
     description: "تجهیزات ورزشی، کوهنوردی و چمدان",
-    icon: "https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons/bike.svg",
-    color: "#10B981"
+    thumbnail: {
+      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      alt: "",
+    },
+    parentId: undefined,
+    order: 6,
   },
   {
+    id: "cat_007",
     name: "اسباب‌بازی و کودک",
+    slug: "toys-kids",
     description: "اسباب‌بازی، لوازم کودک و سرگرمی",
-    icon: "https://cdn.jsdelivr.net/npm/lucide-static@0.321.0/icons/toy.svg",
-    color: "#F472B6"
-  }
+    thumbnail: {
+      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      alt: "",
+    },
+    parentId: undefined,
+    order: 7,
+  },
 ];
 
 export const CategoriesSlider: ComponentConfig<Props> = {
@@ -94,6 +121,10 @@ export const CategoriesSlider: ComponentConfig<Props> = {
       type: "textarea",
       contentEditable: true,
     },
+    className: {
+      type: "text",
+      visible: false,
+    },
   },
   defaultProps: {
     categoryCardType: "card07",
@@ -101,9 +132,19 @@ export const CategoriesSlider: ComponentConfig<Props> = {
     subHeading: "",
     data: mockProductCategories,
   },
-  render: ({ heading, subHeading, data, categoryCardType }) => {
+  render: ({ heading, subHeading, data, categoryCardType, className }) => {
     return (
-      <CategoryShowcase heading={heading} subHeading={subHeading} data={data} />
+      <Carousel
+        heading={<h3 className="text-md md:text-2xl">{heading}</h3>}
+        className={className}
+        arrows={false}
+      >
+        <CategoryShowcase
+          heading={heading}
+          subHeading={subHeading}
+          data={(data && data.length < 5) ? data : mockProductCategories}
+        />
+      </Carousel>
     );
   },
 };

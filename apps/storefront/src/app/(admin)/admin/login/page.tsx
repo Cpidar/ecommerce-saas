@@ -25,14 +25,14 @@ export default async function Login({
     
     const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
-      redirect(`/auth/login?error=${encodeURIComponent(result.error.issues[0].message)}`);
+      redirect(`/admin/login?error=${encodeURIComponent(result.error.issues[0].message)}`);
     }
     
     try {
       await loginAdmin(email, password);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Invalid email or password";
-      redirect(`/auth/login?error=${encodeURIComponent(message)}`);
+      redirect(`/admin/login?error=${encodeURIComponent(message)}`);
     }
     
     redirect(from);

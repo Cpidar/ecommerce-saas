@@ -20,6 +20,8 @@ import {
 } from "@/lib/repositories/medusa-collection-repository";
 import { getPage } from "@/lib/get-page";
 import { getProductTypesList } from "@/lib/repositories/product-types";
+import { medusaCategoryRepository } from "@/lib/repositories/medusa-category-repository";
+import { listProductsByCollection } from "@/lib/repositories/products";
 
 export async function generateMetadata(): Promise<Metadata> {
   const path = `/home`;
@@ -37,27 +39,63 @@ export default async function Page() {
     return notFound();
   }
 
-  // const productTypes = await getProductTypesList(0, 20, [
-  //   "id",
-  //   "value",
-  //   "metadata",
-  // ]);
+  async function enrichData(
+    item: Data["content"][number],
+  ): Promise<Data["content"][number]> {
+    const collections = await medusaCollectionRepository.list();
+    const categories = await medusaCategoryRepository.list();
 
-  //   if (!productTypes) {
-  //   return null;
-  // }
+    switch (item.type) {
+      case "CollectionProductsSliderSection":
+        const collection = await listProductsByCollection(
+          item.props.collection.handle,
+        );
 
-  const collections = await medusaCollectionRepository.list();
+        if (!collection.items.length) return item;
 
-  const incredibleOffersCollection = await getCollectionByHandle(
-    process.env.NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE || "incredible_offers",
-    ["id", "metadata", "products"],
-  );
+        return {
+          ...item,
+          props: {
+            ...item.props,
+            data: collection.items,
+          },
+        };
 
-  const pageData: Data = {
-    ...data,
-    content: data.content.map((item: Data["content"][number]) => {
-      // if (item.type === "ProductTypesSection" && productTypes) {
+      case "IncredibleOffersSection":
+        const incredibleOffersCollection =
+          await listProductsByCollection("incredible_offers");
+        if (!incredibleOffersCollection.items.length) return item;
+        return {
+          ...item,
+          props: {
+            ...item.props,
+            data: incredibleOffersCollection.items,
+          },
+        };
+
+      case "CollectionsSectionWrapper":
+        return {
+          ...item,
+          props: {
+            ...item.props,
+            data: collections.filter(
+              (c) => c.handle !== "incredible_offers",
+            ), // 👈 Live data
+          },
+        };
+
+      case "CategoriesSlider":
+        if(categories.length < 5) return item
+
+        return {
+          ...item,
+          props: {
+            ...item.props,
+            data: categories
+          },
+        };
+
+      // case "ProductTypesSection":
       //   return {
       //     ...item,
       //     props: {
@@ -65,30 +103,18 @@ export default async function Page() {
       //       productTypes: productTypes?.productTypes, // 👈 Live data
       //     },
       //   };
-      // }
-      if (item.type === "CollectionsSectionWrapper" && collections) {
-        return {
-          ...item,
-          props: {
-            ...item.props,
-            collections: collections.filter(
-              (c) => c.handle !== "incredible_offers",
-            ), // 👈 Live data
-          },
-        };
-      }
-      if (item.type === "IncredibleOffersSection" && incredibleOffersCollection) {
-        return {
-          ...item,
-          props: {
-            ...item.props,
-            data: incredibleOffersCollection?.products, // 👈 Live data
-          },
-        };
-      }
-      return item;
-    }),
+
+      default:
+        return item;
+    }
+  }
+
+  const pageData: Data = {
+    ...data,
+    content: await Promise.all(data.content.map(enrichData)),
   };
 
-  return <Client data={data} path={path} />;
+  console.log(pageData);
+
+  return <Client data={pageData} path={path} />;
 }

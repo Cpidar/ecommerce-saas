@@ -14,6 +14,7 @@ import { FullWidthImageSection } from "./blocks/FullWidthImageSection";
 import { IncredibleOffersSection } from "./blocks/IncredibleOffer/config";
 import { Space } from "./blocks/Space";
 import { CategoriesSlider } from "./blocks/CategorySlider/config";
+import { CollectionProductsSliderSection } from "./blocks/collectionProducts-slider/config";
 
 // Define the root categories for better organization in the editor
 export const config: Config = {
@@ -24,6 +25,7 @@ export const config: Config = {
     IntroSection,
     ProductTypesSection,
     CollectionsSectionWrapper,
+    CollectionProductsSliderSection,
     CategoriesSlider,
     AboutSection,
     InspirationTextSection,
@@ -58,13 +60,17 @@ export const config: Config = {
         "CategoriesSlider",
         "AboutSection",
         "IncredibleOffersSection",
+        "CollectionProductsSliderSection",
+        "InspirationTextSection",
+        "FeaturedProductCard",
+        "FullWidthImageSection",
       ],
       title: "Page Sections",
     },
-    cards: {
-      components: ["ProductTypeCard"],
-      title: "Cards & Items",
-    },
+    // cards: {
+    //   components: ["ProductTypeCard"],
+    //   title: "Cards & Items",
+    // },
   },
 };
 

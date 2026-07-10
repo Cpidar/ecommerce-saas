@@ -97,8 +97,8 @@ For example, to use the module in an API route:
 
 ```ts
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework"
-import BlogModuleService from "../../../modules/blog/service"
-import { BLOG_MODULE } from "../../../modules/blog"
+import BlogModuleService from "../../../../modules/blog/service"
+import { BLOG_MODULE } from "../../../../modules/blog"
 
 export async function GET(
   req: MedusaRequest,

@@ -21,7 +21,7 @@ if (!publishableKey) {
 let storeIdCache: string | null = null
 const isBrowser = typeof window !== "undefined"
 
-async function getCurrentStoreId(): Promise<string> {
+export async function getCurrentStoreId(): Promise<string> {
   if (storeIdCache) return storeIdCache
 
   // Server side
@@ -29,7 +29,7 @@ async function getCurrentStoreId(): Promise<string> {
     try {
       const { headers } = await import('next/headers')
       const headersList = await headers()
-      storeIdCache = headersList.get('x-store-id') || 'trestsd'
+      storeIdCache = headersList.get('x-store-id')
       console.log('sdk hit from server', storeIdCache)
       return storeIdCache!
     } catch {

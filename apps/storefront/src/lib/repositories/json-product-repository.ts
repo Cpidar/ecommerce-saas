@@ -8,7 +8,7 @@ import type {
 } from "@/types"
 import data from "@/lib/static-data/products.json"
 
-const products = data.products as Product[]
+const products = data.products as unknown as Product[]
 
 function applyFilters(items: Product[], filters?: ProductFilters): Product[] {
   if (!filters) return items

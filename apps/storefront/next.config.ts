@@ -44,6 +44,8 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+    cacheComponents: true,
+
   // Pin Turbopack's workspace root to this project so Next doesn't get
   // confused by a parent directory's lockfile.
   turbopack: {
