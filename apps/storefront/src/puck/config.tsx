@@ -1,20 +1,21 @@
 // puck.config.tsx
 
 import { Config } from "@puckeditor/core";
-import { HeroSection } from "./blocks/HeroSection01";
-import { HeroSection03 } from "./blocks/hero-sections/TwoColumn/config";
-import { IntroSection } from "./blocks/IntroSection01";
-import { ProductTypesSection } from "./blocks/ProductTypeSection01";
-import { CollectionsSectionWrapper } from "./blocks/collection-slider/config";
-import { AboutSection } from "./blocks/AboutSection";
-import { ProductTypeCard } from "./blocks/ProductTypeCard01";
-import { InspirationTextSection } from "./blocks/InspirationTextSection";
-import { FeaturedProductCard } from "./blocks/FeaturedProductCard";
-import { FullWidthImageSection } from "./blocks/FullWidthImageSection";
-import { IncredibleOffersSection } from "./blocks/IncredibleOffer/config";
+import { HeroSection } from "./sections/HeroSection01";
+import { HeroSection03 } from "./sections/hero-sections/TwoColumn/config";
+import { IntroSection } from "./sections/IntroSection01";
+import { ProductTypesSection } from "./sections/ProductTypeSection01";
+import { CollectionsSectionWrapper } from "./sections/collection-slider/config";
+import { AboutSection } from "./sections/AboutSection";
+import { ProductTypeCard } from "./sections/ProductTypeCard01";
+import { InspirationTextSection } from "./sections/InspirationTextSection";
+import { FeaturedProductCard } from "./sections/FeaturedProductCard";
+import { FullWidthImageSection } from "./sections/FullWidthImageSection";
+import { IncredibleOffersSection } from "./sections/IncredibleOffer/config";
 import { Space } from "./blocks/Space";
-import { CategoriesSlider } from "./blocks/CategorySlider/config";
-import { CollectionProductsSliderSection } from "./blocks/collectionProducts-slider/config";
+import { CategoriesSlider } from "./sections/CategorySlider/config";
+import { CollectionProductsSliderSection } from "./sections/collectionProducts-slider/config";
+import { FullPageRichText } from "./sections/FullPageRichText/config";
 
 // Define the root categories for better organization in the editor
 export const config: Config = {
@@ -32,6 +33,7 @@ export const config: Config = {
     IncredibleOffersSection,
     FeaturedProductCard,
     FullWidthImageSection,
+    FullPageRichText,
     // layout
     Space,
     // Nested Components (can only be placed inside specific sections)
@@ -64,6 +66,7 @@ export const config: Config = {
         "InspirationTextSection",
         "FeaturedProductCard",
         "FullWidthImageSection",
+        "FullPageRichText"
       ],
       title: "Page Sections",
     },

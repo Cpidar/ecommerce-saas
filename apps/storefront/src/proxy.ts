@@ -40,6 +40,7 @@ async function handleEditRoute(request: NextRequest) {
   }
 
   // Check token validity
+  // TODO: must check store id to match with x-store-id header, otherwise redirect to login page
   try {
     const verifyRes = await fetch(
       `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/admin/users/me`,

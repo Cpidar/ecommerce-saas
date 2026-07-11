@@ -17,7 +17,7 @@ interface SlugPageProps {
 // Catalog data is dynamic in Medusa — products, categories, and brands can
 // change at any time in the admin. Render on demand and fall through to 404
 // when the slug isn't recognized.
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -25,35 +25,32 @@ export async function generateMetadata({
   const { slug } = await params;
 
   const product = await productRepository.getBySlug(slug);
-  if (product) {
-    const variant = product.variants[0];
-    const price = variant ? formatPrice(variant.price, variant.currency) : "";
-    return {
+  if (!product) return { title: "Not Found" };
+
+  const variant = product.variants[0];
+  const price = variant ? formatPrice(variant.price, variant.currency) : "";
+  return {
+    title: product.name,
+    description: product.description,
+    alternates: { canonical: `/products/${product.slug}` },
+    openGraph: {
       title: product.name,
       description: product.description,
-      alternates: { canonical: `/products/${product.slug}` },
-      openGraph: {
-        title: product.name,
-        description: product.description,
-        type: "website",
-        url: `${siteConfig.url}/products/${product.slug}`,
-        images: product.images[0]
-          ? [{ url: product.images[0].url, alt: product.images[0].alt }]
-          : [],
-      },
-      other: {
-        "product:price:amount": variant ? String(variant.price / 100) : "",
-        "product:price:currency": variant?.currency ?? "USD",
-      },
-    };
-  }
-
-  return { title: "Not Found" };
+      type: "website",
+      url: `${siteConfig.url}/products/${product.slug}`,
+      images: product.images[0]
+        ? [{ url: product.images[0].url, alt: product.images[0].alt }]
+        : [],
+    },
+    other: {
+      "product:price:amount": variant ? String(variant.price / 100) : "",
+      "product:price:currency": variant?.currency ?? "USD",
+    },
+  };
 }
 
 export default async function SlugPage({ params }: SlugPageProps) {
   const { slug } = await params;
-
   // Check product first
   const product = await productRepository.getBySlug(slug);
 
