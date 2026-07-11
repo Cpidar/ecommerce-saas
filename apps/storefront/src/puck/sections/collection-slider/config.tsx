@@ -1,6 +1,6 @@
 // configs/components/CollectionsSectionWrapper.ts
 import { ComponentConfig } from "@puckeditor/core"
-import { CollectionsSection } from "@/puck/blocks/collection-slider/CollectionsSection"
+import { CollectionsSection } from "./CollectionsSection"
 import { checkboxField } from "../../fields/checkbox"
 import { StoreCollection } from "@medusajs/types"
 
