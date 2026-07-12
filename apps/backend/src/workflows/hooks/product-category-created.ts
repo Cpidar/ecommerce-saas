@@ -21,16 +21,16 @@ createProductCategoriesWorkflow.hooks.categoriesCreated(async ({ categories }, {
   );
 
       // 2. Loop through each newly created product
-    for (const product of categories) {
+    for (const category of categories) {
       // 3. Generate your custom handle
       // Replace this logic with your own strategy
-      let customHandle = slugify(product.name)
+      let customHandle = slugify(category.name)
       
       // Add a timestamp or random string for uniqueness
-      customHandle = `${product.handle}-${Date.now()}`
+      customHandle = `${category.handle}-${Date.now()}`
 
       // 4. Update the product directly with the new handle
-      await productModuleService.updateProductCategories(product.id, {
+      await productModuleService.updateProductCategories(category.id, {
         handle: customHandle
       })
     }

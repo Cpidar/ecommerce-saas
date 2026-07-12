@@ -6,6 +6,7 @@ import { addStoreScope } from "./middlewares/add-store-scope";
 import { storeProductCollectionsRoutesMiddlewares } from "./store/collections/middlewares";
 import { adminStoreMethodsRoutesMiddlewares } from "./admin/store-config/middlewares";
 import { adminCustomUploadsRoutesMiddlewares } from "./admin/uploads/middlewares";
+import { adminProductOptionRoutesMiddlewares } from "./admin/product-options/middlewares";
 
 
 export default defineMiddlewares({
@@ -25,6 +26,7 @@ export default defineMiddlewares({
     ...storeProductCategoriesRoutesMiddlewares,
     ...storeProductCollectionsRoutesMiddlewares,
     ...adminProductCategoryRoutesMiddlewares,
+    ...adminProductOptionRoutesMiddlewares,
     ...adminStoreMethodsRoutesMiddlewares,
     ...adminCustomUploadsRoutesMiddlewares
   ],
