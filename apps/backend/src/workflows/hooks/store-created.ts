@@ -1,8 +1,9 @@
 import { asValue } from "@medusajs/framework/awilix";
 import { IStoreModuleService, IEventBusModuleService } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
-import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
+// import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { createStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflows/create-store/index"
+import default_data_seed from "../../scripts/defaul-seed";
 // import { linkProductToStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflows/link-product-to-store/index"
 
 createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
@@ -11,27 +12,29 @@ createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
   const event = container.resolve<IEventBusModuleService>(Modules.EVENT_BUS)
   const store = await storeService.retrieveStore(storeId)
 
-  const SUPER_ADMIN_STORE_ID = process.env.SUPER_ADMIN_STORE_ID || "store_01KTJY1ZW9GNT71P3KE2DQ163D"
+  // const SUPER_ADMIN_STORE_ID = process.env.SUPER_ADMIN_STORE_ID || "store_01KTJY1ZW9GNT71P3KE2DQ163D"
 
-  container.register('currentStore', asValue({ id: SUPER_ADMIN_STORE_ID }))
+  container.register('currentStore', asValue({ id: storeId }))
 
-  const { result: [product] } = await createProductsWorkflow(container).run({
-    input: {
-      products: [{
-        title: store.name,
-        handle: store.id.toLowerCase().replace(/_/g, '-'),
-        status: 'published',
-        options: [{
-          title: "Default option",
-          values: ["Default option value"]
-        }],
-      }],
-    }
+  default_data_seed({
+    container,
+    storeId: storeId
   })
-  console.log(product)
 
-  // TODO: must be create customer in super admin store
-  //TODO: must be create plans and offers for above product
+  //   const { result: [product] } = await createProductsWorkflow(container).run({
+  //   input: {
+  //     products: [{
+  //       title: store.name,
+  //       handle: store.id.toLowerCase().replace(/_/g, '-'),
+  //       status: 'published',
+  //       options: [{
+  //         title: "Default option",
+  //         values: ["Default option value"]
+  //       }],
+  //     }],
+  //   }
+  // })
+  // console.log(product)
 
   event.emit({
     name: 'store.created',
