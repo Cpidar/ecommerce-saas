@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   // 🟢 Write to the correct path
   // fs.writeFileSync(dbPath, JSON.stringify(updatedData, null, 2)); // Added pretty printing
-  await (await sdk()).client.fetch(
+  await sdk.client.fetch(
     "/store/store-config",
     {
       method: "PUT",

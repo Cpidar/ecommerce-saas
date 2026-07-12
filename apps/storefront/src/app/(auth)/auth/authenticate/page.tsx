@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { phoneAuthSchema } from "@/lib/validators";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth";
-import { AuthError } from "@/lib/auth-error";
+import { AuthError } from "@/lib/utils/auth-error";
 
 const PageLogin = () => {
   const router = useRouter();

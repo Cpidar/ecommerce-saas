@@ -1,5 +1,6 @@
-import Medusa from "@medusajs/js-sdk"
+import Medusa, { FetchArgs, FetchInput } from "@medusajs/js-sdk"
 import { notFound, redirect } from "next/navigation"
+import { getLocaleHeader } from "./utils/get-locale-header"
 
 const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
@@ -21,8 +22,10 @@ if (!publishableKey) {
 let storeIdCache: string | null = null
 const isBrowser = typeof window !== "undefined"
 
-export async function getCurrentStoreId(): Promise<string> {
-  if (storeIdCache) return storeIdCache
+export async function getCurrentStoreId() {
+  if (storeIdCache) return {
+    "x-store-id": storeIdCache,
+  } as const
 
   // Server side
   if (!isBrowser) {
@@ -31,20 +34,24 @@ export async function getCurrentStoreId(): Promise<string> {
       const headersList = await headers()
       storeIdCache = headersList.get('x-store-id')
       console.log('sdk hit from server', storeIdCache)
-      return storeIdCache!
+      return {
+        "x-store-id": storeIdCache,
+      } as const
     } catch {
       redirect('/404')
     }
   }
-  
+
   // Client side - read from cookie
-  const match = document.cookie.match(/current_store_id=([^;]+)/)  
+  const match = document.cookie.match(/current_store_id=([^;]+)/)
   storeIdCache = match && match[1]
   console.log('sdk hit from client', document.cookie)
-  if(!storeIdCache) {
+  if (!storeIdCache) {
     notFound()
   }
-  return storeIdCache
+  return {
+    "x-store-id": storeIdCache,
+  } as const
 }
 
 // Auth storage: localStorage in the browser (persistent across refreshes),
@@ -52,33 +59,62 @@ export async function getCurrentStoreId(): Promise<string> {
 // is loaded separately in each environment, so each evaluates this branch
 // once at boot.
 
-// export const sdk = new Medusa({
-//   baseUrl: backendUrl,
-//   publishableKey,
-//   debug: process.env.NODE_ENV === "development",
-//   // auth: {
-//   //   type: "jwt",
-//   //   jwtTokenStorageMethod: isBrowser ? "local" : "memory",
-//   // },
-//   // [MY-FORK-CONFIG] add store id headers for multi-tenancy
-//   globalHeaders: {
-//     "x-store-id": process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
-//   },
-// })
+export const sdk = new Medusa({
+  baseUrl: backendUrl,
+  publishableKey,
+  debug: process.env.NODE_ENV === "development",
+  // auth: {
+  //   type: "jwt",
+  //   jwtTokenStorageMethod: isBrowser ? "local" : "memory",
+  // },
+  // [MY-FORK-CONFIG] add store id headers for multi-tenancy
+  // globalHeaders: {
+  //   "x-store-id": process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
+  // },
+})
 
-export async function sdk() {
-  const storeId = await getCurrentStoreId();
-  return new Medusa({
-    baseUrl: backendUrl!,
-    // debug: process.env.NODE_ENV === "development",
-    debug: false,
-    publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
-    globalHeaders: {
-      "x-store-id": storeId || process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
-    },
-  })
+// export async function sdk() {
+//   const storeId = await getCurrentStoreId();
+//   return new Medusa({
+//     baseUrl: backendUrl!,
+//     // debug: process.env.NODE_ENV === "development",
+//     debug: false,
+//     publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+//     globalHeaders: {
+//       "x-store-id": storeId || process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,
+//     },
+//   })
+// }
+
+const originalFetch = sdk.client.fetch.bind(sdk.client)
+
+sdk.client.fetch = async <T>(
+  input: FetchInput,
+  init?: FetchArgs
+): Promise<T> => {
+  const headers = init?.headers ?? {}
+  let localeHeader: Record<string, string | null> | undefined
+  let storeHeader: Record<string, string | null> | undefined
+
+  try {
+    localeHeader = await getLocaleHeader()
+    headers["x-medusa-locale"] ??= localeHeader["x-medusa-locale"]
+    
+    storeHeader = await getCurrentStoreId()
+    headers["x-store-id"] ??= localeHeader["x-store-id"]
+  } catch { }
+
+  const newHeaders = {
+    ...localeHeader,
+    ...storeHeader,
+    ...headers,
+  }
+  init = {
+    ...init,
+    headers: newHeaders,
+  }
+  return originalFetch(input, init)
 }
-
 
 
 export function medusaError(error: any): never {

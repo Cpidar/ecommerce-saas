@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
-import { ADMIN_COOKIE } from './lib/admin-auth';
+import { ADMIN_COOKIE } from './lib/medusa/admin-auth';
 
 /**
  * Handle Puck editor /edit url.

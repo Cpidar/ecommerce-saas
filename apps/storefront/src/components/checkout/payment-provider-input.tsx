@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import type { ActivePaymentSession } from "@/lib/cart-client";
+import type { ActivePaymentSession } from "@/lib/medusa/cart-client";
 import BehpardakhtIcon from "./BehpardakhtIcon";
 
 export interface ProviderInputProps {

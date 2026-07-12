@@ -8,7 +8,7 @@ import { Package } from "lucide-react"
 import { PageHeader } from "@/components/ui/page-header"
 import { EmptyState } from "@/components/ui/empty-state"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
-import { listMyOrders } from "@/lib/customer-client"
+import { listMyOrders } from "@/lib/medusa/customer-client"
 import { formatPrice, formatDate } from "@/lib/utils/utils"
 import { useTranslations } from "next-intl"
 

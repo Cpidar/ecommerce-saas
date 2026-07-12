@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl";
 import { useCartStore } from "@/store/cart";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { formatPrice } from "@/lib/utils/utils";
-import { type PaymentProviderInfo } from "@/lib/cart-client";
+import { type PaymentProviderInfo } from "@/lib/medusa/cart-client";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { CheckoutPaymentStep } from "@/components/checkout/checkout-payment-step";
 

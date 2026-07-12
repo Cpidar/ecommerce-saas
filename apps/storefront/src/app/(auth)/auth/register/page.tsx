@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/auth";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { AuthError } from "@/lib/auth-error";
+import { AuthError } from "@/lib/utils/auth-error";
 import { registerSchema } from "@/lib/validators";
 import { useTranslations } from "next-intl";
 

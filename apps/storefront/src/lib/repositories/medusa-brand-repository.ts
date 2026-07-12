@@ -1,5 +1,5 @@
 import type { Brand } from "@/types"
-import { sdk } from "@/lib/medusa"
+import { getCurrentStoreId, sdk } from "@/lib/medusa"
 
 /**
  * Medusa v2 has no native "brand" concept. This repository derives brands
@@ -23,9 +23,11 @@ function slugify(s: string): string {
 let cache: Promise<Brand[]> | null = null
 
 async function fetchAll(): Promise<Brand[]> {
+  const storeHeaders = await getCurrentStoreId()
+
   if (!cache) {
-    cache = (await sdk()).store.product
-      .list({ fields: "id,type", limit: 200 })
+    cache = sdk.store.product
+      .list({ fields: "id,type", limit: 200 }, { ...storeHeaders })
       .then(({ products }) => {
         const seen = new Map<string, Brand>()
         for (const p of products) {

@@ -16,7 +16,7 @@ import {
   addMyAddress,
   deleteMyAddress,
   updateMyAddress,
-} from "@/lib/customer-client"
+} from "@/lib/medusa/customer-client"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 

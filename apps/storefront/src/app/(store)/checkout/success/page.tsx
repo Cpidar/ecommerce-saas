@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatPrice, formatDate } from "@/lib/utils/utils";
-import { completeCart } from "@/lib/cart-client";
+import { completeCart } from "@/lib/medusa/cart-client";
 import { useCartStore } from "@/store/cart";
 import { toast } from "sonner";
 import { completeSubscriptionCheckout } from "@/lib/repositories/subscriptions";

@@ -9,7 +9,7 @@ import type {
   ProductVariant,
   SortOption,
 } from "@/types"
-import { sdk } from "@/lib/medusa"
+import { getCurrentStoreId, sdk } from "@/lib/medusa"
 import { resolveRegion } from "@/lib/medusa-region"
 
 type StoreProduct = HttpTypes.StoreProduct
@@ -59,10 +59,10 @@ function transformVariant(
     dimensions:
       variant.length && variant.width && variant.height
         ? {
-            length: variant.length,
-            width: variant.width,
-            height: variant.height,
-          }
+          length: variant.length,
+          width: variant.width,
+          height: variant.height,
+        }
         : undefined,
   }
 }
@@ -148,17 +148,25 @@ function applyClientSort(items: Product[], sort?: SortOption): Product[] {
 }
 
 async function resolveCategoryIdBySlug(slug: string): Promise<string | null> {
-  const { product_categories } = await (await sdk()).store.category.list({
+  const storeHeaders = await getCurrentStoreId()
+
+  const { product_categories } = await sdk.store.category.list({
     handle: slug,
     limit: 1,
+  }, {
+    ...storeHeaders
   })
   return product_categories[0]?.id ?? null
 }
 
 async function resolveCollectionIdBySlug(handle: string): Promise<string | null> {
-  const { collections } = await (await sdk()).store.collection.list({
+  const storeHeaders = await getCurrentStoreId()
+
+  const { collections } = await sdk.store.collection.list({
     handle,
     limit: 1,
+  }, {
+    ...storeHeaders
   })
   return collections[0]?.id ?? null
 }
@@ -172,6 +180,7 @@ export async function listProductsByCollection(
   pagination?: PaginationParams
 ): Promise<PaginatedResult<Product>> {
   const region = await resolveRegion()
+  const storeHeaders = await getCurrentStoreId()
   const collectionId = await resolveCollectionIdBySlug(collectionSlug)
   const page = pagination?.page ?? 1
   const limit = pagination?.limit ?? 40
@@ -188,13 +197,15 @@ export async function listProductsByCollection(
       },
     }
   }
-  const { products, count } = await (await sdk()).store.product.list({
+  const { products, count } = await sdk.store.product.list({
     region_id: region.id,
     collection_id: [collectionId],
     fields:
       "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail,+metadata",
     limit,
     offset: (page - 1) * limit,
+  }, {
+    ...storeHeaders
   })
   const items = products.map((p) => transformProduct(p, region.currency))
   const totalPages = Math.max(1, Math.ceil(count / limit))
@@ -214,6 +225,8 @@ export async function listProductsByCollection(
 export const medusaProductRepository: ProductRepository = {
   async list(filters, sort, pagination) {
     const region = await resolveRegion()
+    const storeHeaders = await getCurrentStoreId()
+
     const page = pagination?.page ?? 1
     const limit = pagination?.limit ?? 12
 
@@ -245,7 +258,7 @@ export const medusaProductRepository: ProductRepository = {
     const order = buildOrderParam(sort)
     if (order) params.order = order
 
-    const { products, count } = await (await sdk()).store.product.list(params)
+    const { products, count } = await sdk.store.product.list(params, { ...storeHeaders })
     let items = products.map((p) => transformProduct(p, region.currency))
     items = applyClientFilters(items, filters)
     items = applyClientSort(items, sort)
@@ -265,14 +278,15 @@ export const medusaProductRepository: ProductRepository = {
   },
 
   async getBySlug(slug) {
+    const storeHeaders = await getCurrentStoreId()
     const region = await resolveRegion()
     try {
-      const { products } = await (await sdk()).store.product.list({
+      const { products } = await sdk.store.product.list({
         handle: slug,
         region_id: region.id,
         fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail",
         limit: 1,
-      })
+      }, { ...storeHeaders })
       return products[0]
         ? transformProduct(products[0], region.currency)
         : null
@@ -281,15 +295,17 @@ export const medusaProductRepository: ProductRepository = {
     }
   },
 
-    async getSubscriptionProduct() {
+  async getSubscriptionProduct() {
+    const storeHeaders = await getCurrentStoreId()
+
     const region = await resolveRegion()
     try {
-      const { products } = await (await sdk()).store.product.list({
+      const { products } = await sdk.store.product.list({
         handle: process.env.NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG || "subscription-product",
         region_id: region.id,
         fields: "*variants,*variants.calculated_price,+metadata",
         limit: 1,
-      })
+      }, { ...storeHeaders })
       return products[0]
         ? transformProduct(products[0], region.currency)
         : null
@@ -299,12 +315,14 @@ export const medusaProductRepository: ProductRepository = {
   },
 
   async getById(id) {
+    const storeHeaders = await getCurrentStoreId()
+
     const region = await resolveRegion()
     try {
-      const { product } = await (await sdk()).store.product.retrieve(id, {
+      const { product } = await sdk.store.product.retrieve(id, {
         region_id: region.id,
         fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail,+metadata",
-      })
+      }, { ...storeHeaders })
       return product ? transformProduct(product, region.currency) : null
     } catch {
       return null
@@ -315,11 +333,13 @@ export const medusaProductRepository: ProductRepository = {
     // No native "featured" — use products with metadata.featured === true.
     // Falls back to first N products if none are explicitly featured.
     const region = await resolveRegion()
-    const { products } = await (await sdk()).store.product.list({
+    const storeHeaders = await getCurrentStoreId()
+
+    const { products } = await sdk.store.product.list({
       region_id: region.id,
       fields: "*variants,*variants.calculated_price,+variants.inventory_quantity,*categories,*tags,*type,+thumbnail,+metadata",
       limit: 50,
-    })
+    }, { ...storeHeaders })
     const transformed = products.map((p) => transformProduct(p, region.currency))
     const featured = transformed.filter((p) => p.featured)
     return (featured.length > 0 ? featured : transformed).slice(0, limit)

@@ -8,7 +8,7 @@ import {
   removeLineItem,
   updateLineItem,
   clearLocalCart,
-} from "@/lib/cart-client";
+} from "@/lib/medusa/cart-client";
 import { ReorderSubscriptionLineItemMetadataInput } from "@/types/subscription";
 
 interface CartState {

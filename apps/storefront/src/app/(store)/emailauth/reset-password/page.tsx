@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { AuthCardLayout } from "@/components/auth/auth-card-layout"
 import { toast } from "sonner"
-import { completePasswordReset } from "@/lib/auth-server"
-import { AuthError } from "@/lib/auth-error"
+import { completePasswordReset } from "@/lib/medusa/auth-server"
+import { AuthError } from "@/lib/utils/auth-error"
 
 export default function ResetPasswordPage() {
   return (

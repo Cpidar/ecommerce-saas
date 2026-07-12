@@ -32,15 +32,15 @@ function transformCategory(c: StoreCategory, order = 0): Category {
 async function fetchAll(): Promise<Category[]> {
   "use cache"
 
-  const storeId = await getCurrentStoreId()
-  cacheTag(`categories:${storeId}`)
+  const storeHeaders = await getCurrentStoreId()
+  cacheTag(`categories:${storeHeaders["x-store-id"]}`)
 
 
-  const { product_categories } = await (await sdk()).store.category.list({
+  const { product_categories } = await sdk.store.category.list({
     limit: 200,
     fields:
       "id,name,handle,description,parent_category_id,rank,metadata,*product_category_image",
-  })
+  }, { ...storeHeaders })
   return product_categories
     .map((c, idx) => transformCategory(c, idx))
     .sort((a, b) => a.order - b.order)

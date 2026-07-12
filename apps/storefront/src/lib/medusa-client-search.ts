@@ -1,13 +1,13 @@
 "use client"
 
 import type { Product } from "@/types"
-import { sdk, DEFAULT_REGION } from "./medusa"
+import { sdk, DEFAULT_REGION, getCurrentStoreId } from "./medusa"
 
 let regionIdPromise: Promise<string | null> | null = null
 
 async function resolveRegionId(): Promise<string | null> {
   if (!regionIdPromise) {
-    regionIdPromise = (await sdk()).store.region
+    regionIdPromise = sdk.store.region
       .list({})
       .then(({ regions }) => {
         const match = regions.find((r) =>
@@ -29,16 +29,18 @@ export async function searchProductsClient(
   query: string,
   limit = 6
 ): Promise<Product[]> {
+  const storeHeaders = await getCurrentStoreId()
+
   const regionId = await resolveRegionId()
   if (!regionId) return []
 
   try {
-    const { products } = await (await sdk()).store.product.list({
+    const { products } = await sdk.store.product.list({
       q: query,
       region_id: regionId,
       fields: "id,handle,title,subtitle,thumbnail,*variants,*variants.calculated_price",
       limit,
-    })
+    }, { ...storeHeaders })
 
     return products.map((p) => {
       const v = p.variants?.[0]
@@ -57,22 +59,22 @@ export async function searchProductsClient(
         tags: [],
         variants: v
           ? [
-              {
-                id: v.id,
-                productId: p.id,
-                sku: v.sku ?? "",
-                name: v.title ?? "",
-                price: calculated?.calculated_amount ?? 0,
-                currency: "usd",
-                inventory: {
-                  quantity: 0,
-                  trackInventory: false,
-                  allowBackorder: false,
-                },
-                options: [],
-                images: [],
+            {
+              id: v.id,
+              productId: p.id,
+              sku: v.sku ?? "",
+              name: v.title ?? "",
+              price: calculated?.calculated_amount ?? 0,
+              currency: "usd",
+              inventory: {
+                quantity: 0,
+                trackInventory: false,
+                allowBackorder: false,
               },
-            ]
+              options: [],
+              images: [],
+            },
+          ]
           : [],
         rating: 0,
         reviewCount: 0,
@@ -97,13 +99,15 @@ export async function fetchProductsByIdClient(
   const regionId = await resolveRegionId()
   if (!regionId) return []
 
+  const storeHeaders = await getCurrentStoreId()
+
   try {
-    const { products } = await (await sdk()).store.product.list({
+    const { products } = await sdk.store.product.list({
       id: ids,
       region_id: regionId,
       fields: "id,handle,title,subtitle,thumbnail,*variants,*variants.calculated_price",
       limit: ids.length,
-    })
+    }, { ...storeHeaders })
 
     return products.map((p) => {
       const v = p.variants?.[0]
@@ -122,22 +126,22 @@ export async function fetchProductsByIdClient(
         tags: [],
         variants: v
           ? [
-              {
-                id: v.id,
-                productId: p.id,
-                sku: v.sku ?? "",
-                name: v.title ?? "",
-                price: calculated?.calculated_amount ?? 0,
-                currency: "usd",
-                inventory: {
-                  quantity: 0,
-                  trackInventory: false,
-                  allowBackorder: false,
-                },
-                options: [],
-                images: [],
+            {
+              id: v.id,
+              productId: p.id,
+              sku: v.sku ?? "",
+              name: v.title ?? "",
+              price: calculated?.calculated_amount ?? 0,
+              currency: "usd",
+              inventory: {
+                quantity: 0,
+                trackInventory: false,
+                allowBackorder: false,
               },
-            ]
+              options: [],
+              images: [],
+            },
+          ]
           : [],
         rating: 0,
         reviewCount: 0,

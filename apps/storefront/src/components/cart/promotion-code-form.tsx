@@ -9,7 +9,7 @@ import { useTranslations } from "next-intl"
 import {
   applyPromotionCodes,
   getAppliedPromotionCodes,
-} from "@/lib/cart-client"
+} from "@/lib/medusa/cart-client"
 import { useCartStore } from "@/store/cart"
 
 /**

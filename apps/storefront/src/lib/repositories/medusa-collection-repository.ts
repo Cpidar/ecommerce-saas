@@ -1,5 +1,5 @@
 import type { HttpTypes } from "@medusajs/types"
-import { sdk } from "@/lib/medusa"
+import { getCurrentStoreId, sdk } from "@/lib/medusa"
 
 type StoreCollection = HttpTypes.StoreCollection
 
@@ -22,9 +22,11 @@ function transform(c: StoreCollection): Collection {
 let cache: Promise<Collection[]> | null = null
 
 async function fetchAll(): Promise<Collection[]> {
+  const storeHeaders = await getCurrentStoreId()
+
   if (!cache) {
-    cache = (await sdk()).store.collection
-      .list({ limit: 200, fields: "id,handle,title,metadata" })
+    cache = sdk.store.collection
+      .list({ limit: 200, fields: "id,handle,title,metadata" }, { ...storeHeaders })
       .then(({ collections }) => collections.map(transform))
   }
   return cache
@@ -34,7 +36,7 @@ export const getCollectionByHandle = async function (
   handle: string,
   fields?: (keyof HttpTypes.StoreCollection)[]
 ): Promise<HttpTypes.StoreCollection> {
-  return (await sdk()).client
+  return sdk.client
     .fetch<HttpTypes.StoreCollectionListResponse>(`/store/collections`, {
       query: {
         handle,

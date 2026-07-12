@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isAuthed } from "@/lib/admin-auth";
+import { isAuthed } from "@/lib/medusa/admin-auth";
 import { AdminSidebar } from "@/components/admin/sidebar";
 
 export const dynamic = "force-dynamic";

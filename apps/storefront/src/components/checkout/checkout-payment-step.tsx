@@ -14,7 +14,7 @@ import {
   initiatePaymentSession,
   type ActivePaymentSession,
   type PaymentProviderInfo,
-} from "@/lib/cart-client";
+} from "@/lib/medusa/cart-client";
 import type { Cart } from "@/types";
 import { requestProvider } from "@/lib/checkout/payment-providers";
 

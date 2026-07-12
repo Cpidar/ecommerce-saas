@@ -8,14 +8,14 @@ import {
   logout as authLogout,
   register as authRegister,
   tryGetCurrentCustomer,
-} from "@/lib/auth-server"
+} from "@/lib/medusa/auth-server"
 import {
   updateProfile as updateProfileApi,
-} from "@/lib/customer-client"
+} from "@/lib/medusa/customer-client"
 import { sdk } from "@/lib/medusa"
 import { AuthRedirectResponse } from "@medusajs/js-sdk"
-import { verifyOtp } from "../lib/auth-server"
-import { AuthError } from "@/lib/auth-error"
+import { verifyOtp } from "../lib/medusa/auth-server"
+import { AuthError } from "@/lib/utils/auth-error"
 
 type Customer = HttpTypes.StoreCustomer
 
@@ -78,7 +78,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   authenticate: async ({ phone, email }) => {
     set({ isLoading: true })
     try {
-      const response = await (await sdk()).auth.login("customer", "phone-auth", {
+      const response = await sdk.auth.login("customer", "phone-auth", {
         phone,
         email
       }) as AuthRedirectResponse

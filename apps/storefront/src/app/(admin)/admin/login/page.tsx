@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthCardLayout } from "@/components/auth/auth-card-layout";
 import { loginSchema } from "@/lib/validators";
-import { loginAdmin } from "@/lib/admin-auth";
+import { loginAdmin } from "@/lib/medusa/admin-auth";
 
 export default async function Login({
   searchParams,

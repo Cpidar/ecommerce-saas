@@ -50,7 +50,7 @@ export type StoreConfigResponse = {
 }
 
 export const getStoreConfig = async () => {
-  const response = await (await sdk()).client.fetch<StoreConfigResponse>(
+  const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config",
   )
   return response.store_config

@@ -13,7 +13,7 @@ import {
   type CheckoutAddress,
   type ShippingOption,
   type PaymentProviderInfo,
-} from "@/lib/cart-client";
+} from "@/lib/medusa/cart-client";
 import { DEFAULT_REGION } from "@/lib/medusa";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
 import citiesjson from "@/lib/static-data/cities.json";
@@ -40,6 +40,7 @@ export default function CheckoutPage() {
   const tCheckout = useTranslations("checkout");
   const tCommon = useTranslations("common");
   const { customer, isReady } = useAuthGuard();
+  console.log(customer , isReady)
   
   const cart = useCartStore((s) => s.cart);
   const hasHydrated = useCartStore((s) => s.hasHydrated);

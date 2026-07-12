@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
-import { requestReturn, type ReturnItemInput } from "@/lib/customer-client"
+import { requestReturn, type ReturnItemInput } from "@/lib/medusa/customer-client"
 
 interface Props {
   open: boolean

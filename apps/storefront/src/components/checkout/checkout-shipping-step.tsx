@@ -11,7 +11,7 @@ import {
   listPaymentProviders,
   type ShippingOption,
   type PaymentProviderInfo,
-} from "@/lib/cart-client";
+} from "@/lib/medusa/cart-client";
 import type { Cart } from "@/types";
 
 interface CheckoutShippingStepProps {

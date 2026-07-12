@@ -21,7 +21,7 @@ import {
   listShippingOptions,
   type CheckoutAddress,
   type ShippingOption,
-} from "@/lib/cart-client";
+} from "@/lib/medusa/cart-client";
 
 interface CheckoutAddressStepProps {
   initialAddress: CheckoutAddress;
