@@ -4,7 +4,12 @@ import { AnnouncementBar } from "@/components/layout/announcement-bar"
 import { CartDrawer } from "@/components/cart/cart-drawer"
 import { BackToTop } from "@/components/layout/back-to-top"
 import { categoryRepository } from "@/lib/repositories"
+import { Suspense } from "react"
 
+async function HeaderProvider() {
+  const categories = await categoryRepository.list()
+  return <Header categories={categories} />
+}
 
 export default async function StoreLayout({
   children,
@@ -22,7 +27,10 @@ export default async function StoreLayout({
         Skip to content
       </a>
       <AnnouncementBar />
-      <Header categories={categories} />
+      {/* Wrap the dynamic part */}
+      <Suspense fallback={<HeaderSkeleton />}>
+        <HeaderProvider />
+      </Suspense>
       <main id="main-content" className="flex-1">
         {children}
       </main>
@@ -31,4 +39,9 @@ export default async function StoreLayout({
       <BackToTop />
     </>
   )
+}
+
+// Simple skeleton (optional but recommended)
+function HeaderSkeleton() {
+  return <div className="h-16 bg-muted animate-pulse" /> // or your actual header skeleton
 }

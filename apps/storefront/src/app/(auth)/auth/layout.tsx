@@ -11,6 +11,8 @@ export default async function PageLayout({
 }: {
   children: React.ReactNode
 }) {
+  await connection() // wait for an actual request
+
   return (
     <section className="h-screen flex items-center justify-center bg-no-repeat inset-0 bg-cover bg-[url('/images/bg.png')]">
       <div className="flex-1 sm:w-full sm:max-w-105">

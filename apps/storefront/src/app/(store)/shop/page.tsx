@@ -8,7 +8,7 @@ import { SortDropdown } from "@/components/products/sort-dropdown"
 import type { SortOption } from "@/types"
 import { siteConfig } from "@/lib/config"
 import { getTranslations } from "next-intl/server"
-
+import ShopLoading from './loading.tsx'
 interface ShopPageProps {
   searchParams: Promise<{
     page?: string
@@ -24,7 +24,9 @@ export async function generateMetadata({
   const tShop = await getTranslations("shop")
   const params = await searchParams
   const page = Number(params.page) || 1
-  const canonical = page > 1 ? `${siteConfig.url}/shop?page=${page}` : `${siteConfig.url}/shop`
+  const canonical = page > 1
+    ? `${siteConfig.url}/shop?page=${page}`
+    : `${siteConfig.url}/shop`
 
   return {
     title: tShop("title"),
@@ -40,26 +42,32 @@ const SORT_OPTIONS: Record<string, SortOption> = {
   name: { field: "name", order: "asc" },
 }
 
-export default async function ShopPage({ searchParams }: ShopPageProps) {
+// ---------------------------------------------------------------------------
+// Dynamic Data Fetcher Component
+// ---------------------------------------------------------------------------
+async function ShopContent({ searchParams }: ShopPageProps) {
   const tShop = await getTranslations("shop")
   const tCommon = await getTranslations("common")
   const params = await searchParams
-  const page = Number(params.page) || 1
+
+  const pageNum = Number(params.page) || 1
   const sortKey = params.sort || "newest"
   const categorySlug = params.category
   const searchQuery = params.q
 
   const sort = SORT_OPTIONS[sortKey] ?? SORT_OPTIONS.newest
 
+  // Main product data (dynamic)
   const { items: products, pagination } = await productRepository.list(
     {
       category: categorySlug,
       search: searchQuery,
     },
     sort,
-    { page, limit: 40 }
+    { page: pageNum, limit: 40 }
   )
 
+  // Categories for filters (can be lighter)
   const allCategories = await categoryRepository.list()
   const categories = allCategories.filter((c) => !c.parentId)
 
@@ -70,14 +78,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   if (searchQuery) currentParams.q = searchQuery
 
   return (
-    <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
+    <>
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             {categorySlug
-              ? categories.find((c) => c.slug === categorySlug)?.name ??
-                tShop("title")
+              ? categories.find((c) => c.slug === categorySlug)?.name ?? tShop("title")
               : searchQuery
                 ? tShop("resultsFor", { query: searchQuery })
                 : tShop("allProducts")}
@@ -88,7 +95,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           </p>
         </div>
 
-        <Suspense>
+        <Suspense fallback={<div className="h-10 w-48 bg-muted animate-pulse rounded" />}>
           <SortDropdown currentSort={sortKey} />
         </Suspense>
       </div>
@@ -97,29 +104,25 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       <div className="mt-6 flex flex-wrap gap-2">
         <Link
           href="/shop"
-          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-            !categorySlug
+          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${!categorySlug
               ? "border-foreground bg-foreground text-background"
               : "border-border hover:border-foreground"
-          }`}
+            }`}
         >
           {tShop("shopAll")}
         </Link>
-        {categories.map((cat) => {
-          return (
-            <Link
-              key={cat.id}
-              href={`/categories/${cat.slug}`}
-              className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                categorySlug === cat.slug
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border hover:border-foreground"
+        {categories.map((cat) => (
+          <Link
+            key={cat.id}
+            href={`/categories/${cat.slug}`}
+            className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${categorySlug === cat.slug
+                ? "border-foreground bg-foreground text-background"
+                : "border-border hover:border-foreground"
               }`}
-            >
-              {cat.name}
-            </Link>
-          )
-        })}
+          >
+            {cat.name}
+          </Link>
+        ))}
       </div>
 
       {/* Product Grid */}
@@ -135,6 +138,23 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           searchParams={currentParams}
         />
       </div>
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Main Page (with Suspense Boundary)
+// ---------------------------------------------------------------------------
+export default function ShopPage(props: ShopPageProps) {
+  return (
+    <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-6 lg:px-8">
+      <Suspense
+        fallback={
+          <ShopLoading />
+        }
+      >
+        <ShopContent {...props} />
+      </Suspense>
     </div>
   )
 }
