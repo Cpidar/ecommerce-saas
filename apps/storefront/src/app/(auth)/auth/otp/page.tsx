@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import logo from "@/data/logo.svg";
+// import logo from "@/data/logo.svg";
 import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -30,6 +30,8 @@ const PageLogin = () => {
   const authenticate = useAuthStore((s) => s.authenticate);
   const phone = useAuthStore((s) => s.phone);
   const email = useAuthStore((s) => s.email);
+  const refPath = useAuthStore((s) => s.refPath);
+
   const [loading, setLoading] = useState(false);
   const [otp, setOTP] = useState("");
 
@@ -70,7 +72,7 @@ const PageLogin = () => {
   }, [seconds]);
 
   const resendOTP = () => {
-    authenticate({email, phone});
+    authenticate({ email, phone });
 
     setMinutes(3);
     setSeconds(0);
@@ -89,7 +91,7 @@ const PageLogin = () => {
     try {
       await loginWithOTP(phone, otp, email);
       toast.success(t("welcomeBackUser"));
-      router.push(`/account`);
+      refPath ? router.replace(refPath) : router.replace(`/account`);
     } catch (err) {
       const message =
         err instanceof AuthError ? err.message : t("invalidCredentials");
@@ -108,36 +110,20 @@ const PageLogin = () => {
   }
 
   return (
-    <div className="nc-PageLogin mb-8 p-5 lg:mb-10 flex flex-col items-center lg:justify-center">
-      <div className="w-full relative flex items-center justify-center">
-        <button
-          onClick={router.back}
-          className="flex right-0 w-6 text-neutral-700 transition-all duration-300 ease-out cursor-pointer fixed lg:absolute"
-        >
-          <ArrowRightIcon />
-        </button>
-        <Image
-          className="mx-auto h-10 w-auto"
-          src={logo}
-          width={200}
-          height={200}
-          alt={tCommon("companyLogoAlt")}
-        />
-      </div>
-      <div className="w-full mx-auto space-y-6">
-        <h1 className="text-h4 text-neutral-900 text-right w-full mt-6">
-          {t("enterVerificationCode")}
-        </h1>
-        {/* {step === "isSignUp" && (
+    <div className="w-full mx-auto space-y-6">
+      <h1 className="text-h4 text-neutral-900 text-right w-full mt-6">
+        {t("enterVerificationCode")}
+      </h1>
+      {/* {step === "isSignUp" && (
           <p className="text-xs text-neutral-700 my-4 text-right w-full">{`حساب کاربری با شماره موبایل
         ${phone}
         وجود ندارد. برای ساخت حساب جدید، کد تایید برای این شماره ارسال گردید.`}</p>
         )} */}
-        {/* FORM */}
-        <form className="" onSubmit={handleSubmit}>
-          <div className="">
-            <label className="flex justify-center">
-              {/* <Input
+      {/* FORM */}
+      <form className="" onSubmit={handleSubmit}>
+        <div className="">
+          <label dir="ltr" className="flex justify-center">
+            {/* <Input
               type="text"
               placeholder="123456"
               className="text-left mt-1"
@@ -145,52 +131,54 @@ const PageLogin = () => {
               value={otp}
               onChange={(e) => setOTP(e.target.value)}
             /> */}
-              <InputOTP
-                maxLength={6}
-                value={otp}
-                onChange={(value) => setOTP(value)}
-                pattern={REGEXP_ONLY_DIGITS}
-              >
-                <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                </InputOTPGroup>
-                <InputOTPSeparator />
-                <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-12 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-xl">
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
-            </label>
-            <Button
-              className="w-full mt-6 lg:mt-8"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? tCommon("signingIn") : tCommon("signIn")}
-            </Button>
-          </div>
-        </form>
 
-        <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
-          {seconds > 0 || minutes > 0 ? (
-            <p className="text-xs">
-              {t("resendCodeTimer", {
-                time: `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`,
-              })}
-            </p>
-          ) : (
-            <Button
-              className="w-full"
-              disabled={seconds > 0 || minutes > 0}
-              onClick={resendOTP}
+            <InputOTP
+              maxLength={6}
+              value={otp}
+              onChange={(value) => setOTP(value)}
+              pattern={REGEXP_ONLY_DIGITS}
+              dir="ltr"
             >
-              <span className="text-blue-500 text-xs">{t("resendCode")}</span>
-            </Button>
-          )}
+              <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-11 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-lg">
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+                {/* </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-11 *:data-[slot=input-otp-slot]:w-11 *:data-[slot=input-otp-slot]:text-lg"> */}
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+          </label>
+          <Button
+            className="h-11 w-full mt-6 lg:mt-8"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? tCommon("signingIn") : tCommon("signIn")}
+          </Button>
         </div>
+      </form>
+
+      <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
+        {seconds > 0 || minutes > 0 ? (
+          <p className="text-xs">
+            {t("resendCodeTimer", {
+              time: `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`,
+            })}
+          </p>
+        ) : (
+          <Button
+            className="w-full"
+            disabled={seconds > 0 || minutes > 0}
+            onClick={resendOTP}
+            variant={"secondary"}
+          >
+            {t("resendCode")}
+          </Button>
+        )}
       </div>
     </div>
   );

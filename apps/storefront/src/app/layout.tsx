@@ -6,6 +6,9 @@ import { Toaster } from "sonner";
 import { siteConfig } from "@/lib/config";
 import "./globals.css";
 import { IRANSans } from "@/styles/font";
+import { AuthProvider } from "@/components/auth/auth-provider";
+import { tryGetCurrentCustomer } from "@/lib/medusa/auth-server";
+import { Suspense } from "react";
 
 export const inter = Inter({
   variable: "--font-inter",
@@ -45,14 +48,24 @@ const websiteJsonLd = {
   },
 };
 
+async function Providers({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+  const customer = await tryGetCurrentCustomer();
+
+  return (
+    <NextIntlClientProvider messages={messages}>
+      <AuthProvider customer={customer}>{children}</AuthProvider>
+    </NextIntlClientProvider>
+  );
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-
+  const locale = "fa";
   return (
     <html
       lang={locale}
@@ -66,10 +79,11 @@ export default async function RootLayout({
             __html: JSON.stringify([organizationJsonLd, websiteJsonLd]),
           }}
         />
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-        <Toaster position="bottom-right" />
+        <Suspense fallback={null}>
+          <Providers>{children}</Providers>
+        </Suspense>
+
+        <Toaster />
       </body>
     </html>
   );

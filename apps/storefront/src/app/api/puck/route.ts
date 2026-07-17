@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import fs from 'fs';
 import path from 'path';
 import { sdk } from "@/lib/medusa";
-import { getPage, getStoreConfig } from "@/lib/get-page";
+import { siteConfigRepository } from "@/lib/repositories/site-configs";
 
 export async function POST(request: Request) {
   const payload = await request.json();
@@ -24,11 +24,11 @@ export async function POST(request: Request) {
   //     : "{}"
   // );
 
-  const existingStoreConfig = await getStoreConfig()
+  const existingStoreConfig = await siteConfigRepository.getAllConfig()
   const existingPuckDataForPath = existingStoreConfig?.puck_data?.[payload.path] ?? {}
 
   // 🟢 Write to the correct path
-  // fs.writeFileSync(dbPath, JSON.stringify(updatedData, null, 2)); // Added pretty printing
+  fs.writeFileSync(dbPath, JSON.stringify(payload.data, null, 2)); // Added pretty printing
   await sdk.client.fetch(
     "/store/store-config",
     {
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   )
 
   // Purge Next.js cache
-  revalidatePath(payload.path);
+  // revalidatePath(payload.path);
 
   return NextResponse.json({ status: "ok" });
 }

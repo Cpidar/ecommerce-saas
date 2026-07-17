@@ -13,6 +13,7 @@ import {
   setAuthToken,
 } from "./cookies"
 import { AuthError } from "../utils/auth-error"
+import { redirect } from "next/navigation"
 
 type Customer = HttpTypes.StoreCustomer
 
@@ -128,6 +129,8 @@ export async function logout(): Promise<void> {
 
   const cartCacheTag = await getCacheTag("carts")
   revalidateTag(cartCacheTag, "max")
+
+  redirect('/')
 }
 
 /**
@@ -211,13 +214,15 @@ export async function transferCart() {
 }
 
 // [MY-FORK-AUTH] Phone auth methods
-export const authenticateWithPhone = async ({ phone, email }: { phone: string; email: string }): Promise<{ location: string }> => {
+export async function authenticateWithPhone({ phone, email }: { phone: string; email: string }): Promise<{ location: string }> {
   try {
-    const response = await sdk.auth.login("customer", "phone-auth", {
-      phone,
-      email
+    const response = await sdk.client.fetch("/auth/customer/phone-auth", {
+      method: "POST",
+      body: {
+        phone,
+        email
+      }
     }) as AuthRedirectResponse
-
 
     if (
       typeof response === "string" ||
@@ -234,7 +239,7 @@ export const authenticateWithPhone = async ({ phone, email }: { phone: string; e
   }
 }
 
-export const verifyOtp = async ({
+export async function verifyOtp({
   otp,
   phone,
   email,
@@ -243,7 +248,7 @@ export const verifyOtp = async ({
   phone: string
   email: string
   registerData?: Record<string, string>
-}) => {
+}) {
   try {
     const token = (await sdk.auth.callback("customer", "phone-auth", {
       phone,
@@ -269,15 +274,15 @@ export const verifyOtp = async ({
 // TODO: bug must be fixed: register must be after verify OTP
 // for using multi provider (emailpass and phone-auth): first register with emailpass and the create customer and link with it (by regToken).
 // then register with phone-auth to generate OTP and link it with the same customer (by passing customer_id in body) and then authenticate with phone to login
-export const registerWithPhone = async (args: {
-  firstName?: string
-  lastName?: string
-  phone: string
+export async function registerWithPhone(args: {
   email: string
   password: string
-}) => {
+  first_name?: string
+  last_name?: string
+  phone: string
+}) {
   try {
-    const { firstName, lastName, phone, email, password } = args
+    const { first_name, last_name, phone, email, password } = args
 
     const { token: regToken } = await sdk.client.fetch<
       { token: string }
@@ -291,18 +296,18 @@ export const registerWithPhone = async (args: {
 
     const customerData = {
       email,
-      first_name: firstName,
-      last_name: lastName,
+      first_name: first_name,
+      last_name: last_name,
       phone,
     }
 
+    
     const { customer: { id: customer_id } } = await sdk.store.customer.create(
       customerData,
       {},
       { authorization: `Bearer ${regToken}` }
     )
-
-
+    
     await sdk.client.fetch<
       { token: string }
     >(`/auth/customer/phone-auth/register`, {

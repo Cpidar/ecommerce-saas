@@ -5,15 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { InputIcon } from "@/components/ui/input-icon";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
-import { Building2, Globe, Hash, MapPin, Phone, User } from "lucide-react";
+import { Hash, MapPin, Phone, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
@@ -22,23 +14,36 @@ import {
   type CheckoutAddress,
   type ShippingOption,
 } from "@/lib/medusa/cart-client";
+import CitySelector, { SelectorOptionType } from "./city-combobox";
+import citiesjson from "@/lib/static-data/cities.json";
+import provincesjson from "@/lib/static-data/provinces.json";
 
 interface CheckoutAddressStepProps {
   initialAddress: CheckoutAddress;
   customer: { email: string } | null;
-  cities: string[];
   onAddressSubmitted: (shippingOptions: ShippingOption[]) => void;
 }
 
 export function CheckoutAddressStep({
   initialAddress,
   customer,
-  cities,
   onAddressSubmitted,
 }: CheckoutAddressStepProps) {
   const tCheckout = useTranslations("checkout");
   const [address, setAddress] = useState(initialAddress);
   const [submitting, setSubmitting] = useState(false);
+
+  const provinces: SelectorOptionType[] = provincesjson.provinces.map((c) => ({
+    label: c.name,
+    value: `${c.code}`,
+  }));
+
+  const cities: SelectorOptionType[] = citiesjson.cities
+    .filter((c) => c.provice_id === address.province)
+    .map((c) => ({
+      label: c.name,
+      value: c.slug,
+    }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +92,7 @@ export function CheckoutAddressStep({
           <div className="grid gap-6 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor="first_name">
-                {tCheckout("form.firstName")} *
+                {tCheckout("form.firstName")}
               </FieldLabel>
               <InputIcon
                 id="first_name"
@@ -103,7 +108,7 @@ export function CheckoutAddressStep({
 
             <Field>
               <FieldLabel htmlFor="last_name">
-                {tCheckout("form.lastName")} *
+                {tCheckout("form.lastName")}
               </FieldLabel>
               <InputIcon
                 id="last_name"
@@ -120,7 +125,7 @@ export function CheckoutAddressStep({
 
           <Field>
             <FieldLabel htmlFor="address_1">
-              {tCheckout("form.addressLine1")} *
+              {tCheckout("form.addressLine1")}
             </FieldLabel>
             <InputIcon
               id="address_1"
@@ -130,11 +135,11 @@ export function CheckoutAddressStep({
                 setAddress({ ...address, address_1: e.target.value })
               }
               required
-              placeholder="123 Main St"
+              placeholder="خیابان کشاورز ،  ..."
             />
           </Field>
 
-          <Field>
+          {/* <Field>
             <FieldLabel htmlFor="address_2">
               {tCheckout("form.addressLine2")}
             </FieldLabel>
@@ -147,77 +152,34 @@ export function CheckoutAddressStep({
               }
               placeholder="Apartment, suite, etc."
             />
-          </Field>
+          </Field> */}
 
-          <div className="grid gap-6 sm:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2">
             <Field>
               <FieldLabel htmlFor="city">
-                {tCheckout("form.city")} *
-              </FieldLabel>
-              <InputIcon id="city" startIcon={Building2}>
-                <Combobox items={cities}>
-                  <ComboboxInput
-                    id="city"
-                    placeholder="انتخاب نام شهر"
-                    showClear
-                    value={address.city}
-                    onChange={(v) =>
-                      setAddress({ ...address, city: v.target.value })
-                    }
-                  />
-                  <ComboboxContent dir="rtl">
-                    <ComboboxEmpty>No items found.</ComboboxEmpty>
-                    <ComboboxList>
-                      {(item) => (
-                        <ComboboxItem key={item} value={item}>
-                          {item}
-                        </ComboboxItem>
-                      )}
-                    </ComboboxList>
-                  </ComboboxContent>
-                </Combobox>
-              </InputIcon>
-            </Field>
-
-            <Field>
-              <FieldLabel htmlFor="province">
                 {tCheckout("form.stateProvince")}
               </FieldLabel>
-              <InputIcon
-                id="province"
-                startIcon={Globe}
-                value={address.province ?? ""}
-                onChange={(e) =>
-                  setAddress({ ...address, province: e.target.value })
-                }
-                placeholder="State / Province"
+              <CitySelector
+                data={provinces}
+                buttonLabel="نام استان ..."
+                onChange={(v) => setAddress({ ...address, province: v })}
               />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="postal_code">
-                {tCheckout("form.postalCode")} *
-              </FieldLabel>
-              <InputIcon
-                id="postal_code"
-                startIcon={Hash}
-                value={address.postal_code}
-                onChange={(e) =>
-                  setAddress({
-                    ...address,
-                    postal_code: e.target.value,
-                  })
-                }
-                required
-                placeholder="12345"
+              <FieldLabel htmlFor="city">{tCheckout("form.city")}</FieldLabel>
+              <CitySelector
+                data={cities}
+                buttonLabel="نام شهر ..."
+                onChange={(v) => setAddress({ ...address, city: v })}
               />
             </Field>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2">
-            <Field>
+            {/* <Field>
               <FieldLabel htmlFor="country_code">
-                {tCheckout("form.country")} *
+                {tCheckout("form.country")}
               </FieldLabel>
               <InputIcon
                 id="country_code"
@@ -232,20 +194,39 @@ export function CheckoutAddressStep({
                 required
                 placeholder="IR"
               />
+            </Field> */}
+
+            <Field>
+              <FieldLabel htmlFor="postal_code">
+                {tCheckout("form.postalCode")}
+              </FieldLabel>
+              <InputIcon
+                id="postal_code"
+                endIcon={Hash}
+                value={address.postal_code}
+                onChange={(e) =>
+                  setAddress({
+                    ...address,
+                    postal_code: e.target.value,
+                  })
+                }
+                required
+                placeholder="12345678"
+                dir="ltr"
+              />
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="phone">
-                {tCheckout("form.phone")}
-              </FieldLabel>
+              <FieldLabel htmlFor="phone">{tCheckout("form.phone")}</FieldLabel>
               <InputIcon
                 id="phone"
-                startIcon={Phone}
+                endIcon={Phone}
                 value={address.phone ?? ""}
                 onChange={(e) =>
                   setAddress({ ...address, phone: e.target.value })
                 }
                 placeholder="+98 912 345 6789"
+                dir="ltr"
               />
             </Field>
           </div>

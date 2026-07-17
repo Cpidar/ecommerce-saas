@@ -1,10 +1,10 @@
 import { redirect } from "next/navigation";
 import { isAuthed } from "@/lib/medusa/admin-auth";
 import { AdminSidebar } from "@/components/admin/sidebar";
-
-export const dynamic = "force-dynamic";
+import { connection } from "next/server";
 
 export default async function AdminPanelLayout({ children }: { children: React.ReactNode }) {
+    await connection() // wait for an actual request
   // Defense in depth — middleware already gates, but never render the panel unauthed.
   if (!(await isAuthed())) redirect("/admin/login");
 

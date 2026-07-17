@@ -15,12 +15,13 @@ import {
   type PaymentProviderInfo,
 } from "@/lib/medusa/cart-client";
 import { DEFAULT_REGION } from "@/lib/medusa";
-import { useAuthGuard } from "@/hooks/use-auth-guard";
-import citiesjson from "@/lib/static-data/cities.json";
 import { CheckoutAddressStep } from "@/components/checkout/checkout-address-step";
 import { CheckoutShippingStep } from "@/components/checkout/checkout-shipping-step";
 import { CheckoutPaymentStep } from "@/components/checkout/checkout-payment-step";
 import { getCartPurchaseMode } from "@/lib/utils/subscriptions";
+import type { HttpTypes } from "@medusajs/types";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { SelectorOptionType } from "@/components/checkout/city-combobox";
 
 type Step = "address" | "shipping" | "payment";
 
@@ -36,23 +37,27 @@ const EMPTY_ADDRESS: CheckoutAddress = {
   phone: "",
 };
 
-export default function CheckoutPage() {
+export default function Checkout() {
   const tCheckout = useTranslations("checkout");
   const tCommon = useTranslations("common");
   const { customer, isReady } = useAuthGuard();
-  console.log(customer , isReady)
-  
+
   const cart = useCartStore((s) => s.cart);
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const hydrate = useCartStore((s) => s.hydrate);
-  const purchaseMode = getCartPurchaseMode(cart)
-  const isSubscripitionMode = useMemo(() => purchaseMode === "subscription", [purchaseMode])
+  const purchaseMode = getCartPurchaseMode(cart);
+  const isSubscripitionMode = useMemo(
+    () => purchaseMode === "subscription",
+    [purchaseMode],
+  );
 
   useEffect(() => {
     if (!hasHydrated) void hydrate();
   }, [hasHydrated, hydrate]);
 
-  const [step, setStep] = useState<Step>(isSubscripitionMode ? "payment" :"address");
+  const [step, setStep] = useState<Step>(
+    isSubscripitionMode ? "payment" : "address",
+  );
   const [address, setAddress] = useState<CheckoutAddress>({
     ...EMPTY_ADDRESS,
     country_code: DEFAULT_REGION.toLowerCase(),
@@ -63,9 +68,8 @@ export default function CheckoutPage() {
     PaymentProviderInfo[]
   >([]);
 
-  const cities = citiesjson.cities.map((c) => c.name);
+  // TODO:
 
-  if (!isReady || !customer) return null;
 
   if (!hasHydrated) {
     return (
@@ -108,12 +112,14 @@ export default function CheckoutPage() {
     setStep("payment");
   };
 
+  if (!customer) return null;
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 pb-16 sm:px-6 sm:py-16 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight">
         {tCheckout("title")}
       </h1>
-      { !isSubscripitionMode && <StepIndicator current={step} /> }
+      {!isSubscripitionMode && <StepIndicator current={step} />}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
@@ -121,7 +127,6 @@ export default function CheckoutPage() {
             <CheckoutAddressStep
               initialAddress={address}
               customer={customer}
-              cities={cities}
               onAddressSubmitted={handleAddressSubmitted}
             />
           )}

@@ -1,11 +1,7 @@
-import { createCustomerAccountWorkflow } from "@medusajs/medusa/core-flows"
 import {
   AbstractAuthModuleProvider,
   AbstractEventBusModuleService,
-  MedusaError,
-  Modules
-} from "@medusajs/framework/utils"
-import { createWorkflow } from "@medusajs/framework/workflows-sdk"
+  MedusaError} from "@medusajs/framework/utils"
 import {
   AuthenticationInput,
   AuthIdentityProviderService,
@@ -15,7 +11,6 @@ import {
 } from "@medusajs/framework/types"
 import jwt from "jsonwebtoken"
 import { createAuthMetaDataWorkflow } from "../../workflows/register-phone"
-import { email } from "@medusajs/framework/zod"
 
 type InjectedDependencies = {
   logger: Logger
@@ -142,7 +137,7 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
     try {
       await authIdentityProviderService.retrieve({
         entity_id: email,
-      }).then(console.log)
+      })
     } catch (error) {
       return {
         success: false,
@@ -174,28 +169,33 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
   }
 
   async generateOTP(phone: string): Promise<{ hashedOTP: string, otp: string }> {
-    // Generate a 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    let otp: string
 
-    // MelliPayamak OTP
-    // const otp = await fetch("https://console.melipayamak.com/api/send/otp/d2a06968057f4cdf80c0a719d815e24b", {
-    //   method: "POST",
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     // 'Content-Length': phone.length
-    //   },
-    //   body: JSON.stringify({ to: phone })
-    // }).then(res => res.json()).then(res => res.code).catch(console.log)
+    if (process.env.OTP_PROVIDER === "melipayamak") {
+      // MelliPayamak OTP
+      otp = await fetch("https://console.melipayamak.com/api/send/otp/d2a06968057f4cdf80c0a719d815e24b", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Content-Length': phone.length
+        },
+        body: JSON.stringify({ to: phone })
+      }).then(res => res.json()).then(res => res.code).catch(console.log)
+    }
+    else {
+      // Generate a 6-digit OTP
+      otp = Math.floor(100000 + Math.random() * 900000).toString()
 
 
+    }
     // for debug
-    // this.logger.info(`Generated OTP: ${otp}`)
+    this.logger.info(`Generated OTP: ${otp}`)
 
     const hashedOTP = jwt.sign({ otp }, this.options.jwtSecret, {
       expiresIn: "300s"
     })
-
     return { hashedOTP, otp }
+
   }
 
   async validateCallback(

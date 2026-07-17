@@ -1,6 +1,28 @@
 import "server-only"
 import { cookies as nextCookies } from "next/headers"
 
+export async function getCurrentStoreId() {
+  try {
+    const cookies = await nextCookies()
+    const storeId = cookies.get("current_store_id")?.value || process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!
+    return storeId
+  } catch {
+    return ""
+  }
+}
+
+export async function getCurrentStoreHeader() {
+  try {
+    const storeId = await getCurrentStoreId()
+    return {
+      "x-store-id": storeId,
+    } as const
+  } catch {
+    return undefined
+  }
+}
+
+
 export const getAuthHeaders = async (): Promise<
   { authorization: string } | Record<string, never>
 > => {
@@ -22,12 +44,14 @@ export const getCacheTag = async (tag: string): Promise<string> => {
   try {
     const cookies = await nextCookies()
     const cacheId = cookies.get("_medusa_cache_id")?.value
+    // multi tenant aware cache tag, so that we don't share cache between stores
+    const storeId = await getCurrentStoreId()
 
     if (!cacheId) {
       return ""
     }
 
-    return `${tag}-${cacheId}`
+    return `${storeId}:${tag}-${cacheId}`
   } catch {
     return ""
   }

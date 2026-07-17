@@ -234,18 +234,18 @@
     "form": {
       "firstName": "نام",
       "lastName": "نام خانوادگی",
-      "addressLine1": "آدرس خط ۱",
+      "addressLine1": "نشانی",
       "addressLine2": "آدرس خط ۲",
       "city": "شهر",
-      "stateProvince": "استان / منطقه",
+      "stateProvince": "استان",
       "postalCode": "کد پستی",
       "country": "کشور (ISO-2)",
       "phone": "تلفن"
     },
     "actions": {
       "saving": "در حال ذخیره...",
-      "continueToShipping": "ادامه به ارسال",
-      "continueToPayment": "ادامه به پرداخت"
+      "continueToShipping": "انتخاب روش ارسال",
+      "continueToPayment": "انتخاب روش پرداخت"
     },
     "shipping": {
       "loadingOptions": "در حال بارگذاری گزینه‌ها...",

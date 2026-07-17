@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "@/components/ui/page-header"
-import { Package, MapPin, Settings, Heart, LogOut } from "lucide-react"
-import { useAuthGuard } from "@/hooks/use-auth-guard"
-import { useAuthStore } from "@/store/auth"
-import { useTranslations } from "next-intl"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { Package, MapPin, Settings, Heart, LogOut } from "lucide-react";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { useAuthStore } from "@/store/auth";
+import { useTranslations } from "next-intl";
 
 const accountLinks = [
   {
@@ -35,20 +35,20 @@ const accountLinks = [
     href: "/account/settings",
     icon: Settings,
   },
-]
+];
 
 export default function AccountPage() {
-  const tAccount = useTranslations("account")
-  const tCommon = useTranslations("common")
-  const { customer, isReady } = useAuthGuard()
-  const logout = useAuthStore((s) => s.logout)
-  const router = useRouter()
+  const tAccount = useTranslations("account");
+  const tCommon = useTranslations("common");
+  const { customer, isReady } = useAuthGuard();
+  const logout = useAuthStore((s) => s.logout);
+  const router = useRouter();
 
-  if (!isReady || !customer) return null
+  if (!customer) return null;
 
   const greeting = tAccount("welcomeUser", {
-    name: customer.first_name || customer.email,
-  })
+    name: customer?.first_name || customer?.email,
+  });
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
@@ -56,8 +56,7 @@ export default function AccountPage() {
         <Button
           variant="outline"
           onClick={async () => {
-            await logout()
-            router.push(`/`)
+            await logout();
           }}
         >
           <LogOut className="mr-2 h-4 w-4" />
@@ -85,5 +84,5 @@ export default function AccountPage() {
         ))}
       </div>
     </div>
-  )
+  );
 }

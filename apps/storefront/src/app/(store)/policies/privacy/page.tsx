@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: "How we collect, use, and protect your personal information.",
 }
 
-export default function PrivacyPolicyPage() {
+export default async function PrivacyPolicyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight">Privacy Policy</h1>

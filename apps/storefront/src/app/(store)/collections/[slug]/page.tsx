@@ -12,7 +12,7 @@ interface SlugPageProps {
 // Catalog data is dynamic in Medusa — products, categories, and brands can
 // change at any time in the admin. Render on demand and fall through to 404
 // when the slug isn't recognized.
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

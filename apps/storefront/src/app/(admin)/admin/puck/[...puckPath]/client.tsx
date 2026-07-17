@@ -10,6 +10,7 @@ import {
   Puck,
 } from "@puckeditor/core";
 import { Globe, Type } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 const usePuck = createUsePuck<Config>();
@@ -27,7 +28,7 @@ export function Client({
     example: "Hello, world",
   };
 
-  const params = new URL(window.location.href).searchParams;
+  const params = useSearchParams();
 
   return (
     <Puck
@@ -37,7 +38,7 @@ export function Client({
       // }}
       headerPath={path}
       iframe={{
-        enabled: params.get("disableIframe") === "true" ? false : true,
+        enabled: params?.get("disableIframe") === "true" ? false : true,
       }}
       fieldTransforms={{
         userField: ({ value }) => value, // Included to check types
@@ -62,6 +63,7 @@ export function Client({
         },
         headerActions: ({ children }) => {
           const data = usePuck((s) => s.appState.data);
+          console.log("Size in bytes:", JSON.stringify(data).length);
 
           return (
             <>
@@ -77,14 +79,22 @@ export function Client({
               <div>
                 <Button
                   onClick={async () => {
-                    await fetch(`/api/puck`, {
-                      method: "post",
-                      body: JSON.stringify({ data, path }),
-                    });
-                    toast.info("اطلاعات با موفقیت ذخیره شد", {
-                      position: "top-center",
-                      closeButton: true,
-                    });
+                    try {
+                      await fetch(`/api/puck`, {
+                        method: "post",
+                        body: JSON.stringify({ data, path }),
+                      });
+                      toast.info("اطلاعات با موفقیت ذخیره شد", {
+                        position: "top-center",
+                        closeButton: true,
+                      });
+                    } catch (e) {
+                      console.error(e);
+                      toast.error("خطای رخ داده است.", {
+                        position: "top-center",
+                        closeButton: true,
+                      });
+                    }
                   }}
                 >
                   ذخیره و انتشار

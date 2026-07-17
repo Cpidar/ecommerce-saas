@@ -48,7 +48,7 @@ export const IncredibleOffersSection: ComponentConfig<Props> = {
     return (
       <IncredibleOffers
         heading={heading}
-        data={data ? data : mockData.products as unknown as Product[]}
+        data={data?.length ? data : mockData.products as unknown as Product[]}
       />
     );
   },

@@ -23,3 +23,33 @@ export default function StoreError({
     </div>
   )
 }
+
+
+// JUST for debuging
+// "use client";
+
+// import { useEffect } from "react";
+
+// export default function Error({
+//   error,
+//   reset,
+// }: {
+//   error: Error & { digest?: string };
+//   reset: () => void;
+// }) {
+//   useEffect(() => {
+//     console.error(error);
+//   }, [error]);
+
+//   return (
+//     <div className="p-8">
+//       <h1>Something went wrong</h1>
+
+//       <pre>{error.message}</pre>
+
+//       <pre>{error.stack}</pre>
+
+//       <button onClick={reset}>Retry</button>
+//     </div>
+//   );
+// }

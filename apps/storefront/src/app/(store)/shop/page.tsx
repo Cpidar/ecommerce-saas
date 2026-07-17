@@ -8,6 +8,7 @@ import { SortDropdown } from "@/components/products/sort-dropdown"
 import type { SortOption } from "@/types"
 import { siteConfig } from "@/lib/config"
 import { getTranslations } from "next-intl/server"
+import { connection } from "next/server"
 
 interface ShopPageProps {
   searchParams: Promise<{
@@ -41,6 +42,8 @@ const SORT_OPTIONS: Record<string, SortOption> = {
 }
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
+  await connection() // wait for page request (not cached)
+
   const tShop = await getTranslations("shop")
   const tCommon = await getTranslations("common")
   const params = await searchParams

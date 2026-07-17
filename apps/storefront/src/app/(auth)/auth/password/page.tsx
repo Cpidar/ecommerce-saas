@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import logo from "@/data/logo.svg";
+// import logo from "@/data/logo.svg";
 import { ArrowRightIcon } from "lucide-react";
 import { notFound, useParams, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -23,6 +23,9 @@ const PageLogin = () => {
   const authenticate = useAuthStore((s) => s.authenticate);
 
   const phone = useAuthStore((s) => s.phone);
+  const refPath = useAuthStore((s) => s.refPath);
+  const resetAuthStore = useAuthStore((s) => s.reset);
+
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -39,7 +42,7 @@ const PageLogin = () => {
     try {
       await login(email, password);
       toast.success(t("welcomeBackUser"));
-      router.push(`/account`);
+      refPath ? router.replace(refPath) : router.replace(`/account`);
     } catch (err) {
       const message =
         err instanceof AuthError ? err.message : t("invalidCredentials");
@@ -74,51 +77,34 @@ const PageLogin = () => {
   }
 
   return (
-    <div className="nc-PageLogin mb-8 p-5 lg:mb-10 flex flex-col items-center lg:justify-center">
-      <div className="w-full relative flex items-center justify-center">
-        <button
-          onClick={router.back}
-          className="flex right-0 w-6 text-neutral-700 transition-all duration-300 ease-out cursor-pointer fixed lg:absolute"
-        >
-          <ArrowRightIcon />
-        </button>
-        <Image
-          className="mx-auto h-10 w-auto"
-          src={logo}
-          width={200}
-          height={200}
-          alt={tCommon("companyLogoAlt")}
-        />
-      </div>
-      <div className="w-full mx-auto space-y-6">
-        <h1 className="text-h4 text-neutral-900 text-right w-full mt-6">
-          {t("enterPassword")}
-        </h1>
-        {/* FORM */}
-        <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
-          <label className="block">
-            <Input
-              type="password"
-              required
-              minLength={4}
-              className="mt-1"
-              name="password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
-          {/* {message && (
+    <div className="w-full mx-auto space-y-6">
+      <h1 className="text-h4 text-neutral-900 text-right w-full mt-6">
+        {t("enterPassword")}
+      </h1>
+      {/* FORM */}
+      <form className="grid grid-cols-1 gap-6" onSubmit={handleSubmit}>
+        <label className="block">
+          <Input
+            type="password"
+            required
+            minLength={4}
+              className="h-11 text-center tracking-widest"
+            name="password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+        {/* {message && (
             <p className="mt-2 text-xs text-red-500 ltr:text-left rtl:text-right">
               {message}
             </p>
           )} */}
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? tCommon("loading") : tCommon("signIn")}
-          </Button>
-        </form>
-        <button onClick={loginByOTP} className="text-sm text-green-600">
-          {t("loginWithOTP")}
-        </button>
-      </div>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? tCommon("loading") : tCommon("signIn")}
+        </Button>
+      </form>
+      <button onClick={loginByOTP} className="text-sm text-green-600">
+        {t("loginWithOTP")}
+      </button>
     </div>
   );
 };

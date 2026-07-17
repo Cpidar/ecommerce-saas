@@ -2,12 +2,28 @@ import "server-only"
 
 import type { HttpTypes } from "@medusajs/types"
 import type { Category, CategoryImage, CategoryRepository } from "@/types"
-import { getCurrentStoreId, sdk } from "@/lib/medusa"
-import { cacheTag } from "next/cache"
+import { sdk } from "@/lib/medusa"
+import { cacheLife, cacheTag, revalidateTag } from "next/cache"
+import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies"
 
 type StoreCategory = HttpTypes.StoreProductCategory & {
   product_category_image?: CategoryImage[]
 }
+
+// ---------------------------------------------------------------------------
+// Tenant-aware cache tags
+// ---------------------------------------------------------------------------
+const getTenantTag = (storeId: string, tag: string) => `${storeId}:${tag}`
+
+const categoryTags = {
+  all: (storeId: string) => getTenantTag(storeId, "categories"),
+  byId: (storeId: string, id: string) => getTenantTag(storeId, `category:${id}`),
+  bySlug: (storeId: string, slug: string) => getTenantTag(storeId, `category:slug:${slug}`),
+}
+
+// ---------------------------------------------------------------------------
+// Transform (unchanged)
+// ---------------------------------------------------------------------------
 
 function transformCategory(c: StoreCategory, order = 0): Category {
 
@@ -29,22 +45,30 @@ function transformCategory(c: StoreCategory, order = 0): Category {
   }
 }
 
-async function fetchAll(): Promise<Category[]> {
+// ---------------------------------------------------------------------------
+// Cached fetcher (moved dynamic context outside)
+// ---------------------------------------------------------------------------
+async function fetchAllCategories(
+  storeHeaders: Awaited<ReturnType<typeof getCurrentStoreHeader>>,
+  storeId: string
+): Promise<Category[]> {
   "use cache"
-
-  const storeHeaders = await getCurrentStoreId()
-  cacheTag(`categories:${storeHeaders["x-store-id"]}`)
-
+  cacheTag(categoryTags.all(storeId))
+  cacheLife("catalogRef")   // Adjust to "weeks" if categories change very rarely
 
   const { product_categories } = await sdk.store.category.list({
     limit: 200,
-    fields:
-      "id,name,handle,description,parent_category_id,rank,metadata,*product_category_image",
+    fields: "id,name,handle,description,parent_category_id,rank,metadata,*product_category_image",
   }, { ...storeHeaders })
+
   return product_categories
     .map((c, idx) => transformCategory(c, idx))
     .sort((a, b) => a.order - b.order)
 }
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
 
 export const medusaCategoryRepository: CategoryRepository & {
   getChildren(parentId: string): Promise<Category[]>
@@ -52,33 +76,45 @@ export const medusaCategoryRepository: CategoryRepository & {
   getAncestors(categoryId: string): Promise<Category[]>
 } = {
   async list() {
-    return fetchAll()
+    const storeHeaders = await getCurrentStoreHeader()
+    const storeId = await getCurrentStoreId()
+    return fetchAllCategories(storeHeaders, storeId)
   },
 
   async getBySlug(slug) {
-    const all = await fetchAll()
+    const storeHeaders = await getCurrentStoreHeader()
+    const storeId = await getCurrentStoreId()
+    const all = await fetchAllCategories(storeHeaders, storeId)
     return all.find((c) => c.slug === slug) ?? null
   },
 
   async getById(id) {
-    const all = await fetchAll()
+    const storeHeaders = await getCurrentStoreHeader()
+    const storeId = await getCurrentStoreId()
+    const all = await fetchAllCategories(storeHeaders, storeId)
     return all.find((c) => c.id === id) ?? null
   },
 
   async getChildren(parentId) {
-    const all = await fetchAll()
+    const storeHeaders = await getCurrentStoreHeader()
+    const storeId = await getCurrentStoreId()
+    const all = await fetchAllCategories(storeHeaders, storeId)
     return all
       .filter((c) => c.parentId === parentId)
       .sort((a, b) => a.order - b.order)
   },
 
   async getTopLevel() {
-    const all = await fetchAll()
+    const storeHeaders = await getCurrentStoreHeader()
+    const storeId = await getCurrentStoreId()
+    const all = await fetchAllCategories(storeHeaders, storeId)
     return all.filter((c) => !c.parentId).sort((a, b) => a.order - b.order)
   },
 
   async getAncestors(categoryId) {
-    const all = await fetchAll()
+    const storeHeaders = await getCurrentStoreHeader()
+    const storeId = await getCurrentStoreId()
+    const all = await fetchAllCategories(storeHeaders, storeId)
     const chain: Category[] = []
     let current = all.find((c) => c.id === categoryId)
     while (current) {
@@ -88,5 +124,25 @@ export const medusaCategoryRepository: CategoryRepository & {
         : undefined
     }
     return chain
+  },
+}
+
+// ---------------------------------------------------------------------------
+// Revalidation Helpers (for Medusa webhooks)
+// ---------------------------------------------------------------------------
+export const categoryRevalidation = {
+  async all(storeId: string) {
+    await revalidateTag(categoryTags.all(storeId), "catalogRef")
+  },
+
+  async byId(storeId: string, id: string) {
+    await Promise.all([
+      revalidateTag(categoryTags.byId(storeId, id), "catalogRef"),
+      revalidateTag(categoryTags.all(storeId), "catalogRef"), // optional broad fallback
+    ])
+  },
+
+  async bySlug(storeId: string, slug: string) {
+    await revalidateTag(categoryTags.bySlug(storeId, slug), "catalogRef")
   },
 }

@@ -13,7 +13,7 @@
 import { Client } from "./client";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { getPage } from "@/lib/get-page";
+import { siteConfigRepository } from "@/lib/repositories/site-configs";
 
 export async function generateMetadata({
   params,
@@ -23,7 +23,7 @@ export async function generateMetadata({
   // const { puckPath = [] } = await params;
   // const path = `/${puckPath.join("/")}`;
   const path = "/about"
-  const data = await getPage(path);
+  const data = await siteConfigRepository.getPage(path);
   
   return {
     title: data?.root.props?.title,
@@ -38,7 +38,7 @@ export default async function Page({
   // const { puckPath = [] } = await params;
   // const path = `/${puckPath.join("/")}`;
   const path = "/about"
-  const data = await getPage(path);
+  const data = await siteConfigRepository.getPage(path);
 
   if (!data) {
     return notFound();

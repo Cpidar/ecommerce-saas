@@ -20,13 +20,15 @@ import type { Category } from "@/types"
 import { useCartStore } from "@/store/cart"
 import { useAuthStore } from "@/store/auth"
 import { useRouter } from "next/navigation"
+import NcImage from "../common/NcImage"
 
 interface HeaderProps {
   /** All categories (top-level + subcategories) from the repository layer */
   categories?: Category[]
+  logoUrl?: string | null
 }
 
-export function Header({ categories = [] }: HeaderProps) {
+export function Header({ categories = [], logoUrl }: HeaderProps) {
   const allCategories = categories
 
   // Build the mobile menu's Shop section from real Medusa categories
@@ -48,7 +50,7 @@ export function Header({ categories = [] }: HeaderProps) {
   const getItemCount = useCartStore((s) => s.getItemCount)
   const customer = useAuthStore((s) => s.customer)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  const hasAuthHydrated = useAuthStore((s) => s.hasHydrated)
+  // const hasAuthHydrated = useAuthStore((s) => s.hasHydrated)
   const hydrateAuth = useAuthStore((s) => s.hydrate)
   const logout = useAuthStore((s) => s.logout)
   const router = useRouter()
@@ -57,9 +59,9 @@ export function Header({ categories = [] }: HeaderProps) {
   useEffect(() => setMounted(true), [])
   const itemCount = mounted ? getItemCount() : 0
 
-  useEffect(() => {
-    if (mounted && !hasAuthHydrated) void hydrateAuth()
-  }, [mounted, hasAuthHydrated, hydrateAuth])
+  // useEffect(() => {
+  //   if (mounted && !hasAuthHydrated) void hydrateAuth()
+  // }, [mounted, hasAuthHydrated, hydrateAuth])
 
   // Cmd+K / Ctrl+K to open search
   useEffect(() => {
@@ -160,7 +162,7 @@ export function Header({ categories = [] }: HeaderProps) {
 
         {/* Logo */}
         <Link href={("/")} className="text-xl font-semibold tracking-tight">
-          Lumen Starter
+           { logoUrl ? <NcImage  src={logoUrl} width={140} height={30}/>  : "نیتروکامرس" }
         </Link>
 
         {/* Desktop nav — top-level Medusa categories (no parentId) */}

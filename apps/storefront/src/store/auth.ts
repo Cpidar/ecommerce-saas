@@ -6,7 +6,7 @@ import {
   getCurrentCustomer,
   login as authLogin,
   logout as authLogout,
-  register as authRegister,
+  registerWithPhone as authRegister,
   tryGetCurrentCustomer,
 } from "@/lib/medusa/auth-server"
 import {
@@ -27,15 +27,18 @@ interface AuthState {
   // [MY-FORK-AUTH] Phone auth state
   phone: string
   email: string
+  refPath?: string | null
 
-  hydrate: () => Promise<void>
+  hydrate?: () => Promise<void>
+  initialize(customer: Customer | null): void
+  reset():void
   login: (email: string, password: string) => Promise<void>
   register: (data: {
     email: string
     password: string
     first_name?: string
     last_name?: string
-    phone?: string
+    phone: string
   }) => Promise<void>
   logout: () => Promise<void>
   refresh: () => Promise<void>
@@ -45,11 +48,11 @@ interface AuthState {
     phone?: string
   }) => Promise<void>
   // [MY-FORK-AUTH] Phone auth state
-  authenticate: ({ phone, email }: { phone: string; email: string }) => Promise<AuthRedirectResponse>
+  authenticate: ({ phone, email, refPath }: { phone: string; email: string; refPath?: string | null }) => Promise<AuthRedirectResponse>
   loginWithOTP: (phone: string, otp: string, email: string) => Promise<void>
 }
 
-export const useAuthStore = create<AuthState>()((set, get) => ({
+export const useAuthStore = create<AuthState>()((set, get, store) => ({
   customer: null,
   isAuthenticated: false,
   hasHydrated: false,
@@ -57,33 +60,48 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   // [MY-FORK-AUTH] Phone auth state
   phone: '',
   email: '',
+  refPath: '',
 
 
-  hydrate: async () => {
-    if (get().hasHydrated) return
-    set({ isLoading: true })
-    try {
-      const customer = await tryGetCurrentCustomer()
-      set({
-        customer,
-        isAuthenticated: !!customer,
-        hasHydrated: true,
-      })
-    } finally {
-      set({ isLoading: false })
-    }
+  // hydrate: async () => {
+  //   if (get().hasHydrated) return
+  //   set({ isLoading: true })
+  //   try {
+  //     const customer = await tryGetCurrentCustomer()
+  //     set({
+  //       customer,
+  //       isAuthenticated: !!customer,
+  //       hasHydrated: true,
+  //     })
+  //   } finally {
+  //     set({ isLoading: false })
+  //   }
+  // },
+
+  initialize(customer) {
+    set({
+      customer,
+      isAuthenticated: !!customer,
+      hasHydrated: true,
+    })
+  },
+
+  reset: () => {
+    set(store.getInitialState())
   },
 
   // [MY-FORK-AUTH] Phone auth method
-  authenticate: async ({ phone, email }) => {
+  authenticate: async ({ phone, email, refPath }) => {
     set({ isLoading: true })
+    set({ refPath })
     try {
-      const response = await sdk.auth.login("customer", "phone-auth", {
-        phone,
-        email
+      const response = await sdk.client.fetch("/auth/customer/phone-auth", {
+        method: "POST",
+        body: {
+          phone,
+          email
+        }
       }) as AuthRedirectResponse
-
-
       if (
         typeof response === "string" ||
         !response.location
@@ -105,7 +123,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   // [MY-FORK-AUTH] Phone auth method
   loginWithOTP: async (phone, otp, email) => {
-    console.log(email)
     set({ isLoading: true })
     try {
       const customer = await verifyOtp({ phone, otp, email })
@@ -140,17 +157,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   },
 
   register: async (data) => {
-    console.log(data)
     set({ isLoading: true })
     try {
       await authRegister(data)
-      // After registration, fetch the customer so we have the canonical record.
-      const customer = await getCurrentCustomer()
-      set({
-        customer,
-        isAuthenticated: true,
-        hasHydrated: true,
-      })
     } finally {
       set({ isLoading: false })
     }
@@ -163,6 +172,9 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     } finally {
       set({
         customer: null,
+        phone: '',
+        email: '',
+        refPath:'',
         isAuthenticated: false,
         isLoading: false,
       })

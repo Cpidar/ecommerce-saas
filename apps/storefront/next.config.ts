@@ -44,7 +44,20 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
-    cacheComponents: true,
+  cacheComponents: true,
+  cacheLife: {
+    products: {
+      stale: 3600, // 1 hour
+      revalidate: 3600, // 15 minutes
+      expire: 86400, // 1 day
+    },
+    catalogRef: {
+      stale: 3600 * 24 * 7, // 1 hour
+      revalidate: 3600 * 24, // 15 minutes
+      expire: 3600 * 24 * 7, // 1 day
+    },
+  },
+
 
   // Pin Turbopack's workspace root to this project so Next doesn't get
   // confused by a parent directory's lockfile.
@@ -53,7 +66,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     // [MY-FORK-CONFIG] add this to bypass blocking of image optimization requests to local IP addresses
-    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development", 
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === "development",
     // Remote image domains allowed by next/image. Add the hostname your
     // Medusa backend uses if it isn't covered here.
     remotePatterns: [

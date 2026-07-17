@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AuthCardLayout } from "@/components/auth/auth-card-layout"
+import { AuthCardLayout } from "@/components/auth/emailpass-auth-card-layout"
 import { requestPasswordReset } from "@/lib/medusa/auth-server"
 
 export default function ForgotPasswordPage() {

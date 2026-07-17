@@ -11,12 +11,30 @@ import { updateStoreConfigWorkflow } from "../../../workflows/update-store-confi
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
   const query = req.scope.resolve("query");
 
-  const { data: [store_config], metadata: { count, take, skip } = {} } =
-    await query.graph({
-      entity: "store_config",
-      fields: ["*", "payment_configs.*", "shipping_method_configs.*"],
-      filters: req.filterableFields,
-    });
+  // Handle fields query parameter safely
+  let fields: string[] = ["*", "payment_configs.*", "shipping_method_configs.*"];
+
+  if (req.query.fields) {
+    const fieldsParam = req.query.fields;
+
+    if (typeof fieldsParam === "string") {
+      fields = fieldsParam
+        .split(",")
+        .map((f) => f.trim())
+        .filter(Boolean);
+    } else if (Array.isArray(fieldsParam)) {
+      fields = fieldsParam
+        .flat()
+        .map((f) => String(f).trim())
+        .filter(Boolean);
+    }
+  }
+
+  const { data: [store_config], metadata } = await query.graph({
+    entity: "store_config",
+    fields,
+    filters: req.filterableFields,
+  });
 
   res.json({
     store_config,
@@ -37,6 +55,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
 
 export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
   const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+
   // const validatedData = updateStoreConfigWorkflowInputSchema.parse(body);
 
   const { result } = await updateStoreConfigWorkflow (req.scope).run({

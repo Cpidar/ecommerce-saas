@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AuthCardLayout } from "@/components/auth/auth-card-layout"
+import { AuthCardLayout } from "@/components/auth/emailpass-auth-card-layout"
 import { useAuthStore } from "@/store/auth"
 import { AuthError } from "@/lib/utils/auth-error"
 import { toast } from "sonner"
@@ -14,6 +14,7 @@ import { registerSchema } from "@/lib/validators"
 export default function RegisterPage() {
   const router = useRouter()
   const register = useAuthStore((s) => s.register)
+  const phone = useAuthStore(s => s.phone)
   const [form, setForm] = useState({
     firstName: "", lastName: "", email: "", password: "", confirmPassword: "",
   })
@@ -33,6 +34,7 @@ export default function RegisterPage() {
         first_name: form.firstName,
         last_name: form.lastName,
         email: form.email,
+        phone: phone,
         password: form.password,
       })
       toast.success("Account created!")

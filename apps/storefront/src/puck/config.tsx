@@ -16,6 +16,7 @@ import { Space } from "./blocks/Space";
 import { CategoriesSlider } from "./sections/CategorySlider/config";
 import { CollectionProductsSliderSection } from "./sections/collectionProducts-slider/config";
 import { FullPageRichText } from "./sections/FullPageRichText/config";
+import { FeaturesSection } from "./sections/FeaturesSections";
 
 // Define the root categories for better organization in the editor
 export const config: Config = {
@@ -34,6 +35,7 @@ export const config: Config = {
     FeaturedProductCard,
     FullWidthImageSection,
     FullPageRichText,
+    FeaturesSection,
     // layout
     Space,
     // Nested Components (can only be placed inside specific sections)
@@ -42,8 +44,11 @@ export const config: Config = {
 
   // Optional: Define root component (what wraps the page)
   root: {
+    fields: {
+desc: {  type: "text"},
+    },
     render: ({ children }: { children: React.ReactNode }) => {
-      return <>{children}</>;
+      return (<>{children}</>);
     },
   },
 
@@ -66,7 +71,8 @@ export const config: Config = {
         "InspirationTextSection",
         "FeaturedProductCard",
         "FullWidthImageSection",
-        "FullPageRichText"
+        "FullPageRichText",
+        "FeaturesSection"
       ],
       title: "Page Sections",
     },

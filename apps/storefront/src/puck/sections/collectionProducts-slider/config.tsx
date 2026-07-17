@@ -142,7 +142,7 @@ export const CollectionProductsSliderSection: ComponentConfig<Props> = {
     return (
       <CollectionProductsSlider
         heading={heading}
-        data={data ? data : (mockData.products as unknown as Product[])}
+        data={data?.length ? data : (mockData.products as unknown as Product[])}
       />
     );
   },

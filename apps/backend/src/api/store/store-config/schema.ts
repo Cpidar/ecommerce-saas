@@ -109,6 +109,7 @@ export const createStoreConfigWorkflowInputSchema = z
 
         homepage_layout: jsonRecordSchema.optional(),
         about_page_layout: jsonRecordSchema.optional(),
+        puckData: jsonRecordSchema.optional(),
 
         seo_config: storeSeoConfigSchema.optional(),
         marketing_config: storeMarketingConfigSchema.optional(),
@@ -130,8 +131,8 @@ export const updateStoreConfigWorkflowInputSchema =
         .extend({
             id: z.string().min(1),
 
-            payment_configs: z.record(z.string(), updatePaymentConfigSchema.partial()).or(z.string()),
-            shipping_method_configs: z.record(z.string(), updateShippingMethodConfigSchema.partial()).or(z.string()),
+            // payment_configs: z.record(z.string(), updatePaymentConfigSchema.partial()).or(z.string()),
+            // shipping_method_configs: z.record(z.string(), updateShippingMethodConfigSchema.partial()).or(z.string()),
         })
         .strip()
 

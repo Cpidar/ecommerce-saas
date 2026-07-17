@@ -1,6 +1,6 @@
 "use server"
 
-import { sdk, medusaError } from "../medusa"
+import { sdk } from "../medusa"
 import {
   getAuthHeaders,
   getCacheOptions,
@@ -23,6 +23,7 @@ import type {
   ReorderSwapSubscriptionProductRequest,
   ReorderUpdateSubscriptionAddressRequest,
 } from "../../types/subscription"
+import { medusaError } from "../medusa-error"
 
 const SUBSCRIPTIONS_CACHE_TAG = "subscriptions"
 const ORDERS_CACHE_TAG = "orders"

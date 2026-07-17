@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: "Terms and conditions for using our website and services.",
 }
 
-export default function TermsPage() {
+export default async function TermsPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight">Terms of Service</h1>

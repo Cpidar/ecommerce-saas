@@ -1,3 +1,4 @@
+"use cache"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -5,7 +6,7 @@ export const metadata: Metadata = {
   description: "Learn about our shipping options, rates, and delivery times.",
 }
 
-export default function ShippingPolicyPage() {
+export default async function ShippingPolicyPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight">Shipping Policy</h1>

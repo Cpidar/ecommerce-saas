@@ -229,13 +229,17 @@ Application Tokens
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  input,
+  input[type="text"] {
+    @apply h-11; /* Note: @apply still works in CSS, just not in JS */
+  }
 }
 
 /* ============================================================================
    marketing site  — Prose styles for rich HTML content
    Used by: product descriptions, blog posts, CMS pages
    ============================================================================ */
-
 
 @utility marketing-container {
   margin-inline: auto;

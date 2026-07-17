@@ -14,7 +14,7 @@
 import "@puckeditor/core/puck.css";
 import { Client } from "./client";
 import { Metadata } from "next";
-import { getPage } from "@/lib/get-page";
+import { siteConfigRepository } from "@/lib/repositories/site-configs";
 import { DEFAULT_REGION } from "@/lib/medusa";
 import { shouldHandleEditPath } from "@/puck/utils/slug-matcher";
 import { notFound } from "next/navigation";
@@ -49,7 +49,7 @@ export default async function Page({
       ? "/home"
       : `/${puckPath.join("/")}`;
 
-  const data = await getPage(path);
+  const data = await siteConfigRepository.getPage(path);
 
   if (!shouldHandleEditPath(puckPath)) {
     notFound();

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AuthCardLayout } from "@/components/auth/auth-card-layout";
+import { AuthCardLayout } from "@/components/auth/emailpass-auth-card-layout";
 import { loginSchema } from "@/lib/validators";
 import { loginAdmin } from "@/lib/medusa/admin-auth";
 
