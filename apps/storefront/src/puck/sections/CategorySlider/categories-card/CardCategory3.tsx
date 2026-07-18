@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import Link from "next/link";
 import Image, { StaticImageData } from "next/image";
 import { Button } from "@/components/ui/button";
+import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 
 export interface CardCategory3Props {
   className?: string;
@@ -15,7 +16,7 @@ export interface CardCategory3Props {
 
 const CardCategory3: FC<CardCategory3Props> = ({
   className = "",
-  featuredImage,
+  featuredImage = PLACEHOLDER_IMAGE,
   name,
   desc,
   color = "",

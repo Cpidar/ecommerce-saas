@@ -1,9 +1,9 @@
 import React, { FC } from "react";
 import NcImage from "@/components/common/NcImage";
-import explore1Svg from "@/images/collections/explore1.svg";
 import { ArrowRightIcon } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
+import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 
 export interface CardCategory6Props {
   className?: string;
@@ -16,8 +16,8 @@ export interface CardCategory6Props {
 
 const CardCategory6: FC<CardCategory6Props> = ({
   className = "",
-  featuredImage = ".",
-  bgSVG = explore1Svg,
+  featuredImage = PLACEHOLDER_IMAGE,
+  bgSVG,
   name,
   desc,
   color = "bg-rose-50",
@@ -28,7 +28,7 @@ const CardCategory6: FC<CardCategory6Props> = ({
     >
       <div>
         <div className="absolute bottom-0 right-0 top-0 opacity-10">
-          <Image src={bgSVG} alt="" />
+          <Image src={bgSVG || PLACEHOLDER_IMAGE} alt="" />
         </div>
 
         <div className="absolute inset-5 flex flex-col justify-between items-center">

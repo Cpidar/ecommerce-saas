@@ -11,90 +11,80 @@ type Props = {
   className?: string;
 };
 
+const IMAGE_REMOTE_DOMAIN = "https://nitrocommerce-demo-data.s3.ir-thr-at1.arvanstorage.ir/morrow"
+
 export const mockProductCategories: Category[] = [
   {
-    id: "cat_001",
-    name: "الکترونیک و دیجیتال",
-    slug: "electronics-digital",
-    description: "محصولات دیجیتال، لوازم جانبی و گجت‌های هوشمند",
+    id: "1",
+    name: "لوازم ضروری میز کار",
+    slug: "desk-essentials",
+    description: "محصولات کاربردی که محیط کار شما را پربازده‌تر و زیباتر می‌کنند.",
     thumbnail: {
-      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/desk-essentials.svg`,
       alt: "",
     },
     parentId: undefined,
     order: 1,
   },
   {
-    id: "cat_002",
-    name: "مد و پوشاک",
-    slug: "fashion-clothing",
-    description: "پوشاک زنانه، مردانه و کودک، اکسسوری و کیف",
+    id: "2",
+    name: "لوازم جانبی دیجیتال",
+    slug: "tech-accessories",
+    description: "سازمان‌دهنده‌ها و محافظ‌های هوشمند برای وسایل روزمره دیجیتال شما.",
     thumbnail: {
-      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/tech-accessories.svg`,
       alt: "",
     },
     parentId: undefined,
     order: 2,
   },
   {
-    id: "cat_003",
-    name: "خانه و آشپزخانه",
-    slug: "home-kitchen",
-    description: "لوازم خانگی، دکوراسیون، ظروف و مبلمان",
+    id: "3",
+    name: "وسایل سفر",
+    slug: "travel-goods",
+    description: "کیف و سازمان‌دهنده‌های مقاوم برای سفری آسان و بی‌دغدغه.",
     thumbnail: {
-      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/travel-goods.svg`,
       alt: "",
     },
     parentId: undefined,
     order: 3,
   },
   {
-    id: "cat_004",
-    name: "کتاب و محصولات فرهنگی",
-    slug: "books-culture",
-    description: "کتاب، مجله، نوشت‌افزار و لوازم تحریر",
+    id: "4",
+    name: "وسایل خانه",
+    slug: "home-objects",
+    description: "سفال، صوتی و وسایل تزئینی که به فضای شما گرما می‌بخشند.",
     thumbnail: {
-      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/home-objects.svg`,
       alt: "",
     },
     parentId: undefined,
     order: 4,
   },
   {
-    id: "cat_005",
-    name: "زیبایی و سلامت",
-    slug: "beauty-health",
-    description: "لوازم آرایشی، بهداشتی و مراقبت شخصی",
+    id: "5",
+    name: "کیف و کوله‌پشتی",
+    slug: "bags-and-carry",
+    description: "کوله‌پشتی و کیف‌های چندمنظوره برای زندگی مدرن روزمره.",
     thumbnail: {
-      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/bags-and-carry.svg`,
       alt: "",
     },
     parentId: undefined,
     order: 5,
   },
   {
-    id: "cat_006",
-    name: "ورزش و سفر",
-    slug: "sports-travel",
-    description: "تجهیزات ورزشی، کوهنوردی و چمدان",
+    id: "6",
+    name: "ابزارهای روزمره",
+    slug: "everyday-tools",
+    description: "ابزارهای ظریف برای نوشتن، صنایع دستی و ساخت.",
     thumbnail: {
-      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/everyday-tools.svg`,
       alt: "",
     },
     parentId: undefined,
     order: 6,
-  },
-  {
-    id: "cat_007",
-    name: "اسباب‌بازی و کودک",
-    slug: "toys-kids",
-    description: "اسباب‌بازی، لوازم کودک و سرگرمی",
-    thumbnail: {
-      url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
-      alt: "",
-    },
-    parentId: undefined,
-    order: 7,
   },
 ];
 
@@ -136,13 +126,14 @@ export const CategoriesSlider: ComponentConfig<Props> = {
     return (
       <Carousel
         heading={<h3 className="text-md md:text-2xl">{heading}</h3>}
-        className={className}
+        className={`mx-auto w-full max-w-[1440px] ${className}`}
         arrows={false}
       >
         <CategoryShowcase
           heading={heading}
           subHeading={subHeading}
           data={(data && data.length < 5) ? data : mockProductCategories}
+          categoryCardType={categoryCardType}
         />
       </Carousel>
     );

@@ -5,7 +5,8 @@ import { CartDrawer } from "@/components/cart/cart-drawer";
 import { BackToTop } from "@/components/layout/back-to-top";
 import { categoryRepository } from "@/lib/repositories";
 import { Suspense } from "react";
-import { siteConfigRepository } from "@/lib/repositories/site-configs";
+import { siteConfigRepository, StoreConfigInput } from "@/lib/repositories/site-configs";
+import { siteConfig as defaultConfig } from "@/lib/config";
 
 async function HeaderProvider() {
   const categories = await categoryRepository.list();
@@ -15,9 +16,18 @@ async function HeaderProvider() {
 }
 
 async function FooterProvider() {
-  const coreConfig = await siteConfigRepository.getGeneralConfig();
-  const logo = await coreConfig?.logo_url;
-  return <Footer />;
+  let siteConfig = await siteConfigRepository.getCoreConfig();
+  console.log(siteConfig)
+  if (!siteConfig) {
+    siteConfig = defaultConfig as unknown as StoreConfigInput ;
+  }
+  return <Footer siteConfig={siteConfig} />;
+}
+
+async function AnnouncementBarProvider() {
+  const siteConfig = await siteConfigRepository.getGeneralConfig();
+  const announcement = await siteConfig?.announcement as string;
+  return <AnnouncementBar  announcement={announcement} />;
 }
 
 export default async function StoreLayout({
@@ -33,7 +43,9 @@ export default async function StoreLayout({
       >
         Skip to content
       </a>
-      <AnnouncementBar />
+      <Suspense fallback={<HeaderSkeleton />}>
+        <AnnouncementBarProvider />
+      </Suspense>
       {/* Wrap the dynamic part */}
       <Suspense fallback={<HeaderSkeleton />}>
         <HeaderProvider />

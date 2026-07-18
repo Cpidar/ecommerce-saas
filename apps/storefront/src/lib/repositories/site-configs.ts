@@ -35,6 +35,7 @@ export type StoreConfigInput = {
   title: string
   handle: string
   domain: string
+  tagline?: string
   description?: string
   logo_url?: string | null
   logo_alt?: string | null
@@ -103,6 +104,8 @@ const fetchPuckPage = async (storeId?: string) => {
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=puck_data",
   )
+
+  console.log(response)
 
   return response.store_config
 
@@ -173,7 +176,7 @@ export const siteConfigRepository = {
     return page
   },
 
-    async getGeneralConfig() {
+  async getGeneralConfig() {
     const storeId = await getCurrentStoreId()
     const coreConfig = await fetchGeneralConfig(storeId)
 

@@ -75,6 +75,13 @@ const StoreConfigPage = () => {
     }));
   };
 
+  const setConfigField = (key: string, value: unknown) => {
+    setForm((current) => ({
+      ...current,
+      config: { ...(current.config ?? {}), [key]: value },
+    }));
+  };
+
   const uploadAdminFile = async (file: File) => {
     const body = new FormData();
     body.append("files", file, file.name);
@@ -96,6 +103,7 @@ const StoreConfigPage = () => {
   useEffect(() => {
     getStoreConfig()
       .then((storeConfig) => {
+        console.log(storeConfig)
         if (!storeConfig) return;
         setForm({ ...emptyStoreConfig, ...storeConfig });
         setSeoConfigJson(JSON.stringify(storeConfig.seo_config ?? {}, null, 2));
@@ -261,149 +269,343 @@ const StoreConfigPage = () => {
         </form>
       </Container>
 
-      {/* ==================== BRAND ASSETS ==================== */}
+      {/* ==================== Marketing ==================== */}
       <Container className="p-6 my-3">
         <form onSubmit={handleSubmit}>
           <div className="mb-6 flex items-center gap-2">
-            <ImageIcon />
-            <Heading level="h2">{t("storeConfig.brand.title")}</Heading>
+            <Heading level="h2">{t("storeConfig.info.title")}</Heading>
           </div>
           <Text size="small" className="text-ui-fg-subtle mb-6">
-            {t("storeConfig.brand.subtitle")}
+            {t("storeConfig.info.subtitle")}
           </Text>
 
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-            <div className="space-y-6">
-              <div className="grid gap-2">
-                <Label>{t("storeConfig.brand.logoUrl")}</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={form.logo_url ?? ""}
-                    onChange={(e) => setField("logo_url", e.target.value)}
-                    placeholder="https://..."
-                  />
-                  <Button asChild variant="secondary" type="button">
-                    <label htmlFor="logo_upload" className="cursor-pointer">
-                      {t("storeConfig.brand.upload")}
-                    </label>
-                  </Button>
-                  <input
-                    id="logo_upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      try {
-                        const url = await uploadAdminFile(file);
-                        if (url) {
-                          setField("logo_url", url);
-                          toast.success("Logo uploaded");
+          <Container className="my-3">
+            <Label className="block mb-4">
+              {t("storeConfig.contact.socialLinks")}
+            </Label>
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+              <div className="space-y-6">
+                <div className="grid gap-2">
+                  <Label>{t("storeConfig.info.logoUrl")}</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={form.logo_url ?? ""}
+                      onChange={(e) => setField("logo_url", e.target.value)}
+                      placeholder="https://..."
+                    />
+                    <Button asChild variant="secondary" type="button">
+                      <label htmlFor="logo_upload" className="cursor-pointer">
+                        {t("storeConfig.info.upload")}
+                      </label>
+                    </Button>
+                    <input
+                      id="logo_upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const url = await uploadAdminFile(file);
+                          if (url) {
+                            setField("logo_url", url);
+                            toast.success("Logo uploaded");
+                          }
+                        } catch {
+                          toast.error("Upload failed");
+                        } finally {
+                          e.target.value = "";
                         }
-                      } catch {
-                        toast.error("Upload failed");
-                      } finally {
-                        e.target.value = "";
-                      }
-                    }}
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="logo_alt">
+                    {t("storeConfig.info.logoAlt")}
+                  </Label>
+                  <Input
+                    id="logo_alt"
+                    value={form.logo_alt ?? ""}
+                    onChange={(e) => setField("logo_alt", e.target.value)}
+                    placeholder="Store logo"
                   />
                 </div>
+
+                {form.logo_url && (
+                  <div>
+                    <Text size="small" className="mb-2">
+                      {t("storeConfig.info.preview")}
+                    </Text>
+                    <div className="border border-ui-border-base rounded-md p-4 bg-ui-bg-subtle">
+                      <img
+                        src={form.logo_url}
+                        alt={form.logo_alt || "Logo"}
+                        className="max-h-20 object-contain"
+                        onError={(e) =>
+                          ((e.target as HTMLImageElement).style.display =
+                            "none")
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="grid gap-2">
-                <Label htmlFor="logo_alt">
-                  {t("storeConfig.brand.logoAlt")}
+              <div className="space-y-6">
+                <div className="grid gap-2">
+                  <Label>{t("storeConfig.info.faviconUrl")}</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={form.favicon_url ?? ""}
+                      onChange={(e) => setField("favicon_url", e.target.value)}
+                      placeholder="https://..."
+                    />
+                    <Button asChild variant="secondary" type="button">
+                      <label
+                        htmlFor="favicon_upload"
+                        className="cursor-pointer"
+                      >
+                        {t("storeConfig.info.upload")}
+                      </label>
+                    </Button>
+                    <input
+                      id="favicon_upload"
+                      type="file"
+                      accept="image/*,.ico"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        try {
+                          const url = await uploadAdminFile(file);
+                          if (url) {
+                            setField("favicon_url", url);
+                            toast.success("Favicon uploaded");
+                          }
+                        } catch {
+                          toast.error("Upload failed");
+                        } finally {
+                          e.target.value = "";
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {form.favicon_url && (
+                  <div>
+                    <Text size="small" className="mb-2">
+                      {t("storeConfig.info.preview")}
+                    </Text>
+                    <div className="border border-ui-border-base rounded-md p-6 bg-ui-bg-subtle flex items-center justify-center">
+                      <img
+                        src={form.favicon_url}
+                        alt="Favicon"
+                        className="h-12 w-12 object-contain"
+                        onError={(e) =>
+                          ((e.target as HTMLImageElement).style.display =
+                            "none")
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </Container>
+
+          <Container className="my-3">
+            <Label className="block mb-4">
+              {t("storeConfig.contact.socialLinks")}
+            </Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+              {/* Contacts */}
+              <div>
+                <div>
+                  <div className="md:col-span-2 grid gap-2">
+                    <Label htmlFor="address">
+                      {t("storeConfig.contact.address")}
+                    </Label>
+                    <Textarea
+                      id="address"
+                      value={
+                        (
+                          form.marketing_config?.contact as Record<
+                            string,
+                            string
+                          >
+                        )?.address ?? ""
+                      }
+                      onChange={(e) =>
+                        setMarketingField("contact", {
+                          ...((form.marketing_config?.contact as Record<
+                            string,
+                            unknown
+                          >) ?? {}),
+                          ["address"]: e.target.value,
+                        })
+                      }
+                      placeholder="تهران، بلوار امام علی، ..."
+                      rows={3}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="md:col-span-2 grid gap-2">
+                    <Label htmlFor="phone">
+                      {t("storeConfig.contact.phone")}
+                    </Label>
+                    <Input
+                      id="phone"
+                      value={
+                        (
+                          form.marketing_config?.contact as Record<
+                            string,
+                            string
+                          >
+                        )?.phone ?? ""
+                      }
+                      onChange={(e) =>
+                        setMarketingField("contact", {
+                          ...((form.marketing_config?.contact as Record<
+                            string,
+                            unknown
+                          >) ?? {}),
+                          ["phone"]: e.target.value,
+                        })
+                      }
+                      placeholder="09123456789"
+                    />
+                  </div>
+                </div>
+              </div>
+              {/* Socials */}
+              <div>
+                {[
+                  "instagram",
+                  "x",
+                  "facebook",
+                  "linkedin",
+                  "youtube",
+                  "tiktok",
+                ].map((platform) => (
+                  <div key={platform} className="grid gap-2">
+                    <Label
+                      htmlFor={`social_${platform}`}
+                      className="capitalize"
+                    >
+                      {platform}
+                    </Label>
+                    <Input
+                      id={`social_${platform}`}
+                      value={
+                        (((form.marketing_config?.social_links as Record<
+                          string,
+                          unknown
+                        >) ?? {})[platform] as string) ?? ""
+                      }
+                      onChange={(e) =>
+                        setMarketingField("social_links", {
+                          ...((form.marketing_config?.social_links as Record<
+                            string,
+                            unknown
+                          >) ?? {}),
+                          [platform]: e.target.value,
+                        })
+                      }
+                      placeholder={`https://.../${platform}`}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Container>
+
+          <div className="text-ui-fg-subtle text-sm self-center">
+            {t("storeConfig.info.moreSettings")}
+          </div>
+
+          <div className="flex justify-end mt-8">
+            <Button isLoading={isSaving} type="submit" size="large">
+              {isSaving
+                ? t("storeConfig.actions.saving")
+                : t("storeConfig.actions.save")}
+            </Button>
+          </div>
+        </form>
+      </Container>
+
+      {/* ==================== Site Setting ==================== */}
+      <Container className="p-6 my-3">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-6">
+            <Heading level="h2">{t("storeConfig.site.title")}</Heading>
+            <Text size="small" className="text-ui-fg-subtle mt-1">
+              {t("storeConfig.site.subtitle")}
+            </Text>
+          </div>
+
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2 grid gap-2">
+                <Label htmlFor="announcement">
+                  {t("storeConfig.site.announcement")}
                 </Label>
-                <Input
-                  id="logo_alt"
-                  value={form.logo_alt ?? ""}
-                  onChange={(e) => setField("logo_alt", e.target.value)}
-                  placeholder="Store logo"
+                <Textarea
+                  id="announcement"
+                  value={
+                    ((
+                      (form.marketing_config?.social_links as Record<
+                        string,
+                        unknown
+                      >) ?? {}
+                    )?.announcement as string) ?? ""
+                  }
+                  onChange={(e) =>
+                    setConfigField("announcement", {
+                      ...((form.marketing_config?.social_links as Record<
+                        string,
+                        unknown
+                      >) ?? {}),
+                      announcement: e.target.value,
+                    })
+                  }
+                  placeholder="متن نوار بالای سایت (برای عدم نمایش خالی بگذارید)"
+                  rows={3}
                 />
               </div>
 
-              {form.logo_url && (
-                <div>
-                  <Text size="small" className="mb-2">
-                    {t("storeConfig.brand.preview")}
-                  </Text>
-                  <div className="border border-ui-border-base rounded-md p-4 bg-ui-bg-subtle">
-                    <img
-                      src={form.logo_url}
-                      alt={form.logo_alt || "Logo"}
-                      className="max-h-20 object-contain"
-                      onError={(e) =>
-                        ((e.target as HTMLImageElement).style.display = "none")
-                      }
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-6">
               <div className="grid gap-2">
-                <Label>{t("storeConfig.brand.faviconUrl")}</Label>
-                <div className="flex gap-2">
-                  <Input
-                    value={form.favicon_url ?? ""}
-                    onChange={(e) => setField("favicon_url", e.target.value)}
-                    placeholder="https://..."
-                  />
-                  <Button asChild variant="secondary" type="button">
-                    <label htmlFor="favicon_upload" className="cursor-pointer">
-                      {t("storeConfig.brand.upload")}
-                    </label>
-                  </Button>
-                  <input
-                    id="favicon_upload"
-                    type="file"
-                    accept="image/*,.ico"
-                    className="hidden"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (!file) return;
-                      try {
-                        const url = await uploadAdminFile(file);
-                        if (url) {
-                          setField("favicon_url", url);
-                          toast.success("Favicon uploaded");
-                        }
-                      } catch {
-                        toast.error("Upload failed");
-                      } finally {
-                        e.target.value = "";
-                      }
-                    }}
-                  />
-                </div>
+                <Label>{t("storeConfig.site.googleAnalytics")}</Label>
+                <Input
+                  value={
+                    (form.marketing_config?.google_analytics_id as string) ?? ""
+                  }
+                  onChange={(e) =>
+                    setMarketingField("google_analytics_id", e.target.value)
+                  }
+                  placeholder="G-XXXXXXXXXX"
+                />
               </div>
-
-              {form.favicon_url && (
-                <div>
-                  <Text size="small" className="mb-2">
-                    {t("storeConfig.brand.preview")}
-                  </Text>
-                  <div className="border border-ui-border-base rounded-md p-6 bg-ui-bg-subtle flex items-center justify-center">
-                    <img
-                      src={form.favicon_url}
-                      alt="Favicon"
-                      className="h-12 w-12 object-contain"
-                      onError={(e) =>
-                        ((e.target as HTMLImageElement).style.display = "none")
-                      }
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="text-ui-fg-subtle text-sm self-center">
-              {t("storeConfig.brand.moreSettings")}
+              <div className="grid gap-2">
+                <Label>{t("storeConfig.site.googleTagManager")}</Label>
+                <Input
+                  value={
+                    (form.marketing_config?.google_tag_manager_id as string) ??
+                    ""
+                  }
+                  onChange={(e) =>
+                    setMarketingField("google_tag_manager_id", e.target.value)
+                  }
+                  placeholder="GTM-XXXXXX"
+                />
+              </div>
             </div>
           </div>
-
           <div className="flex justify-end mt-8">
             <Button isLoading={isSaving} type="submit" size="large">
               {isSaving
@@ -556,99 +758,6 @@ const StoreConfigPage = () => {
             </div>
           </div>
 
-          <div className="flex justify-end mt-8">
-            <Button isLoading={isSaving} type="submit" size="large">
-              {isSaving
-                ? t("storeConfig.actions.saving")
-                : t("storeConfig.actions.save")}
-            </Button>
-          </div>
-        </form>
-      </Container>
-
-      {/* ==================== MARKETING ==================== */}
-      <Container className="p-6 my-3">
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <Heading level="h2">{t("storeConfig.marketing.title")}</Heading>
-            <Text size="small" className="text-ui-fg-subtle mt-1">
-              {t("storeConfig.marketing.subtitle")}
-            </Text>
-          </div>
-
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="grid gap-2">
-                <Label>{t("storeConfig.marketing.googleAnalytics")}</Label>
-                <Input
-                  value={
-                    (form.marketing_config?.google_analytics_id as string) ?? ""
-                  }
-                  onChange={(e) =>
-                    setMarketingField("google_analytics_id", e.target.value)
-                  }
-                  placeholder="G-XXXXXXXXXX"
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label>{t("storeConfig.marketing.googleTagManager")}</Label>
-                <Input
-                  value={
-                    (form.marketing_config?.google_tag_manager_id as string) ??
-                    ""
-                  }
-                  onChange={(e) =>
-                    setMarketingField("google_tag_manager_id", e.target.value)
-                  }
-                  placeholder="GTM-XXXXXX"
-                />
-              </div>
-            </div>
-
-            <div>
-              <Label className="block mb-4">
-                {t("storeConfig.marketing.socialLinks")}
-              </Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {[
-                  "instagram",
-                  "x",
-                  "facebook",
-                  "linkedin",
-                  "youtube",
-                  "tiktok",
-                ].map((platform) => (
-                  <div key={platform} className="grid gap-2">
-                    <Label
-                      htmlFor={`social_${platform}`}
-                      className="capitalize"
-                    >
-                      {platform}
-                    </Label>
-                    <Input
-                      id={`social_${platform}`}
-                      value={
-                        (((form.marketing_config?.social_links as Record<
-                          string,
-                          unknown
-                        >) ?? {})[platform] as string) ?? ""
-                      }
-                      onChange={(e) =>
-                        setMarketingField("social_links", {
-                          ...((form.marketing_config?.social_links as Record<
-                            string,
-                            unknown
-                          >) ?? {}),
-                          [platform]: e.target.value,
-                        })
-                      }
-                      placeholder={`https://.../${platform}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
           <div className="flex justify-end mt-8">
             <Button isLoading={isSaving} type="submit" size="large">
               {isSaving

@@ -1,8 +1,8 @@
-import { _getImgRd, _getTagNameRd } from "@/lib/static-data/fakeData";
 import React, { FC } from "react";
 import NcImage from "@/components/common/NcImage";
 import Link from "next/link";
 import { StaticImageData } from "next/image";
+import { PLACEHOLDER_IMAGE } from "@/lib/constants";
 
 export interface CardCategory1Props {
   className?: string;
@@ -15,9 +15,9 @@ export interface CardCategory1Props {
 const CardCategory1: FC<CardCategory1Props> = ({
   className = "",
   size = "normal",
-  name = "",
+  name = "نام دسته",
   desc = "",
-  featuredImage = "",
+  featuredImage = PLACEHOLDER_IMAGE,
 }) => {
   return (
     <Link
@@ -29,7 +29,7 @@ const CardCategory1: FC<CardCategory1Props> = ({
         containerClassName={`shrink-0 relative ${
           size === "large" ? "w-20 h-20" : "w-12 h-12"
         } rounded-lg mr-4 overflow-hidden`}
-        src={featuredImage || _getImgRd()}
+        src={featuredImage}
         sizes="(max-width: 640px) 100vw, 40vw"
         fill
       />
@@ -39,7 +39,7 @@ const CardCategory1: FC<CardCategory1Props> = ({
             size === "large" ? "text-lg" : "text-base"
           } nc-card-title text-foreground font-semibold`}
         >
-          {name || _getTagNameRd()}
+          {name}
         </h2>
         <span
           className={`${

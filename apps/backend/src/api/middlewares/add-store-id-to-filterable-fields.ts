@@ -27,7 +27,7 @@ export async function addStoreIdToFilterableFields(
   // set 'filterableFields' so then the 'maybeApplyLinkFilter' middleware will process it
   req.filterableFields["store_id"] = storeId;
 
-  console.log('Before ApplyLinkFilter:', req.filterableFields)
+  console.log('😒😒😒😒 Before ApplyLinkFilter:', req.filterableFields)
 
   return next();
 }

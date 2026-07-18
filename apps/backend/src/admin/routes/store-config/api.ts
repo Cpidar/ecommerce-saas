@@ -5,7 +5,6 @@ export const getStoreConfig = async () => {
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/admin/store-config",
   )
-console.log(response)
   return response.store_config?? null
 }
 

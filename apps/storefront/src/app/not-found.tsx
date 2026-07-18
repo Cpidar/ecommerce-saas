@@ -11,8 +11,8 @@ export default async function NotFound() {
 
   return (
     <>
-      <AnnouncementBar />
-      <Header categories={categories} />
+      {/* <AnnouncementBar />
+      <Header categories={categories} /> */}
       <main className="flex-1">
         <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
           <p className="text-sm font-medium text-muted-foreground">404</p>
@@ -32,7 +32,7 @@ export default async function NotFound() {
           </div>
         </div>
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </>
   )
 }

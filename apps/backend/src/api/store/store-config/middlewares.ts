@@ -4,12 +4,12 @@ import {
 } from "@medusajs/framework/http";
 import { moveIdsToQueryFromFilterableFields } from "../../middlewares/move-ids-to-query-from-filterable-fields";
 import StoreLinkStoreConfig from "../../../links/multi-tenant/store_config-store"
-import { addStoreIdToFilterableFields } from "../../middlewares/admin/add-store-id-to-filterable-fields";
+import { addStoreIdToFilterableFields } from "../../middlewares/add-store-id-to-filterable-fields";
 
-export const adminStoreMethodsRoutesMiddlewares: MiddlewareRoute[] = [
+export const storeStoreConfigRoutesMiddlewares: MiddlewareRoute[] = [
   {
     method: ["GET"],
-    matcher: "/admin/store-config",
+    matcher: "/store/store-config",
     middlewares: [
       addStoreIdToFilterableFields,
       maybeApplyLinkFilter({
@@ -22,7 +22,7 @@ export const adminStoreMethodsRoutesMiddlewares: MiddlewareRoute[] = [
   },
   {
     method: ["DELETE"],
-    matcher: "/admin/store-config",
+    matcher: "/store/store-config",
     middlewares: [
       addStoreIdToFilterableFields,
       maybeApplyLinkFilter({

@@ -27,6 +27,8 @@ export type StoreConfigInput = {
   title: string
   handle: string
   domain: string
+  
+  tagline?: string
   description?: string
   logo_url?: string | null
   logo_alt?: string | null

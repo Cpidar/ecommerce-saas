@@ -30,6 +30,8 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
     }
   }
 
+  console.log(req.filterableFields)
+
   const { data: [store_config], metadata } = await query.graph({
     entity: "store_config",
     fields,
@@ -58,7 +60,7 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
 
   // const validatedData = updateStoreConfigWorkflowInputSchema.parse(body);
 
-  const { result } = await updateStoreConfigWorkflow (req.scope).run({
+  const { result } = await updateStoreConfigWorkflow(req.scope).run({
     input: { ...body },
   });
 

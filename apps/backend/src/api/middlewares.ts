@@ -7,6 +7,7 @@ import { storeProductCollectionsRoutesMiddlewares } from "./store/collections/mi
 import { adminStoreMethodsRoutesMiddlewares } from "./admin/store-config/middlewares";
 import { adminCustomUploadsRoutesMiddlewares } from "./admin/uploads/middlewares";
 import { adminProductOptionRoutesMiddlewares } from "./admin/product-options/middlewares";
+import { storeStoreConfigRoutesMiddlewares } from "./store/store-config/middlewares";
 
 
 export default defineMiddlewares({
@@ -25,6 +26,7 @@ export default defineMiddlewares({
     ...storeProductsRoutesMiddlewares,
     ...storeProductCategoriesRoutesMiddlewares,
     ...storeProductCollectionsRoutesMiddlewares,
+    ...storeStoreConfigRoutesMiddlewares,
     ...adminProductCategoryRoutesMiddlewares,
     ...adminProductOptionRoutesMiddlewares,
     ...adminStoreMethodsRoutesMiddlewares,

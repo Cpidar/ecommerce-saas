@@ -7,7 +7,11 @@
       "update": "Update"
     },
     "loading": "Loading store config...",
-
+    "contact": {
+      "phone": "Phone Number",
+      "address": "Address",
+      "socialLinks": "Social Media Links"
+    },
     "basic": {
       "title": "Basic Information",
       "subtitle": "Core details about your store",
@@ -17,10 +21,9 @@
       "domain": "Domain",
       "description": "Description"
     },
-
-    "brand": {
-      "title": "Brand Assets",
-      "subtitle": "Logo, favicon, and branding elements",
+    "marketing": {
+      "title": "Marketing & Analytics",
+      "subtitle": "Marketing and branding elements",
       "logoUrl": "Logo URL",
       "logoAlt": "Alt Text",
       "faviconUrl": "Favicon URL",
@@ -28,7 +31,6 @@
       "upload": "Upload",
       "moreSettings": "More brand settings (colors, fonts, etc.) are available in the Advanced section."
     },
-
     "seo": {
       "title": "SEO Settings",
       "subtitle": "Search engine optimization and social sharing",
@@ -44,15 +46,13 @@
       "ogType": "OG Type",
       "twitterCard": "Twitter Card"
     },
-
-    "marketing": {
-      "title": "Marketing & Analytics",
-      "subtitle": "Tracking and social media links",
+    "site": {
+      "title": "Site Settings",
+      "subtitle": "Manage Site Settings",
       "googleAnalytics": "Google Analytics ID",
       "googleTagManager": "Google Tag Manager ID",
-      "socialLinks": "Social Media Links"
+      "announcement": "Announcement bar"
     },
-
     "advanced": {
       "title": "Advanced Configuration",
       "subtitle": "Raw JSON for homepage layout, custom configs, etc.",
@@ -62,7 +62,6 @@
       "marketingJson": "Marketing Config (JSON)",
       "generalJson": "General Config (JSON)"
     },
-
     "actions": {
       "save": "Save All Changes",
       "saving": "Saving...",

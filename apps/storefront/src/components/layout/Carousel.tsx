@@ -25,6 +25,7 @@ export const Carousel: React.FC<CarouselProps> = ({
     skipSnaps: true,
     active: true,
     direction: "rtl",
+    align: "center",
   });
   const [prevBtnDisabled, setPrevBtnDisabled] = React.useState(true);
   const [nextBtnDisabled, setNextBtnDisabled] = React.useState(true);
