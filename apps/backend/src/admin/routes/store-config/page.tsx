@@ -103,7 +103,6 @@ const StoreConfigPage = () => {
   useEffect(() => {
     getStoreConfig()
       .then((storeConfig) => {
-        console.log(storeConfig)
         if (!storeConfig) return;
         setForm({ ...emptyStoreConfig, ...storeConfig });
         setSeoConfigJson(JSON.stringify(storeConfig.seo_config ?? {}, null, 2));
@@ -229,7 +228,6 @@ const StoreConfigPage = () => {
                 id="domain"
                 value={form.domain}
                 onChange={(e) => setField("domain", e.target.value)}
-                required
                 placeholder="https://example.com"
               />
             </div>
@@ -486,27 +484,32 @@ const StoreConfigPage = () => {
               {/* Socials */}
               <div>
                 {[
-                  "instagram",
-                  "x",
-                  "facebook",
-                  "linkedin",
-                  "youtube",
-                  "tiktok",
+                  { value: "instagram", label: "اینستاگرام"},
+                  { value: "telegram", label: "تلگرام"},
+                  { value: "eitaa", label: "ایتا"},
+                  { value: "bale", label: "بله"},
+                  { value: "rubika", label: "روبیکا"},
+                  { value: "x", label: "ایکس"},
+                  { value: "facebook", label: "فیسبوک"},
+                  { value: "linkedlin", label: "لینکدین"},
+                  { value: "youtube", label: "یوتیوب"},
+                  { value: "aparat", label: "آپارات"},
+                  { value: "tiktok", label: "تیک تاک"},
                 ].map((platform) => (
-                  <div key={platform} className="grid gap-2">
+                  <div key={platform.value} className="grid gap-2">
                     <Label
                       htmlFor={`social_${platform}`}
                       className="capitalize"
                     >
-                      {platform}
+                      {platform.label}
                     </Label>
                     <Input
-                      id={`social_${platform}`}
+                      id={`social_${platform.value}`}
                       value={
                         (((form.marketing_config?.social_links as Record<
                           string,
                           unknown
-                        >) ?? {})[platform] as string) ?? ""
+                        >) ?? {})[platform.value] as string) ?? ""
                       }
                       onChange={(e) =>
                         setMarketingField("social_links", {
@@ -514,7 +517,7 @@ const StoreConfigPage = () => {
                             string,
                             unknown
                           >) ?? {}),
-                          [platform]: e.target.value,
+                          [platform.value]: e.target.value,
                         })
                       }
                       placeholder={`https://.../${platform}`}

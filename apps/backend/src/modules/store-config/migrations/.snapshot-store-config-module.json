@@ -49,7 +49,7 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "''",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
@@ -60,7 +60,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "unique": false,
           "length": null,
           "precision": null,
@@ -81,7 +81,7 @@
           "length": null,
           "precision": null,
           "scale": null,
-          "default": null,
+          "default": "''",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"

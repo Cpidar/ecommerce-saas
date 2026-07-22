@@ -2,7 +2,6 @@
   "root": {
     "props": {}
   },
-  "zones": {},
   "content": [
     {
       "type": "HeroSection03",
@@ -137,7 +136,7 @@
       "type": "InspirationTextSection",
       "props": {
         "id": "InspirationTextSection-f5cbacce-ef5c-4163-a276-2787318a2317",
-        "title": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است",
+        "title": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است...",
         "description": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد",
         "showSection": true
       }
@@ -159,77 +158,77 @@
             "id": "prod_01KTK8Q6SWKJ344E689ES4NA03",
             "name": "لامپ",
             "slug": "lamp",
-            "description": "",
+            "tags": [],
             "images": [
               {
-                "url": "http://localhost:3900/medusabucket/store_01KTK5R0R5MZZ6KSPB43M5SMPF__dark-gray-three-seater-sofa-01KX957P7PQ2XNE6PGNA2SM3XX.png",
-                "alt": "لامپ"
-              }
-            ],
-            "status": "active",
-            "brandId": "",
-            "categoryIds": [],
-            "tags": [],
-            "variants": [
-              {
-                "id": "variant_01KTK8Q6Y1Q87764GV6B9GS3AG",
-                "productId": "prod_01KTK8Q6SWKJ344E689ES4NA03",
-                "sku": "",
-                "name": "لامپ",
-                "price": 500000,
-                "currency": "irr",
-                "inventory": {
-                  "quantity": 0,
-                  "trackInventory": false,
-                  "allowBackorder": false
-                },
-                "options": [],
-                "images": [
-                  {
-                    "url": "http://localhost:3900/medusabucket/store_01KTK5R0R5MZZ6KSPB43M5SMPF__dark-gray-three-seater-sofa-01KX957P7PQ2XNE6PGNA2SM3XX.png",
-                    "alt": "لامپ"
-                  }
-                ]
+                "alt": "لامپ",
+                "url": "http://localhost:3900/medusabucket/store_01KTK5R0R5MZZ6KSPB43M5SMPF__dark-gray-three-seater-sofa-01KX957P7PQ2XNE6PGNA2SM3XX.png"
               }
             ],
             "rating": 0,
-            "reviewCount": 0,
+            "status": "active",
+            "brandId": "",
             "featured": false,
+            "variants": [
+              {
+                "id": "variant_01KTK8Q6Y1Q87764GV6B9GS3AG",
+                "sku": "",
+                "name": "لامپ",
+                "price": 500000,
+                "images": [
+                  {
+                    "alt": "لامپ",
+                    "url": "http://localhost:3900/medusabucket/store_01KTK5R0R5MZZ6KSPB43M5SMPF__dark-gray-three-seater-sofa-01KX957P7PQ2XNE6PGNA2SM3XX.png"
+                  }
+                ],
+                "options": [],
+                "currency": "irr",
+                "inventory": {
+                  "quantity": 0,
+                  "allowBackorder": false,
+                  "trackInventory": false
+                },
+                "productId": "prod_01KTK8Q6SWKJ344E689ES4NA03"
+              }
+            ],
             "createdAt": "2026-06-08T09:23:47.647Z",
-            "updatedAt": "2026-07-11T17:58:15.769Z"
+            "updatedAt": "2026-07-11T17:58:15.769Z",
+            "categoryIds": [],
+            "description": "",
+            "reviewCount": 0
           },
           {
             "id": "prod_01KV91RSMSFG6DM056G23E4XH1",
             "name": "محافظ برق",
             "slug": "mohafez",
-            "description": "",
+            "tags": [],
             "images": [],
+            "rating": 0,
             "status": "active",
             "brandId": "",
-            "categoryIds": [],
-            "tags": [],
+            "featured": false,
             "variants": [
               {
                 "id": "variant_01KV91RSPCHMFDWH16ZGWSDA6C",
-                "productId": "prod_01KV91RSMSFG6DM056G23E4XH1",
                 "sku": "",
                 "name": "محافظ برق",
                 "price": 450000,
+                "images": [],
+                "options": [],
                 "currency": "irr",
                 "inventory": {
                   "quantity": 0,
-                  "trackInventory": false,
-                  "allowBackorder": false
+                  "allowBackorder": false,
+                  "trackInventory": false
                 },
-                "options": [],
-                "images": []
+                "productId": "prod_01KV91RSMSFG6DM056G23E4XH1"
               }
             ],
-            "rating": 0,
-            "reviewCount": 0,
-            "featured": false,
             "createdAt": "2026-06-16T20:25:37.178Z",
-            "updatedAt": "2026-07-10T13:16:06.967Z"
+            "updatedAt": "2026-07-10T13:16:06.967Z",
+            "categoryIds": [],
+            "description": "",
+            "reviewCount": 0
           }
         ],
         "heading": "فروش ویژه",
@@ -319,5 +318,6 @@
         "direction": ""
       }
     }
-  ]
+  ],
+  "zones": {}
 }

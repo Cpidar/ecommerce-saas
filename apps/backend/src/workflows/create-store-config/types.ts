@@ -59,7 +59,7 @@ export type ShippingMethodConfigInput = {
 
 export type CreateStoreConfigWorkflowInput = {
   medusa_store_id: string
-  title: string
+  title?: string
   handle: string
   domain?: string
   description?: string

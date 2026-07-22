@@ -1,0 +1,325 @@
+{
+  "/home": {
+    "root": {
+      "props": {}
+    },
+    "zones": {},
+    "content": [
+      {
+        "type": "HeroSection03",
+        "props": {
+          "id": "HeroSection03-c9b9ca5f-9a4a-4d37-9b48-9731e044f6b4",
+          "leftSection": {
+            "text": "<h2><strong>لورم ایپسوم متن ساختگی </strong></h2><p>با تولید سادگی نامفهوم از صنعت چاپ </p>",
+            "image": "https://nitrocommerce-demo-data.s3.ir-thr-at1.arvanstorage.ir/morrow/categories/desk-essentials.svg"
+          },
+          "rightSection": {
+            "text": "<p>لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است </p>",
+            "image": "https://nitrocommerce-demo-data.s3.ir-thr-at1.arvanstorage.ir/morrow/products/ridge-planter-1.svg"
+          }
+        }
+      },
+      {
+        "type": "CategoriesSlider",
+        "props": {
+          "id": "CategoriesSlider-22a97eb4-922a-4b3e-a8e0-07f70d71f643",
+          "data": [
+            {
+              "id": "cat_001",
+              "name": "الکترونیک و دیجیتال",
+              "slug": "electronics-digital",
+              "order": 1,
+              "thumbnail": {
+                "alt": "",
+                "url": "/images/content/gray-one-seater-sofa-wooden-coffee-table.png"
+              },
+              "description": "محصولات دیجیتال، لوازم جانبی و گجت\u200cهای هوشمند"
+            },
+            {
+              "id": "cat_002",
+              "name": "مد و پوشاک",
+              "slug": "fashion-clothing",
+              "order": 2,
+              "thumbnail": {
+                "alt": "",
+                "url": "/images/content/gray-one-seater-sofa-wooden-coffee-table.png"
+              },
+              "description": "پوشاک زنانه، مردانه و کودک، اکسسوری و کیف"
+            },
+            {
+              "id": "cat_003",
+              "name": "خانه و آشپزخانه",
+              "slug": "home-kitchen",
+              "order": 3,
+              "thumbnail": {
+                "alt": "",
+                "url": "/images/content/gray-one-seater-sofa-wooden-coffee-table.png"
+              },
+              "description": "لوازم خانگی، دکوراسیون، ظروف و مبلمان"
+            },
+            {
+              "id": "cat_004",
+              "name": "کتاب و محصولات فرهنگی",
+              "slug": "books-culture",
+              "order": 4,
+              "thumbnail": {
+                "alt": "",
+                "url": "/images/content/gray-one-seater-sofa-wooden-coffee-table.png"
+              },
+              "description": "کتاب، مجله، نوشت\u200cافزار و لوازم تحریر"
+            },
+            {
+              "id": "cat_005",
+              "name": "زیبایی و سلامت",
+              "slug": "beauty-health",
+              "order": 5,
+              "thumbnail": {
+                "alt": "",
+                "url": "/images/content/gray-one-seater-sofa-wooden-coffee-table.png"
+              },
+              "description": "لوازم آرایشی، بهداشتی و مراقبت شخصی"
+            },
+            {
+              "id": "cat_006",
+              "name": "ورزش و سفر",
+              "slug": "sports-travel",
+              "order": 6,
+              "thumbnail": {
+                "alt": "",
+                "url": "/images/content/gray-one-seater-sofa-wooden-coffee-table.png"
+              },
+              "description": "تجهیزات ورزشی، کوهنوردی و چمدان"
+            },
+            {
+              "id": "cat_007",
+              "name": "اسباب\u200cبازی و کودک",
+              "slug": "toys-kids",
+              "order": 7,
+              "thumbnail": {
+                "alt": "",
+                "url": "/images/content/gray-one-seater-sofa-wooden-coffee-table.png"
+              },
+              "description": "اسباب\u200cبازی، لوازم کودک و سرگرمی"
+            }
+          ],
+          "heading": "",
+          "subHeading": "",
+          "categoryCardType": "card02"
+        }
+      },
+      {
+        "type": "Space",
+        "props": {
+          "id": "Space-8b871447-0da8-4bfc-97a8-ef82a6c0787f",
+          "size": "16",
+          "direction": "vertical"
+        }
+      },
+      {
+        "type": "IncredibleOffersSection",
+        "props": {
+          "id": "IncredibleOffersSection-8c78928a-bc20-43b1-af8b-b8d85bf6ba6f",
+          "data": [],
+          "heading": "تخفیفهای شگفت انگیز",
+          "subHeading": "josadfasd\nfasdfasd",
+          "collectionSlug": "incredible_offers",
+          "categoryCardType": "card07"
+        }
+      },
+      {
+        "type": "Space",
+        "props": {
+          "id": "Space-dd350b61-9768-4a46-9e34-fd1e1d7e2b99",
+          "size": "12",
+          "direction": ""
+        }
+      },
+      {
+        "type": "InspirationTextSection",
+        "props": {
+          "id": "InspirationTextSection-f5cbacce-ef5c-4163-a276-2787318a2317",
+          "title": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است",
+          "description": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد",
+          "showSection": true
+        }
+      },
+      {
+        "type": "Space",
+        "props": {
+          "id": "Space-97d61f00-8729-4af2-ba40-847063501bb9",
+          "size": "12",
+          "direction": ""
+        }
+      },
+      {
+        "type": "CollectionProductsSliderSection",
+        "props": {
+          "id": "CollectionProductsSliderSection-80976047-e03f-4b79-968e-79156bfab497",
+          "data": [
+            {
+              "id": "prod_01KTK8Q6SWKJ344E689ES4NA03",
+              "name": "لامپ",
+              "slug": "lamp",
+              "tags": [],
+              "images": [
+                {
+                  "alt": "لامپ",
+                  "url": "http://localhost:3900/medusabucket/store_01KTK5R0R5MZZ6KSPB43M5SMPF__dark-gray-three-seater-sofa-01KX957P7PQ2XNE6PGNA2SM3XX.png"
+                }
+              ],
+              "rating": 0,
+              "status": "active",
+              "brandId": "",
+              "featured": false,
+              "variants": [
+                {
+                  "id": "variant_01KTK8Q6Y1Q87764GV6B9GS3AG",
+                  "sku": "",
+                  "name": "لامپ",
+                  "price": 500000,
+                  "images": [
+                    {
+                      "alt": "لامپ",
+                      "url": "http://localhost:3900/medusabucket/store_01KTK5R0R5MZZ6KSPB43M5SMPF__dark-gray-three-seater-sofa-01KX957P7PQ2XNE6PGNA2SM3XX.png"
+                    }
+                  ],
+                  "options": [],
+                  "currency": "irr",
+                  "inventory": {
+                    "quantity": 0,
+                    "allowBackorder": false,
+                    "trackInventory": false
+                  },
+                  "productId": "prod_01KTK8Q6SWKJ344E689ES4NA03"
+                }
+              ],
+              "createdAt": "2026-06-08T09:23:47.647Z",
+              "updatedAt": "2026-07-11T17:58:15.769Z",
+              "categoryIds": [],
+              "description": "",
+              "reviewCount": 0
+            },
+            {
+              "id": "prod_01KV91RSMSFG6DM056G23E4XH1",
+              "name": "محافظ برق",
+              "slug": "mohafez",
+              "tags": [],
+              "images": [],
+              "rating": 0,
+              "status": "active",
+              "brandId": "",
+              "featured": false,
+              "variants": [
+                {
+                  "id": "variant_01KV91RSPCHMFDWH16ZGWSDA6C",
+                  "sku": "",
+                  "name": "محافظ برق",
+                  "price": 450000,
+                  "images": [],
+                  "options": [],
+                  "currency": "irr",
+                  "inventory": {
+                    "quantity": 0,
+                    "allowBackorder": false,
+                    "trackInventory": false
+                  },
+                  "productId": "prod_01KV91RSMSFG6DM056G23E4XH1"
+                }
+              ],
+              "createdAt": "2026-06-16T20:25:37.178Z",
+              "updatedAt": "2026-07-10T13:16:06.967Z",
+              "categoryIds": [],
+              "description": "",
+              "reviewCount": 0
+            }
+          ],
+          "heading": "فروش ویژه",
+          "collection": {
+            "id": "pcol_01KX62QBZTE12JFJ1WDGXCRQ4X",
+            "title": "فروش ویژه",
+            "handle": "فروش-ویژه"
+          },
+          "subHeading": "",
+          "categoryCardType": "card03"
+        }
+      },
+      {
+        "type": "Space",
+        "props": {
+          "id": "Space-2b47dfb3-5619-4804-a5d9-b39165e2f4eb",
+          "size": "16",
+          "direction": "vertical"
+        }
+      },
+      {
+        "type": "FeaturesSection",
+        "props": {
+          "id": "FeaturesSection-8627a885-75e6-4273-a701-2e9dfadf5fa8",
+          "features": [
+            {
+              "desc": "برای سفارش\u200cهای بالای ۵۰۰ هزار تومان",
+              "icon": "airplay",
+              "title": "ارسال رایگان"
+            },
+            {
+              "desc": "تمام محصولات دارای گارانتی اصالت",
+              "icon": "album",
+              "title": "گارانتی اصالت"
+            },
+            {
+              "desc": "همیشه در خدمت شما هستیم",
+              "icon": "apple",
+              "title": "پشتیبانی ۲۴ ساعته"
+            },
+            {
+              "desc": "پرداخت از طریق درگاه\u200cهای بانکی معتبر",
+              "icon": "atom",
+              "title": "پرداخت امن"
+            }
+          ]
+        }
+      },
+      {
+        "type": "AboutSection",
+        "props": {
+          "id": "AboutSection-2c907fcf-3d26-4762-98e9-b52b0f96b6a5",
+          "title": "درباره شرکت",
+          "heading": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است",
+          "linkHref": "/about",
+          "linkText": "مطالعه بیشتر",
+          "mainImage": "/images/content/gray-sofa-against-concrete-wall.png",
+          "paragraph1": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است",
+          "paragraph2": "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است ",
+          "showSection": true,
+          "mainImageAlt": "Gray sofa against concrete wall"
+        }
+      },
+      {
+        "type": "FullWidthImageSection",
+        "props": {
+          "id": "FullWidthImageSection-c285f1a1-1bc9-4e7c-a5f0-9c50ec4d3280",
+          "image": "/images/content/living-room-brown-armchair-gray-corner-sofa.png",
+          "altText": "Living room with brown armchair and gray corner sofa",
+          "className": "mt-26 md:mt-36 mb-8 md:mb-26",
+          "showSection": true
+        }
+      },
+      {
+        "type": "Space",
+        "props": {
+          "id": "Space-75a08a8f-2958-4def-a695-d8f10e5b0238",
+          "size": "24px",
+          "direction": ""
+        }
+      },
+      {
+        "type": "Space",
+        "props": {
+          "id": "Space-f37506a1-b68e-4eb4-b869-e62a9f5ca706",
+          "size": "16",
+          "direction": ""
+        }
+      }
+    ]
+  }
+}

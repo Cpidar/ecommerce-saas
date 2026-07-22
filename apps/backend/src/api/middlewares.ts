@@ -14,7 +14,7 @@ export default defineMiddlewares({
 
   routes: [
     {
-      method: ["GET"],
+      method: ["ALL"],
       matcher: "/store/*",
       middlewares: [addStoreScope],
     },

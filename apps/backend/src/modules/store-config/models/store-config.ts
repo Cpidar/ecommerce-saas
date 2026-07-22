@@ -5,9 +5,9 @@ const StoreConfig = model.define('store_config', {
   id: model.id().primaryKey(),
 
   medusa_store_id: model.text(),
-  title: model.text(),
-  handle: model.text().unique(),
-  domain: model.text(),
+  title: model.text().default(''),
+  handle: model.text().unique().nullable(),
+  domain: model.text().default(''),
   description: model.text().default(''),
 
   logo_url: model.text().nullable(),

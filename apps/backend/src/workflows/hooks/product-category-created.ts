@@ -25,9 +25,11 @@ createProductCategoriesWorkflow.hooks.categoriesCreated(async ({ categories }, {
       // 3. Generate your custom handle
       // Replace this logic with your own strategy
       let customHandle = slugify(category.name)
+      const uniquPostfix = Math.floor(1000 + Math.random() * 9000).toString()
+
       
       // Add a timestamp or random string for uniqueness
-      customHandle = `${category.handle}-${Date.now()}`
+      customHandle = `ncc-${uniquPostfix}-${category.handle}`
 
       // 4. Update the product directly with the new handle
       await productModuleService.updateProductCategories(category.id, {

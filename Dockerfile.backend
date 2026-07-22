@@ -59,13 +59,13 @@ ENV NODE_ENV=production
 RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
 # Copy only the standalone build output, not the whole monorepo/source tree.
-COPY --from=build /server/apps/backend/.medusa/server ./
+COPY --from=build /server/apps/backend/.medusa/server/package.json ./
 
 RUN --mount=type=cache,id=pnpm-runner,target=/pnpm/store \
-    pnpm install \
-      --prod \
-      --no-frozen-lockfile \
-      --config.package-import-method=copy
+    pnpm install --prod --no-frozen-lockfile --config.package-import-method=copy
+
+COPY --from=build /server/apps/backend/.medusa/server ./
+
 
 # If you copied .env in the build stage, bring it along here too:
 # COPY --from=build /server/apps/backend/.env ./.env.production

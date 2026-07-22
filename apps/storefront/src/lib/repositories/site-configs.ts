@@ -105,7 +105,7 @@ const fetchPuckPage = async (storeId?: string) => {
     "/store/store-config?fields=puck_data",
   )
 
-  console.log(response)
+  console.log("🐉🐉🐉", response)
 
   return response.store_config
 
@@ -143,7 +143,7 @@ export const siteConfigRepository = {
   async getAllConfig() {
     const storeId = await getCurrentStoreId()
     const allConfig = await fetchAllConfig(storeId)
-
+console.log(allConfig)
     return allConfig
 
   },
@@ -157,22 +157,27 @@ export const siteConfigRepository = {
   },
 
   async getPage(path?: string): Promise<any> {
-    const dbPath = `puck-data/database.json`
+    const templatePath = `puck-data/template.json` // Base template fallback
     const storeId = await getCurrentStoreId()
 
-    const defaultData: Record<string, Data> | null = fs.existsSync(dbPath)
-      ? JSON.parse(fs.readFileSync(dbPath, "utf-8"))
-      : null;
+    let puckData: any = null;
 
     const storeConfig = await fetchPuckPage(storeId)
-    // if (!storeConfig || !storeConfig.puck_data) return (path && defaultData) ? defaultData[path] : defaultData
 
-    if (!storeConfig) {
-      throw new Error("store config not found")
+    if (storeConfig?.puck_data) {
+      puckData = storeConfig.puck_data
+      console.log("😍😍😍😍", puckData)
+    } else {
+      // Fallback to template.json when there is no store config
+      if (fs.existsSync(templatePath)) {
+        puckData = JSON.parse(fs.readFileSync(templatePath, "utf-8"))
+      }
+      console.log("🍕🍕🍕🍕", puckData)
+      
     }
-    const puckData = storeConfig.puck_data
+    
+    
     const page = path ? puckData[path] : puckData
-
     return page
   },
 

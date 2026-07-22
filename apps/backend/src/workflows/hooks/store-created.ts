@@ -4,6 +4,7 @@ import { Modules } from "@medusajs/framework/utils";
 // import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
 import { createStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflows/create-store/index"
 import default_data_seed from "../../scripts/defaul-seed";
+import { createConfigWorkflow } from "../create-store-config";
 // import { linkProductToStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflows/link-product-to-store/index"
 
 createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
@@ -16,10 +17,22 @@ createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
 
   container.register('currentStore', asValue({ id: storeId }))
 
+  const { result: { storeConfig } } = await createConfigWorkflow(container).run({
+    input: {
+      title: store.name,
+      handle: store.metadata?.handle,
+      medusa_store_id: store.id,
+      // TODO: seed puck data json
+    }
+  })
+
+  console.log("Store config set: ", storeConfig)
+
   default_data_seed({
     container,
     storeId: storeId
   })
+
 
   //   const { result: [product] } = await createProductsWorkflow(container).run({
   //   input: {

@@ -1,37 +1,37 @@
-# .github/workflows/deploy.yml
-name: Build and Deploy
-on:
-  push:
-    branches: [main]
+# # .github/workflows/deploy.yml
+# name: Build and Deploy
+# on:
+#   push:
+#     branches: [main]
 
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
 
-      - name: Log in to private registry
-        run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login registry.tabeshelecshop.ir -u admin --password-stdin
+#       - name: Log in to private registry
+#         run: echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login registry.tabeshelecshop.ir -u admin --password-stdin
 
-      - name: Build
-        run: |
-          docker build -f Dockerfile.backend -t registry.tabeshelecshop.ir/medusa-backend:${{ github.sha }} \
-                       -t registry.tabeshelecshop.ir/medusa-backend:latest .
+#       - name: Build
+#         run: |
+#           docker build -f Dockerfile.backend -t registry.tabeshelecshop.ir/medusa-backend:${{ github.sha }} \
+#                        -t registry.tabeshelecshop.ir/medusa-backend:latest .
 
-      - name: Push
-        run: |
-          docker push registry.tabeshelecshop.ir/medusa-backend:${{ github.sha }}
-          docker push registry.tabeshelecshop.ir/medusa-backend:latest
+#       - name: Push
+#         run: |
+#           docker push registry.tabeshelecshop.ir/medusa-backend:${{ github.sha }}
+#           docker push registry.tabeshelecshop.ir/medusa-backend:latest
 
-      - name: Deploy to VPS
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          port: ${{ secrets.VPS_SSH_PORT }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            cd /app/infra
-            docker login registry.tabeshelecshop.ir -u admin -p ${{ secrets.REGISTRY_PASSWORD }}
-            docker compose pull medusa
-            docker compose up -d medusa
+#       - name: Deploy to VPS
+#         uses: appleboy/ssh-action@v1
+#         with:
+#           host: ${{ secrets.VPS_HOST }}
+#           port: ${{ secrets.VPS_SSH_PORT }}
+#           username: ${{ secrets.VPS_USER }}
+#           key: ${{ secrets.VPS_SSH_KEY }}
+#           script: |
+#             cd /app/infra
+#             docker login registry.tabeshelecshop.ir -u admin -p ${{ secrets.REGISTRY_PASSWORD }}
+#             docker compose pull medusa
+#             docker compose up -d medusa

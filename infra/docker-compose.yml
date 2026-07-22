@@ -96,7 +96,7 @@ services:
 
   # ========== MEDUSA BACKEND ==========
   medusa:
-    image: backend-image:latest
+    image: medusa:v1
     container_name: medusa_backend
     restart: unless-stopped
     depends_on:
