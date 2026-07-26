@@ -1,112 +1,124 @@
-import { Client } from "./client";
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
-import { Data } from "@puckeditor/core";
-import { Suspense } from "react";
+import { Client } from "./client"
+import { notFound } from "next/navigation"
+import { Metadata } from "next"
+import { Data } from "@puckeditor/core"
+import { Suspense } from "react"
 
-import { medusaCollectionRepository } from "@/lib/repositories/medusa-collection-repository";
-import { siteConfigRepository } from "@/lib/repositories/site-configs";
-import { medusaCategoryRepository } from "@/lib/repositories/medusa-category-repository";
-import { listProductsByCollection } from "@/lib/repositories/products";
-import LoadingSkeleton from "./loading";
+import { siteConfigRepository } from "@/lib/repositories/site-configs"
+import { medusaCollectionRepository } from "@/lib/repositories/medusa-collection-repository"
+import { medusaCategoryRepository } from "@/lib/repositories/medusa-category-repository"
+import { listProductsByCollection } from "@/lib/repositories/products"
 
 // ---------------------------------------------------------------------------
-// Static Metadata
+// Metadata
 // ---------------------------------------------------------------------------
 export async function generateMetadata(): Promise<Metadata> {
-  const path = `/home`;
-  const data = await siteConfigRepository.getPage(path);
-
+  const data = await siteConfigRepository.getPage("/home")
   return {
-    title: data?.root.props?.title ?? "Home",
-    description: data?.root.props?.description ?? "",
-  };
+    title: data?.root?.props?.title ?? "Home",
+    description: data?.root?.props?.description ?? "",
+  }
 }
 
 // ---------------------------------------------------------------------------
-// Dynamic Data Fetcher (Wrapped in Suspense)
+// Heavy product enrichment (runs in background)
 // ---------------------------------------------------------------------------
-async function EnrichedPageData({ path }: { path: string }) {
-  const data = await siteConfigRepository.getPage(path);
-  if (!data) notFound();
+async function EnrichedContent({ data }: { data: Data }) {
+  // Collect needed collection handles
+  const collectionHandles = data.content
+    .filter((item) => item.type === "CollectionProductsSliderSection")
+    .map((item) => item.props.collection?.handle)
+    .filter(Boolean) as string[]
 
-  async function enrichData(
-    item: Data["content"][number],
-  ): Promise<Data["content"][number]> {
+  // Fetch everything in parallel
+  const [collections, categories, incredibleOffers, ...collectionResults] =
+    await Promise.all([
+      medusaCollectionRepository.list(),
+      medusaCategoryRepository.list(),
+      listProductsByCollection("incredible_offers"),
+      ...collectionHandles.map((handle) => listProductsByCollection(handle)),
+    ])
+
+  const productsByHandle: Record<string, any[]> = {
+    incredible_offers: incredibleOffers.items,
+  }
+
+  collectionHandles.forEach((handle, index) => {
+    productsByHandle[handle] = collectionResults[index]?.items ?? []
+  })
+
+  // Enrich only the product-related sections
+  const enrichedContent = data.content.map((item) => {
     switch (item.type) {
       case "CollectionProductsSliderSection": {
-        const collection = await listProductsByCollection(
-          item.props.collection.handle,
-        );
+        const handle = item.props.collection?.handle
         return {
           ...item,
           props: {
             ...item.props,
-            data: collection.items,
+            data: productsByHandle[handle] ?? [],
           },
-        };
+        }
       }
 
-      case "IncredibleOffersSection": {
-        const incredibleOffers =
-          await listProductsByCollection("incredible_offers");
+      case "IncredibleOffersSection":
         return {
           ...item,
           props: {
             ...item.props,
-            data: incredibleOffers.items,
+            data: productsByHandle.incredible_offers ?? [],
           },
-        };
-      }
+        }
 
-      case "CollectionsSectionWrapper": {
-        const collections = await medusaCollectionRepository.list();
+      case "CollectionsSectionWrapper":
         return {
           ...item,
           props: {
             ...item.props,
             data: collections.filter((c) => c.handle !== "incredible_offers"),
           },
-        };
-      }
+        }
 
-      case "CategoriesSlider": {
-        const categories = await medusaCategoryRepository.list();
-        if (categories.length < 5) return item;
-
+      case "CategoriesSlider":
+        if (categories.length < 5) return item
         return {
           ...item,
           props: {
             ...item.props,
             data: categories,
           },
-        };
-      }
+        }
 
       default:
-        return item;
+        return item // Hero and other static sections stay as-is
     }
-  }
-
-  const enrichedContent = await Promise.all(data.content.map(enrichData));
+  })
 
   const pageData: Data = {
     ...data,
     content: enrichedContent,
-  };
+  }
 
-  return <Client data={pageData} path={path} />;
+  return <Client data={pageData} path="/home" />
 }
 
 // ---------------------------------------------------------------------------
-// Main Page (Static Shell + Dynamic Content)
+// Page – Instant shell + progressive enrichment
 // ---------------------------------------------------------------------------
-export default function HomePage() {
-  const path = `/home`;
+export default async function HomePage() {
+  // 1. Load the light Puck page data first (this is fast + can be cached)
+  const data = await siteConfigRepository.getPage("/home")
+  if (!data) notFound()
 
   return (
-    // <Suspense fallback={<LoadingSkeleton />}>
-      <EnrichedPageData path={path} />
-    // </Suspense>
-  );
+    <Suspense
+      fallback={
+        // Show the page immediately with empty product data (Hero appears right away)
+        <Client data={data} path="/home" />
+      }
+    >
+      {/* 2. Then replace with fully enriched data */}
+      <EnrichedContent data={data} />
+    </Suspense>
+  )
 }

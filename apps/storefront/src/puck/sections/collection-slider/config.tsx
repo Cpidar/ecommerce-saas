@@ -57,25 +57,37 @@ const mockCollections: StoreCollection[] = [
 ]
 
 export const CollectionsSectionWrapper: ComponentConfig<CollectionsSectionWrapper> =
-  {
-    label: "نمایش مجموعه ها",
-    defaultProps: {
-      showSection: true,
-      data: mockCollections,
+{
+  label: "نمایش مجموعه ها",
+  defaultProps: {
+    showSection: true,
+    // data: mockCollections,
+  },
+  fields: {
+    showSection: {
+      label: "Show Section",
+      ...checkboxField,
     },
-    fields: {
-      showSection: {
-        label: "Show Section",
-        ...checkboxField,
-      },
-    },
-    render: ({ showSection, data, puck: { isEditing } }) => {
-      if (!showSection) return <></>
+  },
+  render: ({ showSection, data, puck: { isEditing } }) => {
+    if (!showSection) return <></>
+    if (isEditing) {
       return (
         <CollectionsSection
-          collections={data ? data : mockCollections}
+          collections={mockCollections}
           className="mb-22 md:mb-36"
         />
       )
-    },
-  }
+    }
+    if (!data && data.length === 0) {
+      // Show a nice skeleton / placeholder while real data is loading
+      // return <SliderSkeleton></SliderSkeleton>
+    }
+    return (
+      <CollectionsSection
+        collections={data}
+        className="mb-22 md:mb-36"
+      />
+    )
+  },
+}
