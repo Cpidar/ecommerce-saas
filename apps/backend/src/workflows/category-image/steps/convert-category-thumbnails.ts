@@ -7,7 +7,7 @@ export type ConvertCategoryThumbnailsStepInput = {
 }
 
 export const convertCategoryThumbnailsStep = createStep(
-  "convert-category-thumbnails-step",
+  "convert-category-thumbnails",
   async (input: ConvertCategoryThumbnailsStepInput, { container }) => {
     const productMediaService: ProductMediaModuleService =
       container.resolve(PRODUCT_MEDIA_MODULE)

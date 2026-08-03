@@ -13,7 +13,7 @@ export type CreateCategoryImagesStepInput = {
 }
 
 export const createCategoryImagesStep = createStep(
-  "create-category-images-step",
+  "create-category-images",
   async (input: CreateCategoryImagesStepInput, { container }) => {
     const productMediaService: ProductMediaModuleService =
       container.resolve(PRODUCT_MEDIA_MODULE)

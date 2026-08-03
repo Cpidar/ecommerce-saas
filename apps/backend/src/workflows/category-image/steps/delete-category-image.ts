@@ -7,7 +7,7 @@ export type DeleteCategoryImagesStepInput = {
 }
 
 export const deleteCategoryImagesStep = createStep(
-  "delete-category-images-step",
+  "delete-category-images",
   async (input: DeleteCategoryImagesStepInput, { container }) => {
     const productMediaService: ProductMediaModuleService =
       container.resolve(PRODUCT_MEDIA_MODULE)

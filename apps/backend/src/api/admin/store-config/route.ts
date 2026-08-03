@@ -1,3 +1,4 @@
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import {
   MedusaRequest,
   MedusaResponse,
@@ -9,7 +10,7 @@ import { createStoreConfigWorkflowInputSchema, updateStoreConfigWorkflowInputSch
 import { updateStoreConfigWorkflow } from "../../../workflows/update-store-config";
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const query = req.scope.resolve("query");
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
   const { data: [store_config], metadata: { count, take, skip } = {} } =
     await query.graph({

@@ -15,7 +15,7 @@ type CreateBrandWorkflowInput = {
 }
 
 export const createAuthMetaDataWorkflow = createWorkflow(
-    "auth-app-metadata",
+    "create-auth-meta-data",
     ({ authIdentityId, actorType, value }: CreateBrandWorkflowInput) => {
         const brand = setAuthAppMetadataStep({
             authIdentityId,

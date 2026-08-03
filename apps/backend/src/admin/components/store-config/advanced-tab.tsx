@@ -177,7 +177,6 @@ const getSubset = (
   tab: TabKey
 ): unknown => {
   if (tab === "full") {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, medusa_store_id, homepage_layout, about_page_layout, ...rest } = storeConfig;
     return rest;
   }

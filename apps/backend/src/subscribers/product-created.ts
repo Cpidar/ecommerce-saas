@@ -1,4 +1,4 @@
-import { Modules } from "@medusajs/framework/utils"
+import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import {
     SubscriberArgs,
     type SubscriberConfig,
@@ -10,7 +10,7 @@ export default async function productCreatedEvent({
     container,
 }: SubscriberArgs<{ id: string }>) {
 
-    const logger = container.resolve("logger")
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
     logger.info("Product Created Event Subscriber")
 
     const productModule = container.resolve(Modules.PRODUCT)

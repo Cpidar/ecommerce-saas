@@ -1,3 +1,4 @@
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
 import { createCategoryImagesWorkflow } from "../../../../../workflows/category-image/create-category-images"
 import { z } from "@medusajs/framework/zod"
@@ -43,7 +44,7 @@ export async function GET(
   res: MedusaResponse
 ): Promise<void> {
   const { category_id } = req.params
-  const query = req.scope.resolve("query")
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const { data: categoryImages } = await query.graph({
     entity: "product_category_image",

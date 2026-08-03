@@ -1,3 +1,4 @@
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { type MedusaNextFunction, type MedusaRequest, type MedusaResponse } from "@medusajs/framework/http";
 
 export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
@@ -16,7 +17,7 @@ export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, nex
     return;
   }
 
-  const query = req.scope.resolve('query')
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const sluggyfiedStoreId = storeId.toLowerCase().replace(/_/g, '-')
   console.log(sluggyfiedStoreId)

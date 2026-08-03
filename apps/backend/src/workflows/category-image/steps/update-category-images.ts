@@ -10,7 +10,7 @@ export type UpdateCategoryImagesStepInput = {
 }
 
 export const updateCategoryImagesStep = createStep(
-  "update-category-images-step",
+  "update-category-images",
   async (input: UpdateCategoryImagesStepInput, { container }) => {
     const productMediaService: ProductMediaModuleService =
       container.resolve(PRODUCT_MEDIA_MODULE)
