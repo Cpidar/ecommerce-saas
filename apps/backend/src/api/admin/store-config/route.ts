@@ -32,16 +32,28 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
     input: { ...validatedData, medusa_store_id: currentStore.id },
   });
 
-  res.status(201).json({ config: result });
+  res.status(201).json({ store_config: result });
 };
 
 export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
   const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-  // const validatedData = updateStoreConfigWorkflowInputSchema.parse(body);
+  const validatedData = updateStoreConfigWorkflowInputSchema.parse(body);
+
+  const normalizedInput = {
+    ...validatedData,
+    payment_configs:
+      typeof validatedData.payment_configs === "string"
+        ? JSON.parse(validatedData.payment_configs)
+        : validatedData.payment_configs,
+    shipping_method_configs:
+      typeof validatedData.shipping_method_configs === "string"
+        ? JSON.parse(validatedData.shipping_method_configs)
+        : validatedData.shipping_method_configs,
+  };
 
   const { result } = await updateStoreConfigWorkflow(req.scope).run({
-    input: { ...body },
+    input: normalizedInput,
   });
 
-  res.status(201).json({ config: result });
+  res.status(200).json({ store_config: result });
 };

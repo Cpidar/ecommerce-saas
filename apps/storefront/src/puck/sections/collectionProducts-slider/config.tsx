@@ -1,5 +1,7 @@
 import { ComponentConfig } from "@puckeditor/core";
-import CollectionProductsSlider from "./components";
+import CollectionProductsSlider, {
+  CollectionSliderSkeleton,
+} from "./components";
 import mockData from "@/lib/static-data/products.json";
 import { Product } from "@/types";
 
@@ -55,7 +57,9 @@ const collectionsList = async (): Promise<MedusaCollection[]> => {
   }));
 };
 
-async function getCollection(collectionId: string): Promise<{ collection: MedusaCollection }> {
+async function getCollection(
+  collectionId: string,
+): Promise<{ collection: MedusaCollection }> {
   if (!publishableApiKey || !backendUrl) {
     throw new Error("Missing Medusa backend URL or publishable API key");
   }
@@ -138,12 +142,18 @@ export const CollectionProductsSliderSection: ComponentConfig<Props> = {
     subHeading: "",
     data: mockData.products as unknown as Product[],
   },
-  render: ({ heading, subHeading, data }) => {
-    return (
-      <CollectionProductsSlider
-        heading={heading}
-        data={data?.length ? data : (mockData.products as unknown as Product[])}
-      />
-    );
+  render: ({ heading, subHeading, data, puck: { isEditing } }) => {
+    if (isEditing) {
+      return (
+        <CollectionProductsSlider
+          heading={heading}
+          data={mockData.products as unknown as Product[]}
+        />
+      );
+    }
+    if (!data) {
+      return <CollectionSliderSkeleton />;
+    }
+    return <CollectionProductsSlider heading={heading} data={data} />;
   },
 };

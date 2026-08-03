@@ -100,6 +100,7 @@ export const createStoreConfigWorkflowInputSchema = z
         handle: z.string().min(1),
         domain: z.string().min(1),
         description: z.string().optional(),
+        tagline: z.string().optional(),
 
         logo_url: z.string().url().nullable().optional(),
         logo_alt: z.string().nullable().optional(),

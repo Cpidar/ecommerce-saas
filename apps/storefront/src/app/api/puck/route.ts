@@ -29,23 +29,29 @@ export async function POST(request: Request) {
 
   // 🟢 Write to the correct path
   // fs.writeFileSync(dbPath, JSON.stringify(payload.data, null, 2)); // Added pretty printing
-  await sdk.client.fetch(
-    "/store/store-config",
-    {
-      method: "PUT",
-      body: {
-        ...existingStoreConfig,
-        puck_data: {
-          ...existingStoreConfig?.puck_data,
-          [payload.path]: {
-            ...existingPuckDataForPath,
-            ...payload.data
-          }
-        }
-      },
-    }
-  ).then(console.log)
 
+  try {
+
+    await sdk.client.fetch(
+      "/store/store-config",
+      {
+        method: "POST",
+        body: {
+          ...existingStoreConfig,
+          puck_data: {
+            ...existingStoreConfig?.puck_data,
+            [payload.path]: {
+              ...existingPuckDataForPath,
+              ...payload.data
+            }
+          }
+        },
+      }
+    ).then(res => console.log("🔥🔥🔥🔥", res))
+  } catch (e) {
+    console.error(e)
+    throw new Error("Something was wrong")
+  }
   // Purge Next.js cache
   // revalidatePath(payload.path);
 

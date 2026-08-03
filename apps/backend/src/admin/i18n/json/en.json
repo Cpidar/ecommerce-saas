@@ -21,7 +21,7 @@
       "domain": "Domain",
       "description": "Description"
     },
-    "marketing": {
+    "info": {
       "title": "Marketing & Analytics",
       "subtitle": "Marketing and branding elements",
       "logoUrl": "Logo URL",

@@ -1,22 +1,68 @@
 import { ComponentConfig } from "@puckeditor/core";
-import IncredibleOffers from "./components";
+import IncredibleOffers, { IncredibleOffersSkeleton } from "./components";
 import mockData from "@/lib/static-data/products.json";
 import { Product } from "@/types";
 
+interface MedusaCollection {
+  id: string;
+  title: string;
+  handle: string;
+  deleted_at?: string;
+  metadata?: Record<string, any>;
+  external_id?: string;
+  products?: any[];
+}
 
 type Props = {
-  collectionSlug: string;
+  collection: { id: string; title: string; handle: string };
   categoryCardType: string;
-  heading: string,
-  subHeading: string,
-  data?: Product[]
+  heading: string;
+  subHeading: string;
+  data?: Product[];
 };
 
+const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL;
+const publishableApiKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY;
+
+const collectionsList = async (): Promise<MedusaCollection[]> => {
+  if (!publishableApiKey || !backendUrl) {
+    throw new Error("Missing Medusa backend URL or publishable API key");
+  }
+
+  const match = document.cookie.match(/current_store_id=([^;]+)/);
+  const storeIdCache = match && match[1];
+  console.log("sdk hit from client", storeIdCache);
+
+  const headers: HeadersInit = {
+    "x-publishable-api-key": publishableApiKey,
+    "Content-Type": "application/json",
+    "x-store-id": storeIdCache || "store_01KVJBNGCHF9N47BJFRJ3BMWHY",
+  };
+  const res = await fetch(`${backendUrl}/store/collections`, {
+    method: "GET",
+    headers,
+  });
+
+  if (!res.ok) {
+    throw new Error(`HTTP error! status: ${res.status}`);
+  }
+
+  const { collections } = await res.json();
+  return collections.map((collection: MedusaCollection) => ({
+    id: collection.id,
+    title: collection.title,
+    handle: collection.handle,
+  }));
+};
 
 export const IncredibleOffersSection: ComponentConfig<Props> = {
   label: "محصولات شگفت انگیز",
   fields: {
-    collectionSlug: { type: "text", contentEditable: false },
+    collection: {
+      type: "external",
+      label: "انتخاب کالکشن",
+      fetchList: collectionsList,
+    },
     categoryCardType: {
       type: "select",
       options: [
@@ -31,25 +77,36 @@ export const IncredibleOffersSection: ComponentConfig<Props> = {
     },
     heading: {
       type: "textarea",
-      contentEditable: true
+      contentEditable: true,
     },
     subHeading: {
       type: "textarea",
-    }
+    },
   },
   defaultProps: {
-    collectionSlug: "incredible_offers",
-    categoryCardType: 'card07',
-    heading: 'تخفیفهای شگفت انگیز',
-    subHeading: '',
-    data: mockData.products as unknown as Product[]
+    collection: {
+      handle: "incredible_offers",
+      id: "",
+      title: "تخفیفهای شگفت انگیز",
+    },
+    categoryCardType: "card07",
+    heading: "تخفیفهای شگفت انگیز",
+    subHeading: "",
+    data: mockData.products as unknown as Product[],
   },
-  render: ({ heading, subHeading, data }) => {
-    return (
-      <IncredibleOffers
-        heading={heading}
-        data={data?.length ? data : mockData.products as unknown as Product[]}
-      />
-    );
+  render: ({ heading, subHeading, data, puck: { isEditing } }) => {
+    if (isEditing) {
+      return (
+        <IncredibleOffers
+          heading={heading}
+          data={mockData.products as unknown as Product[]}
+        />
+      );
+    }
+    if (!data || data.length === 0) {
+      return <IncredibleOffersSkeleton />;
+    }
+
+    return <IncredibleOffers heading={heading} data={data} />;
   },
 };

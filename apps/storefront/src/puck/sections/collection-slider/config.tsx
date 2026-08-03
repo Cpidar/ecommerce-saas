@@ -1,12 +1,15 @@
 // configs/components/CollectionsSectionWrapper.ts
-import { ComponentConfig } from "@puckeditor/core"
-import { CollectionsSection } from "./CollectionsSection"
-import { checkboxField } from "../../fields/checkbox"
-import { StoreCollection } from "@medusajs/types"
+import { ComponentConfig } from "@puckeditor/core";
+import {
+  CollectionSliderSkeleton,
+  CollectionsSection,
+} from "./CollectionsSection";
+import { checkboxField } from "../../fields/checkbox";
+import { StoreCollection } from "@medusajs/types";
 
 interface CollectionsSectionWrapper {
-  showSection: boolean
-  data?: StoreCollection[]
+  showSection: boolean;
+  data?: StoreCollection[];
 }
 
 const mockCollections: StoreCollection[] = [
@@ -18,7 +21,9 @@ const mockCollections: StoreCollection[] = [
     updated_at: "2024-03-20T14:45:00Z",
     deleted_at: null,
     metadata: {
-      image: { url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png" }
+      image: {
+        url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      },
     },
   },
   {
@@ -29,7 +34,9 @@ const mockCollections: StoreCollection[] = [
     updated_at: "2024-01-10T11:20:00Z",
     deleted_at: null,
     metadata: {
-      image: { url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png" }
+      image: {
+        url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      },
     },
   },
   {
@@ -40,7 +47,9 @@ const mockCollections: StoreCollection[] = [
     updated_at: "2024-03-25T09:30:00Z",
     deleted_at: null,
     metadata: {
-      image: { url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png" }
+      image: {
+        url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      },
     },
   },
   {
@@ -51,10 +60,12 @@ const mockCollections: StoreCollection[] = [
     updated_at: "2024-03-28T10:15:00Z",
     deleted_at: "2024-03-29T16:20:00Z", // Example with deleted_at populated
     metadata: {
-      image: { url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png" }
+      image: {
+        url: "/images/content/gray-one-seater-sofa-wooden-coffee-table.png",
+      },
     }, // Example with null metadata
   },
-]
+];
 
 export const CollectionsSectionWrapper: ComponentConfig<CollectionsSectionWrapper> =
   {
@@ -70,12 +81,23 @@ export const CollectionsSectionWrapper: ComponentConfig<CollectionsSectionWrappe
       },
     },
     render: ({ showSection, data, puck: { isEditing } }) => {
-      if (!showSection) return <></>
+      if (!showSection) return <></>;
+      if (isEditing) {
+        return (
+          <CollectionsSection
+            collections={mockCollections}
+            className="mb-22 md:mb-36"
+          />
+        );
+      }
+      if (!data || data.length === 0) {
+        return (
+          // Skeleton
+          <CollectionSliderSkeleton />
+        );
+      }
       return (
-        <CollectionsSection
-          collections={data ? data : mockCollections}
-          className="mb-22 md:mb-36"
-        />
-      )
+        <CollectionsSection collections={data} className="mb-22 md:mb-36" />
+      );
     },
-  }
+  };

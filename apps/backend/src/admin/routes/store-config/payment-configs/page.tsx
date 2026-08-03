@@ -30,6 +30,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { sdk } from "../../../lib/sdk";
 import { getStoreConfig, saveStoreConfig } from "../api";
 import type { StoreConfigInput, PaymentConfigInput } from "../types";
+import { StoreConfigShell } from "../store-config-layout";
 
 type ProviderConfig = {
   name: string;
@@ -311,106 +312,108 @@ const PaymentMethods = ({ className }: PaymentMethodsProps) => {
   }
 
   return (
-    <section className={className}>
-      <div className="mx-auto max-w-2xl py-16 md:py-24">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <Heading>روش‌های پرداخت</Heading>
-            <Text className="text-ui-fg-subtle mt-1">
-              مدیریت درگاه‌های پرداخت ایرانی
-            </Text>
-          </div>
-          <Button
-            onClick={startAddingNew}
-            disabled={
-              saveMutation.isPending ||
-              isAddingNew ||
-              missingProviderIds.length === 0
-            }
-          >
-            <Plus className="mr-2" />
-            افزودن درگاه جدید
-          </Button>
-        </div>
-
-        <div className="space-y-3">
-          {methods
-            .filter((method) => method)
-            .map((method) => {
-              const providerId = getPaymentConfigKey(method);
-              const isEditing = editingProviderId === providerId;
-
-              return (
-                <Container
-                  key={providerId}
-                  className={`overflow-hidden border p-0 transition-colors ${
-                    isEditing
-                      ? "border-ui-border-interactive"
-                      : "border-ui-border-base"
-                  }`}
-                >
-                  <div className="p-4">
-                    {isEditing ? (
-                      <EditForm
-                        editForm={editForm}
-                        currentProvider={currentProvider}
-                        onProviderChange={handleProviderChange}
-                        onConfigChange={handleConfigChange}
-                        onSave={save}
-                        onCancel={cancelEditing}
-                        isSaving={saveMutation.isPending}
-                      />
-                    ) : (
-                      <ViewMode
-                        method={method}
-                        onEdit={() => startEditing(method)}
-                        onDelete={() => deleteMethod(method.provider_id)}
-                        isDeleting={saveMutation.isPending}
-                      />
-                    )}
-                  </div>
-                </Container>
-              );
-            })}
-
-          {isAddingNew && (
-            <Container className="border-ui-border-interactive overflow-hidden p-0">
-              <div className="p-4">
-                <EditForm
-                  editForm={editForm}
-                  availableProviderIds={missingProviderIds}
-                  currentProvider={currentProvider}
-                  onProviderChange={handleProviderChange}
-                  onConfigChange={handleConfigChange}
-                  onSave={save}
-                  onCancel={cancelAddingNew}
-                  isSaving={saveMutation.isPending}
-                  isNew
-                />
-              </div>
-            </Container>
-          )}
-        </div>
-
-        {methods.filter((m) => m).length === 0 && !isAddingNew && (
-          <Container className="mt-3 flex flex-col items-center justify-center py-12">
-            <CreditCard className="mb-4 size-12 text-ui-fg-muted" />
-            <Heading level="h2">هیچ درگاهی ثبت نشده است</Heading>
-            <Text className="mt-2 text-ui-fg-subtle">
-              درگاه پرداخت اضافه کنید
-            </Text>
+    <StoreConfigShell>
+      <Container className="p-6">
+        <div className="mb-6">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <Heading>روش‌های پرداخت</Heading>
+              <Text className="text-ui-fg-subtle mt-1">
+                مدیریت درگاه‌های پرداخت ایرانی
+              </Text>
+            </div>
             <Button
-              className="mt-4"
               onClick={startAddingNew}
-              disabled={missingProviderIds.length === 0}
+              disabled={
+                saveMutation.isPending ||
+                isAddingNew ||
+                missingProviderIds.length === 0
+              }
             >
               <Plus className="mr-2" />
-              افزودن درگاه پرداخت
+              افزودن درگاه جدید
             </Button>
-          </Container>
-        )}
-      </div>
-    </section>
+          </div>
+
+          <div className="space-y-3">
+            {methods
+              .filter((method) => method)
+              .map((method) => {
+                const providerId = getPaymentConfigKey(method);
+                const isEditing = editingProviderId === providerId;
+
+                return (
+                  <Container
+                    key={providerId}
+                    className={`overflow-hidden border p-0 transition-colors ${
+                      isEditing
+                        ? "border-ui-border-interactive"
+                        : "border-ui-border-base"
+                    }`}
+                  >
+                    <div className="p-4">
+                      {isEditing ? (
+                        <EditForm
+                          editForm={editForm}
+                          currentProvider={currentProvider}
+                          onProviderChange={handleProviderChange}
+                          onConfigChange={handleConfigChange}
+                          onSave={save}
+                          onCancel={cancelEditing}
+                          isSaving={saveMutation.isPending}
+                        />
+                      ) : (
+                        <ViewMode
+                          method={method}
+                          onEdit={() => startEditing(method)}
+                          onDelete={() => deleteMethod(method.provider_id)}
+                          isDeleting={saveMutation.isPending}
+                        />
+                      )}
+                    </div>
+                  </Container>
+                );
+              })}
+
+            {isAddingNew && (
+              <Container className="border-ui-border-interactive overflow-hidden p-0">
+                <div className="p-4">
+                  <EditForm
+                    editForm={editForm}
+                    availableProviderIds={missingProviderIds}
+                    currentProvider={currentProvider}
+                    onProviderChange={handleProviderChange}
+                    onConfigChange={handleConfigChange}
+                    onSave={save}
+                    onCancel={cancelAddingNew}
+                    isSaving={saveMutation.isPending}
+                    isNew
+                  />
+                </div>
+              </Container>
+            )}
+          </div>
+
+          {methods.filter((m) => m).length === 0 && !isAddingNew && (
+            <div className="mt-3 flex flex-col items-center justify-center py-12">
+              <CreditCard className="mb-4 size-12 text-ui-fg-muted" />
+              <Heading level="h2">هیچ درگاهی ثبت نشده است</Heading>
+              <Text className="mt-2 text-ui-fg-subtle">
+                درگاه پرداخت اضافه کنید
+              </Text>
+              <Button
+                className="mt-4"
+                onClick={startAddingNew}
+                disabled={missingProviderIds.length === 0}
+              >
+                <Plus className="mr-2" />
+                افزودن درگاه پرداخت
+              </Button>
+            </div>
+          )}
+        </div>
+      </Container>
+    </StoreConfigShell>
   );
 };
 
@@ -572,6 +575,7 @@ const ViewMode = ({ method, onEdit, onDelete, isDeleting }: ViewModeProps) => {
 export const config = defineRouteConfig({
   label: "روش‌های پرداخت",
   icon: CurrencyDollar,
+  rank: 4,
 });
 
 export default PaymentMethods;

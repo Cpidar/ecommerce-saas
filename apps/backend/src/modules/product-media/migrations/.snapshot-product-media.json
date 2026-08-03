@@ -11,8 +11,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "url": {
@@ -22,6 +29,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "file_id": {
@@ -31,6 +45,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "type": {
@@ -40,6 +61,12 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
           "enumItems": [
             "thumbnail",
             "image"
@@ -53,6 +80,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -62,8 +96,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -73,8 +112,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -84,7 +128,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -98,7 +148,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_category_image_deleted_at\" ON \"product_category_image\" (deleted_at) WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_category_image_deleted_at\" ON \"product_category_image\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "unique_thumbnail_per_category",
@@ -107,7 +157,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"unique_thumbnail_per_category\" ON \"product_category_image\" (category_id, type) WHERE type = 'thumbnail' AND deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"unique_thumbnail_per_category\" ON \"product_category_image\" (\"category_id\", \"type\") WHERE type = 'thumbnail' AND deleted_at IS NULL"
         },
         {
           "keyName": "product_category_image_pkey",
