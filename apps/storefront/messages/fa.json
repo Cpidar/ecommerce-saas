@@ -166,6 +166,8 @@
     "rememberPassword": "رمز عبور را به خاطر دارید؟",
     "demoAccounts": "حساب‌های دمو:",
     "invalidCredentials": "ایمیل یا رمز عبور اشتباه است",
+    "footerText": "قدرت گرفته از",
+    "footerLinkText": "نیتروکامرس",
     "accountExists": "حساب کاربری با این ایمیل قبلاً وجود دارد",
     "passwordMismatch": "رمزهای عبور مطابقت ندارند",
     "passwordMinLength": "رمز عبور باید حداقل ۸ کاراکتر باشد",

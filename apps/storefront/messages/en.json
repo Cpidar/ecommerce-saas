@@ -164,6 +164,8 @@
     "rememberPassword": "Remember your password?",
     "demoAccounts": "Demo accounts:",
     "invalidCredentials": "Invalid email or password",
+    "footerText": "Powered by",
+    "footerLinkText": "NitroCommerce",
     "accountExists": "An account with this email already exists",
     "passwordMismatch": "Passwords don't match",
     "passwordMinLength": "Password must be at least 8 characters",
