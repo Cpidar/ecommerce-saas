@@ -130,6 +130,17 @@ const fetchAdminPuckPage = async () => {
 
 }
 
+const fetchSeoConfig = async (storeId?: string) => {
+  "use cache"
+  cacheTag(storeConfigTags.all(storeId || "store"))
+  cacheLife("max")
+
+  const response = await sdk.client.fetch<StoreConfigResponse>(
+    "/store/store-config?fields=seo_config",
+  )
+  return response.store_config?.seo_config
+}
+
 const fetchShippingAndPaymentconfig = async (storeId?: string) => {
   // if (process.env.NODE_ENV === "production") {
   "use cache"
@@ -213,6 +224,13 @@ export const siteConfigRepository = {
 
     // const page = path ? puckData[path] : puckData
     return storeConfig
+  },
+
+  async getSeoConfig() {
+    const storeId = await getCurrentStoreId()
+    const coreConfig = await fetchSeoConfig(storeId)
+
+    return coreConfig
   },
 
   async getGeneralConfig() {
