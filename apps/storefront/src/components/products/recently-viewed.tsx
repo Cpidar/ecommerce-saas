@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { useRecentlyViewedStore } from "@/store/recently-viewed"
-import { PLACEHOLDER_IMAGE } from "@/lib/constants"
+import { IMAGE_REMOTE_HOST, PLACEHOLDER_IMAGE } from "@/lib/constants"
 import { formatPrice } from "@/lib/utils/utils"
 
 interface RecentlyViewedProps {
@@ -28,12 +28,12 @@ export function RecentlyViewed({ excludeProductId }: RecentlyViewedProps) {
         {items.map((item) => (
           <Link
             key={item.productId}
-            href={`/${item.slug}`}
+            href={`/products/${item.slug}`}
             className="group shrink-0"
           >
             <div className="relative h-32 w-32 overflow-hidden rounded-lg bg-neutral-100">
               <Image
-                src={item.imageUrl || PLACEHOLDER_IMAGE}
+                src={item.imageUrl ? `${IMAGE_REMOTE_HOST}/${item.imageUrl}` : PLACEHOLDER_IMAGE}
                 alt={item.imageAlt || item.name}
                 fill
                 className="object-cover transition-transform duration-300 group-hover:scale-105"

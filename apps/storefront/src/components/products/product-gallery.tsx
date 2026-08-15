@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import type { ProductImage } from "@/types"
-import { PLACEHOLDER_IMAGE } from "@/lib/constants"
+import { IMAGE_REMOTE_HOST, PLACEHOLDER_IMAGE } from "@/lib/constants"
 import { cn } from "@/lib/utils/utils"
 
 interface ProductGalleryProps {
@@ -14,8 +14,6 @@ interface ProductGalleryProps {
 export function ProductGallery({ images, productName = "Product" }: ProductGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const currentImage = images[selectedIndex]
-
-  const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS;
 
   return (
     <div className="flex flex-col gap-4">

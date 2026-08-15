@@ -24,7 +24,7 @@ export function formatPrice(
     currency: 'IRR',
     // Hide the IRR symbol, we'll add our own
     currencyDisplay: 'code',
-  }).format(priceInToman * 10)
+  }).format(priceInToman)
     .replace('IRR', '') // Remove IRR code
     .trim();
   

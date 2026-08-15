@@ -7,7 +7,7 @@ import { Heart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { StarRating } from "@/components/products/star-rating";
 import { formatPrice } from "@/lib/utils/utils";
-import { PLACEHOLDER_IMAGE } from "@/lib/constants";
+import { IMAGE_REMOTE_HOST, PLACEHOLDER_IMAGE } from "@/lib/constants";
 import { useWishlistStore } from "@/store/wishlist";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -30,7 +30,6 @@ export function ProductCard({ product }: ProductCardProps) {
   const compareAtPrice = defaultVariant.compareAtPrice;
   const isOnSale = compareAtPrice && compareAtPrice > price;
   const image = product.images[0];
-  const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS;
 
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);

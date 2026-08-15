@@ -3,6 +3,8 @@ import { CreditCard } from "lucide-react"
 
 export const BASE_URL = ''
 
+export const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS;
+
 export const PLACEHOLDER_IMAGE = "/images/products/placeholder.svg"
 
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
