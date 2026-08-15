@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
         subtitle={`If an account exists for ${email || "that address"}, we've sent a password reset link.`}
         footerText="Remember your password?"
         footerLinkText="Sign in"
-        footerLinkHref="/auth/login"
+        footerLinkHref="/customer-auth/login"
       >
         <p className="text-sm text-muted-foreground">
           The link expires after a short window. Didn&apos;t get an email? Check
@@ -48,7 +48,7 @@ export default function ForgotPasswordPage() {
       subtitle="Enter your email and we'll send you a reset link"
       footerText="Remember your password?"
       footerLinkText="Sign in"
-      footerLinkHref="/auth/login"
+      footerLinkHref="/customer-auth/login"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">

@@ -1,48 +1,50 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { Heart } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { StarRating } from "@/components/products/star-rating"
-import { formatPrice } from "@/lib/utils/utils"
-import { PLACEHOLDER_IMAGE } from "@/lib/constants"
-import { useWishlistStore } from "@/store/wishlist"
-import { toast } from "sonner"
-import { useTranslations } from "next-intl"
-import type { Product } from "@/types"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Heart } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { StarRating } from "@/components/products/star-rating";
+import { formatPrice } from "@/lib/utils/utils";
+import { PLACEHOLDER_IMAGE } from "@/lib/constants";
+import { useWishlistStore } from "@/store/wishlist";
+import { toast } from "sonner";
+import { useTranslations } from "next-intl";
+import type { Product } from "@/types";
 
 interface ProductCardProps {
-  product: Product
+  product: Product;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const t = useTranslations("product")
-  const tCommon = useTranslations("common")
-  const wishlistItems = useWishlistStore((s) => s.items)
-  const addItem = useWishlistStore((s) => s.addItem)
-  const removeItem = useWishlistStore((s) => s.removeItem)
+  const t = useTranslations("product");
+  const tCommon = useTranslations("common");
+  const wishlistItems = useWishlistStore((s) => s.items);
+  const addItem = useWishlistStore((s) => s.addItem);
+  const removeItem = useWishlistStore((s) => s.removeItem);
 
-  const defaultVariant = product.variants[0]
-  
-  const price = defaultVariant.price
-  const compareAtPrice = defaultVariant.compareAtPrice
-  const isOnSale = compareAtPrice && compareAtPrice > price
-  const image = product.images[0]
+  const defaultVariant = product.variants[0];
 
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isWishlisted = mounted && wishlistItems.some((i) => i.productId === product.id)
-  
-  if (!defaultVariant) return null
-  
+  const price = defaultVariant.price;
+  const compareAtPrice = defaultVariant.compareAtPrice;
+  const isOnSale = compareAtPrice && compareAtPrice > price;
+  const image = product.images[0];
+  const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS;
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const isWishlisted =
+    mounted && wishlistItems.some((i) => i.productId === product.id);
+
+  if (!defaultVariant) return null;
+
   function handleWishlist(e: React.MouseEvent) {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (isWishlisted) {
-      removeItem(product.id)
-      toast(t("removedFromWishlist"))
+      removeItem(product.id);
+      toast(t("removedFromWishlist"));
     } else {
       addItem({
         productId: product.id,
@@ -50,16 +52,18 @@ export function ProductCard({ product }: ProductCardProps) {
         slug: product.slug,
         price,
         image: image ?? { url: PLACEHOLDER_IMAGE, alt: product.name },
-      })
-      toast.success(t("addedToWishlist"))
+      });
+      toast.success(t("addedToWishlist"));
     }
   }
 
   return (
-    <Link href={(`/products/${product.slug}`)} className="group">
+    <Link href={`/products/${product.slug}`} className="group">
       <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
         <Image
-          src={image?.url ?? PLACEHOLDER_IMAGE}
+          src={
+            image.url ? `${IMAGE_REMOTE_HOST}/${image.url}` : PLACEHOLDER_IMAGE
+          }
           alt={image?.alt ?? product.name}
           fill
           className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -76,7 +80,9 @@ export function ProductCard({ product }: ProductCardProps) {
         <button
           onClick={handleWishlist}
           className="absolute top-2 right-2 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-sm transition-opacity hover:bg-neutral-50 sm:opacity-0 sm:group-hover:opacity-100"
-          aria-label={isWishlisted ? t("removeFromWishlist") : t("addToWishlist")}
+          aria-label={
+            isWishlisted ? t("removeFromWishlist") : t("addToWishlist")
+          }
         >
           <Heart
             className={`h-4 w-4 ${isWishlisted ? "fill-current text-wishlist" : "text-neutral-600"}`}
@@ -84,7 +90,11 @@ export function ProductCard({ product }: ProductCardProps) {
         </button>
       </div>
       <div className="mt-3">
-        <StarRating rating={product.rating} reviewCount={product.reviewCount} size="sm" />
+        <StarRating
+          rating={product.rating}
+          reviewCount={product.reviewCount}
+          size="sm"
+        />
         <h3 className="mt-1 text-sm font-medium text-foreground group-hover:underline">
           {product.name}
         </h3>
@@ -105,5 +115,5 @@ export function ProductCard({ product }: ProductCardProps) {
         )}
       </div>
     </Link>
-  )
+  );
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, type KeyboardEvent as ReactKe
 import Link from "next/link"
 import Image from "next/image"
 import { Search, X, ArrowRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { StarRating } from "@/components/products/star-rating"
 import { formatPrice } from "@/lib/utils/utils"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
@@ -23,6 +24,7 @@ interface SearchModalProps {
 }
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
+  const t = useTranslations("search")
   const [query, setQuery] = useState("")
   const [results, setResults] = useState<Product[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
@@ -101,7 +103,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       />
 
       {/* Modal */}
-      <div ref={modalRef} className="relative mx-auto mt-[10vh] w-full max-w-2xl px-4" role="dialog" aria-modal="true" aria-label="Search products">
+      <div ref={modalRef} className="relative mx-auto mt-[10vh] w-full max-w-2xl px-4" role="dialog" aria-modal="true" aria-label={t("searchProductsAriaLabel")}>
         <div className="overflow-hidden rounded-xl bg-white shadow-2xl">
           {/* Input */}
           <div className="flex items-center border-b px-4">
@@ -111,15 +113,15 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search products..."
-              aria-label="Search products"
+              placeholder={t("placeholder")}
+              aria-label={t("searchProductsAriaLabel")}
               className="flex-1 border-0 bg-transparent px-4 py-4 text-lg outline-none placeholder:text-muted-foreground/60"
             />
             {hasQuery ? (
               <button
                 onClick={() => setQuery("")}
                 className="rounded-md p-1 text-muted-foreground hover:text-foreground"
-                aria-label="Clear search"
+                aria-label={t("clearSearch")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -173,7 +175,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                   onClick={handleClose}
                   className="mt-1 flex items-center justify-center gap-2 rounded-lg p-3 text-sm text-muted-foreground transition-colors hover:bg-neutral-50 hover:text-foreground"
                 >
-                  View all results
+                  {t("viewAllResults")}
                   <ArrowRight className="h-3 w-3" />
                 </Link>
               </div>
@@ -182,7 +184,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             {hasQuery && results.length === 0 && (
               <div className="px-4 py-12 text-center">
                 <p className="text-sm text-muted-foreground">
-                  No results for &quot;{query}&quot;
+                  {t("noResults", { query })}
                 </p>
               </div>
             )}
@@ -190,7 +192,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
             {!hasQuery && (
               <div className="p-4">
                 <p className="mb-3 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  Popular Searches
+                  {t("popularSearches")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {popularSearches.map((term) => (

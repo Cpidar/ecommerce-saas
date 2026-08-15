@@ -126,12 +126,21 @@
   "search": {
     "title": "جستجو",
     "placeholder": "جستجوی محصولات...",
+    "searchProductsAriaLabel": "جستجوی محصولات",
+    "clearSearch": "پاک کردن جستجو",
+    "escapeKey": "ESC",
     "searchTip": "نام محصول، دسته‌بندی یا کلمه کلیدی جستجو کنید.",
     "noResults": "هیچ محصولی برای «{query}» پیدا نشد. عبارت دیگری امتحان کنید.",
     "resultsFor": "نتیجه برای",
     "resultFor": "نتیجه برای",
     "viewAllResults": "مشاهده همه نتایج",
-    "popularSearches": "جستجوهای محبوب"
+    "popularSearches": "جستجوهای محبوب",
+    "popularTerms": [
+      "تی‌شرت",
+      "سوییشرت",
+      "شلوار",
+      "مرچ"
+    ]
   },
   "auth": {
     "welcomeBack": "خوش آمدید",

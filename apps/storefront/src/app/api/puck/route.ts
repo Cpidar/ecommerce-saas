@@ -4,9 +4,15 @@ import fs from 'fs';
 import path from 'path';
 import { sdk } from "@/lib/medusa";
 import { siteConfigRepository } from "@/lib/repositories/site-configs";
+import { cookies } from 'next/headers';
+import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
 
 export async function POST(request: Request) {
   const payload = await request.json();
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ADMIN_COOKIE)?.value;
+
+  console.log(token)
   // Construct the full path
   // const dbPath = `puck-data/database.json`
 
@@ -24,20 +30,22 @@ export async function POST(request: Request) {
   //     : "{}"
   // );
 
-  const existingStoreConfig = await siteConfigRepository.getAllConfig()
+  const existingStoreConfig = await siteConfigRepository.getPageFromAdmin()
   const existingPuckDataForPath = existingStoreConfig?.puck_data?.[payload.path] ?? {}
 
+  console.log(existingStoreConfig)
   // 🟢 Write to the correct path
   // fs.writeFileSync(dbPath, JSON.stringify(payload.data, null, 2)); // Added pretty printing
 
   try {
 
     await sdk.client.fetch(
-      "/store/store-config",
+      "/admin/store-config",
       {
-        method: "POST",
+        method: "PUT",
+        headers: { 'Authorization': `Bearer ${token}` },
         body: {
-          ...existingStoreConfig,
+          id: existingStoreConfig?.id,
           puck_data: {
             ...existingStoreConfig?.puck_data,
             [payload.path]: {

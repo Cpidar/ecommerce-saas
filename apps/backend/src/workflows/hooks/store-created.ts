@@ -19,7 +19,7 @@ createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
 
   const { result: { storeConfig } } = await createConfigWorkflow(container).run({
     input: {
-      title: store.name,
+      title: store.name || '',
       handle: store.metadata?.handle,
       medusa_store_id: store.id,
       // TODO: seed puck data json

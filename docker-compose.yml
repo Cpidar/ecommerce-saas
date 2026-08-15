@@ -61,6 +61,58 @@ services:
         max-size: "100m"
         max-file: "5"
 
+  backup:
+    image: eeshugerman/postgres-backup-s3:16
+    restart: unless-stopped
+    mem_limit: 128M
+    cpus: "0.3"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SCHEDULE: "@weekly" # optional
+      BACKUP_KEEP_DAYS: 7 # optional
+      PASSPHRASE: passphrase # optional
+      S3_REGION: region
+      S3_ACCESS_KEY_ID: key
+      S3_SECRET_ACCESS_KEY: secret
+      S3_BUCKET: my-bucket
+      S3_PREFIX: backup
+      POSTGRES_HOST: postgres
+      POSTGRES_DATABASE: dbname
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    networks:
+      - medusa_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+  
+  dbx:
+    image: t8y2/dbx:latest
+    container_name: dbms
+    restart: unless-stopped
+    mem_limit: 128M
+    cpus: "0.5"
+
+    # For faster pulls in China, use the CNB image instead:
+    # image: docker.cnb.cool/dbxio.com/dbx:latest
+    pull_policy: always
+    ports:
+      - "4224:4224"
+    networks:
+      - medusa_network
+    volumes:
+      - dbx-data:/app/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+
+
   # ========== REDIS (Cache & Queue) ==========
   # UPGRADED: (untagged) → redis:8.8-alpine
   # FIX: healthcheck now authenticates with password (was a false-positive before)
@@ -350,6 +402,8 @@ volumes:
     name: medusa_garage_meta
   garage_data:
     name: medusa_garage_data
+  dbx-data:
+    name: dbx_data
 # ========== NETWORKS ==========
 networks:
   medusa_network:

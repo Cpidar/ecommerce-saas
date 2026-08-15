@@ -27,10 +27,10 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const currentStore = req.scope.resolve("currentStore") as StoreDTO;
   const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-  const validatedData = createStoreConfigWorkflowInputSchema.parse(body);
+  const validatedData = createStoreConfigWorkflowInputSchema.parse({ ...body, medusa_store_id: currentStore.id });
 
   const { result } = await createConfigWorkflow(req.scope).run({
-    input: { ...validatedData, medusa_store_id: currentStore.id },
+    input: { ...validatedData },
   });
 
   res.status(201).json({ store_config: result });
@@ -51,6 +51,10 @@ export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
         ? JSON.parse(validatedData.shipping_method_configs)
         : validatedData.shipping_method_configs,
   };
+
+  // medusa_store_id is immutable on existing records — drop it to avoid uniqueness / payload issues
+  delete (normalizedInput as any).medusa_store_id;
+  delete (normalizedInput as any).handle;
 
   const { result } = await updateStoreConfigWorkflow(req.scope).run({
     input: normalizedInput,

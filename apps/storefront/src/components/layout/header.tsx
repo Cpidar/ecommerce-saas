@@ -21,24 +21,27 @@ import { useCartStore } from "@/store/cart"
 import { useAuthStore } from "@/store/auth"
 import { useRouter } from "next/navigation"
 import NcImage from "../common/NcImage"
+import { StoreConfigInput } from "@/lib/repositories/site-configs"
 
 interface HeaderProps {
   /** All categories (top-level + subcategories) from the repository layer */
   categories?: Category[]
-  logoUrl?: string | null
+  siteConfig: StoreConfigInput
 }
 
-export function Header({ categories = [], logoUrl }: HeaderProps) {
+
+export function Header({ categories = [], siteConfig }: HeaderProps) {
   const allCategories = categories
+  const logoUrl = siteConfig.logo_url
 
   // Build the mobile menu's Shop section from real Medusa categories
   // (top-level only — children render as expandable subcategories below).
   const shopMenuItems: NavItem[] = allCategories
     .filter((c) => !c.parentId)
-    .map((c) => ({ name: c.name, href: `/${c.slug}` }))
+    .map((c) => ({ name: c.name, href: `/categories/${c.slug}` }))
 
   const mobileSections = mobileMenuSections.map((section) =>
-    section.label === "Shop" ? { ...section, items: shopMenuItems } : section
+    section.label === "فروشگاه" ? { ...section, items: shopMenuItems } : section
   )
   const t = useTranslations("nav")
   const tCommon = useTranslations("common")
@@ -162,7 +165,7 @@ export function Header({ categories = [], logoUrl }: HeaderProps) {
 
         {/* Logo */}
         <Link href={("/")} className="text-xl font-semibold tracking-tight">
-           { logoUrl ? <NcImage  src={logoUrl} width={140} height={30}/>  : "نیتروکامرس" }
+           { logoUrl ? <NcImage  src={logoUrl} width={140} height={30}/>  : (siteConfig.title || "نیتروکامرس") }
         </Link>
 
         {/* Desktop nav — top-level Medusa categories (no parentId) */}
@@ -238,7 +241,7 @@ export function Header({ categories = [], logoUrl }: HeaderProps) {
             </DropdownMenu>
           ) : (
             <Link
-              href={("/auth/authenticate")}
+              href={("/customer-auth/authenticate")}
               className="hidden h-10 w-10 items-center justify-center rounded-md hover:bg-accent lg:inline-flex"
               aria-label={tCommon("signIn")}
             >

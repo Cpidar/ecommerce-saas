@@ -80,7 +80,7 @@ async function EnrichedContent({ data }: { data: Data }) {
         }
 
       case "CategoriesSlider":
-        if (categories.length < 5) return item
+        if (categories.length < 4) return item
         return {
           ...item,
           props: {

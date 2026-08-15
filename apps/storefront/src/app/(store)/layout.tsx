@@ -10,14 +10,16 @@ import { siteConfig as defaultConfig } from "@/lib/config";
 
 async function HeaderProvider() {
   const categories = await categoryRepository.list();
-  const coreConfig = await siteConfigRepository.getCoreConfig();
-  const logo = await coreConfig?.logo_url;
-  return <Header categories={categories} logoUrl={logo} />;
+  let siteConfig = await siteConfigRepository.getCoreConfig();
+  if (!siteConfig) {
+    siteConfig = defaultConfig as unknown as StoreConfigInput ;
+  }
+  return <Header categories={categories} siteConfig={siteConfig} />;
 }
 
 async function FooterProvider() {
   let siteConfig = await siteConfigRepository.getCoreConfig();
-  console.log(siteConfig)
+
   if (!siteConfig) {
     siteConfig = defaultConfig as unknown as StoreConfigInput ;
   }
@@ -26,7 +28,7 @@ async function FooterProvider() {
 
 async function AnnouncementBarProvider() {
   const siteConfig = await siteConfigRepository.getGeneralConfig();
-  const announcement = await siteConfig?.announcement as string;
+  const announcement = await siteConfig?.announcement_bar as any;
   return <AnnouncementBar  announcement={announcement} />;
 }
 

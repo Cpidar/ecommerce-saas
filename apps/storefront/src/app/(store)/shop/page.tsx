@@ -87,7 +87,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {pagination.total}{" "}
-            {pagination.total === 1 ? tCommon("product") : tCommon("products")}
+            {tCommon("product")}
           </p>
         </div>
 

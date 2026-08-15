@@ -12,13 +12,13 @@ export default function Error({
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
       <p className="text-sm font-medium text-muted-foreground">500</p>
       <h1 className="mt-2 text-3xl font-bold tracking-tight">
-        Something went wrong
+        خطایی رخ داده است
       </h1>
       <p className="mt-4 text-muted-foreground">
-        An unexpected error occurred. Please try again.
+        یک خطای غیرمنتظره رخ داده است لطفا بعدا امتحان کنید
       </p>
       <Button onClick={reset} className="mt-8">
-        Try Again
+        تلاش دوباره
       </Button>
     </div>
   )

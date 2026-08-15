@@ -32,10 +32,10 @@ async function handleEditRoute(request: NextRequest) {
   const token = request.cookies.get(ADMIN_COOKIE)?.value;
 
   if (!token) {
-    console.log("redirect to", `/admin/login?from=${pathWithoutEdit}/edit`)
+    console.log("redirect to", `/admin-portal/login?from=${pathWithoutEdit}/edit`)
     // Fix 1: Make sure the URL has a leading slash
-    const loginUrl = new URL(`/admin/login?from=${pathWithoutEdit}/edit`, request.url);
-    console.log("Login URL:", loginUrl.toString());
+    const loginUrl = new URL(`/admin-portal/login?from=${pathWithoutEdit}/edit`, request.url);
+
     return NextResponse.redirect(loginUrl);
   }
 
@@ -52,15 +52,15 @@ async function handleEditRoute(request: NextRequest) {
     );
 
     if (!verifyRes.ok) {
-      return NextResponse.redirect(new URL(`/admin/login?from=${pathWithoutEdit}/edit`, request.url));
+      return NextResponse.redirect(new URL(`/admin-portal/login?from=${pathWithoutEdit}/edit`, request.url));
     }
   } catch {
-    return NextResponse.redirect(new URL(`/admin/login?from=${pathWithoutEdit}/edit`, request.url));
+    return NextResponse.redirect(new URL(`/admin-portal/login?from=${pathWithoutEdit}/edit`, request.url));
   }
 
 
 
-  const pathWithEditPrefix = `/admin/puck${pathWithoutEdit}`;
+  const pathWithEditPrefix = `/admin-portal/puck${pathWithoutEdit}`;
 
   return NextResponse.rewrite(new URL(pathWithEditPrefix, request.url));
 

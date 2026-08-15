@@ -85,6 +85,7 @@ const nextConfig: NextConfig = {
       // [MY-FORK-CONFIG]
       { protocol: "http", hostname: "localhost", port: "3900" },
       { protocol: "http", hostname: "localhost", port: "9000" },
+      { protocol: "https", hostname: "tabeshelecshop.ir" },
     ],
   },
 

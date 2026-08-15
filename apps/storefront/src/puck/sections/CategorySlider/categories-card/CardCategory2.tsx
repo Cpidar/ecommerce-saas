@@ -23,7 +23,7 @@ const CardCategory2: FC<CardCategory2Props> = ({
 }) => {
   return (
     <Link
-      href={"/collection"}
+      href={"/categories/${}"}
       className={`nc-CardCategory2 ${className}`}
       data-nc-id="CardCategory2"
     >

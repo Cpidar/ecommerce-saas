@@ -251,9 +251,9 @@ async function fetchProductList(
   storeId: string,
   extraTags: string[] = []
 ): Promise<{ items: Product[]; count: number }> {
-  // "use cache"
-  // cacheTag(productTags.all(storeId), ...extraTags)
-  // cacheLife("products")
+  "use cache"
+  cacheTag(productTags.all(storeId), ...extraTags)
+  cacheLife("products")
 
   const { products, count } = await sdk.store.product.list(params, { ...storeHeaders })
   return { items: products.map((p) => transformProduct(p, currency)), count }

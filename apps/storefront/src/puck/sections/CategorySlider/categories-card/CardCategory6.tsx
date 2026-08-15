@@ -50,7 +50,7 @@ const CardCategory6: FC<CardCategory6Props> = ({
           </div>
 
           <Link
-            href={"/collection"}
+            href={"/categories/${}"}
             className="flex items-center text-sm font-medium group-hover:text-primary-500 transition-colors"
           >
             <span>See Collection</span>
@@ -59,7 +59,7 @@ const CardCategory6: FC<CardCategory6Props> = ({
         </div>
       </div>
 
-      <Link href={"/collection"}></Link>
+      <Link href={"/categories/${}"}></Link>
     </div>
   );
 };

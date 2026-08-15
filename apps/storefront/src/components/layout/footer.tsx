@@ -29,6 +29,9 @@ export function Footer({ siteConfig }: { siteConfig: StoreConfigInput }) {
     string,
     string
   >;
+  const contact = siteConfig.marketing_config?.contact as
+    | { address?: string | null | undefined; phone?: string | null | undefined }
+    | undefined;
 
   return (
     <footer className="border-t bg-muted">
@@ -37,11 +40,21 @@ export function Footer({ siteConfig }: { siteConfig: StoreConfigInput }) {
           {/* Brand */}
           <div className="col-span-2">
             <Link href="/" className="text-xl font-semibold tracking-tight">
-              {siteConfig.title}
+              {siteConfig.title || "نیتروکامرس"}
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
               {siteConfig.tagline || siteConfig.description}
             </p>
+            {contact?.address && (
+              <p className="mt-4 text-sm text-muted-foreground">
+                {contact.address}
+              </p>
+            )}
+            {contact?.phone && (
+              <p className="mt-4 text-sm text-muted-foreground">
+                {contact.phone}
+              </p>
+            )}
           </div>
 
           {/* Shop */}
@@ -101,7 +114,7 @@ export function Footer({ siteConfig }: { siteConfig: StoreConfigInput }) {
         <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-muted-foreground">
             &copy; 1405 {siteConfig.title}. تمامی حقوق محفوظ است.
-            <br className="sm:hidden" /> 
+            <br className="sm:hidden" />
             ساخته شده با{" "}
             <a
               href="https://epicdesignlabs.com"

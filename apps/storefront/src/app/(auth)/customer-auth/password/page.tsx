@@ -55,7 +55,7 @@ const PageLogin = () => {
   async function loginByOTP() {
     if (!phone) {
       toast.error(t("missingPhoneNumber"));
-      router.push("/auth/authenticate");
+      router.push("/customer-auth/authenticate");
       return;
     }
     setLoading(true);

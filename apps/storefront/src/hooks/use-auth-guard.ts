@@ -25,7 +25,7 @@ export function useAuthGuard() {
 
   useEffect(() => {
     if (hasHydrated && !isAuthenticated) {
-      router.replace(`/auth/authenticate?ref=${pathname}`)
+      router.replace(`/customer-auth/authenticate?ref=${pathname}`)
     }
   }, [hasHydrated, isAuthenticated, router, countryCode])
 

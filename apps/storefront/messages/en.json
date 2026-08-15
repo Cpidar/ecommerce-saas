@@ -124,12 +124,21 @@
   "search": {
     "title": "Search",
     "placeholder": "Search products...",
+    "searchProductsAriaLabel": "Search products",
+    "clearSearch": "Clear search",
+    "escapeKey": "ESC",
     "searchTip": "Try searching for a product name, category, or keyword.",
     "noResults": "No products found for \"{query}\". Try a different search term.",
     "resultsFor": "results for",
     "resultFor": "result for",
     "viewAllResults": "View all results",
-    "popularSearches": "Popular Searches"
+    "popularSearches": "Popular Searches",
+    "popularTerms": [
+      "T-Shirt",
+      "Sweatshirt",
+      "Pants",
+      "Merch"
+    ]
   },
   "auth": {
     "welcomeBack": "Welcome back",

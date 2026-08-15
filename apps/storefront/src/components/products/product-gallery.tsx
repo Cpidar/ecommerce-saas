@@ -15,12 +15,14 @@ export function ProductGallery({ images, productName = "Product" }: ProductGalle
   const [selectedIndex, setSelectedIndex] = useState(0)
   const currentImage = images[selectedIndex]
 
+  const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS;
+
   return (
     <div className="flex flex-col gap-4">
       {/* Main image */}
       <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
         <Image
-          src={currentImage?.url ?? PLACEHOLDER_IMAGE}
+          src={currentImage?.url ? `${IMAGE_REMOTE_HOST}/${currentImage.url}` : PLACEHOLDER_IMAGE}
           alt={currentImage?.alt ?? productName}
           fill
           className="object-cover"
@@ -45,7 +47,7 @@ export function ProductGallery({ images, productName = "Product" }: ProductGalle
               aria-label={`View image ${index + 1}`}
             >
               <Image
-                src={image.url ?? PLACEHOLDER_IMAGE}
+                src={image.url ? `${IMAGE_REMOTE_HOST}/${image.url}` : PLACEHOLDER_IMAGE}
                 alt={image.alt ?? `${productName} thumbnail ${index + 1}`}
                 fill
                 className="object-cover"

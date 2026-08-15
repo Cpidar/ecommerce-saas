@@ -6,6 +6,7 @@ const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
 const publishableKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 
 export const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION ?? "ir"
+const DEFAULT_STORE_ID = process.env.NEXT_PUBLIC_DEFAULT_STORE_ID ?? "test_store"
 
 if (!backendUrl) {
   throw new Error(
@@ -30,7 +31,7 @@ async function resolveCurrentStoreId(): Promise<string> {
     try {
       const { headers } = await import('next/headers')
       const headersList = await headers()
-      storeIdCache = headersList.get('x-store-id') || 'trestsd'
+      storeIdCache = headersList.get('x-store-id') || DEFAULT_STORE_ID
       console.log('sdk hit from server', storeIdCache)
       return storeIdCache!
     } catch {

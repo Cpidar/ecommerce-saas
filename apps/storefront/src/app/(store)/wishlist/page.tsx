@@ -44,12 +44,12 @@ export default function WishlistPage() {
   if (wishlistedProducts.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <PageHeader title="Wishlist" />
+        <PageHeader title="محبوب ها" />
         <EmptyState
           icon={Heart}
-          title="Your wishlist is empty"
-          description="Save products you love to find them easily later."
-          actionLabel="Browse Products"
+          title="هیج محصولی در لیست محبوب ها وجود ندارد"
+          description="محصولات محبوب خود را انتخاب کنید تا بعدا راحت‌تر پیدایشان کنید."
+          actionLabel="گشت و گذار در فروشگاه"
           actionHref="/shop"
         />
       </div>

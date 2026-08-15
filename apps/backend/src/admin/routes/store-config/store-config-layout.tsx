@@ -1,6 +1,6 @@
 "use client";
 
-import { CogSixTooth as Cog, CreditCard, Globe, LightBulb, TruckFast as Truck, Wrench } from "@medusajs/icons";
+import { CogSixTooth as Cog, CreditCard, Globe, LightBulb, TruckFast as Truck, Wrench, Component } from "@medusajs/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Button,
@@ -21,6 +21,12 @@ export const NAV_ITEMS = [
     path: "/store-config/branding",
     label: "برندینگ و تماس",
     icon: LightBulb,
+    exact: false,
+  },
+    {
+    path: "/store-config/site-settings",
+    label: "تنظیمات سایت",
+    icon: Component,
     exact: false,
   },
   {

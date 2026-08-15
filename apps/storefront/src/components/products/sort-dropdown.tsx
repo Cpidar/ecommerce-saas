@@ -4,10 +4,10 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { ChevronDown } from "lucide-react"
 
 const sortOptions = [
-  { value: "newest", label: "Newest" },
-  { value: "price-asc", label: "Price: Low to High" },
-  { value: "price-desc", label: "Price: High to Low" },
-  { value: "name", label: "Name: A-Z" },
+  { value: "newest", label: "جدیدترین" },
+  { value: "price-asc", label: "قیمت از ارزانترین" },
+  { value: "price-desc", label: "قیمت از گرانترین" },
+  { value: "name", label: "نام" },
 ]
 
 interface SortDropdownProps {

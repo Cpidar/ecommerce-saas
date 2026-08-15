@@ -10,15 +10,15 @@ export default function StoreError({
 }) {
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
-      <p className="text-sm font-medium text-muted-foreground">Something went wrong</p>
+      <p className="text-sm font-medium text-muted-foreground">خطایی رخ داده است</p>
       <h1 className="mt-2 text-3xl font-bold tracking-tight">
-        We couldn&apos;t load this page
+        این صفحه قابل دسترس نیست
       </h1>
       <p className="mt-4 text-muted-foreground">
-        Please try again. If the problem persists, contact support.
+        لطفا بعدا تلاش کنید یا با مدیر سایت تماس بگیرید
       </p>
       <Button onClick={reset} className="mt-8">
-        Try Again
+        تلاش دوباره
       </Button>
     </div>
   )

@@ -5,6 +5,8 @@ import fs from "fs";
 import { sdk } from "../medusa";
 import { cacheLife, cacheTag } from "next/cache";
 import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies";
+import { cookies } from 'next/headers';
+import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
 
 export type JsonRecord = Record<string, unknown>
 
@@ -73,9 +75,9 @@ const fetchAllConfig = async (
   storeId?: string
 ) => {
   // No need to Cache
-  // "use cache"
-  // cacheTag(storeConfigTags.all(storeId || "store"))
-  // cacheLife("max")
+  "use cache"
+  cacheTag(storeConfigTags.all(storeId || "store"))
+  cacheLife("max")
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config",
@@ -86,9 +88,9 @@ const fetchAllConfig = async (
 const fetchCoreConfig = async (
   storeId?: string
 ) => {
-  // "use cache"
-  // cacheTag(storeConfigTags.all(storeId || "store"))
-  // cacheLife("max")
+  "use cache"
+  cacheTag(storeConfigTags.all(storeId || "store"))
+  cacheLife("max")
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=title,handle,domain,description,logo_url,logo_alt,favicon_url,seo_config.*,marketing_config.*",
@@ -97,9 +99,9 @@ const fetchCoreConfig = async (
 }
 
 const fetchPuckPage = async (storeId?: string) => {
-  // "use cache"
-  // cacheTag(storeConfigTags.all(storeId || "store"))
-  // cacheLife("max")
+  "use cache"
+  cacheTag(storeConfigTags.all(storeId || "store"))
+  cacheLife("max")
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=puck_data",
@@ -111,10 +113,29 @@ const fetchPuckPage = async (storeId?: string) => {
 
 }
 
+const fetchAdminPuckPage = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ADMIN_COOKIE)?.value;
+
+  const response = await sdk.client.fetch<StoreConfigResponse>(
+    "/store/store-config?fields=puck_data,id",
+    {
+      method: "GET",
+      headers: { 'Authorization': `Bearer ${token}` },
+    }
+  )
+
+
+  return response.store_config
+
+}
+
 const fetchShippingAndPaymentconfig = async (storeId?: string) => {
-  // "use cache"
-  // cacheTag(storeConfigTags.all(storeId || "store"))
-  // cacheLife("max")
+  // if (process.env.NODE_ENV === "production") {
+  "use cache"
+  cacheTag(storeConfigTags.all(storeId || "store"))
+  cacheLife("max")
+  // }
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=payment_configs.*,shipping_method_configs.*",
@@ -124,9 +145,9 @@ const fetchShippingAndPaymentconfig = async (storeId?: string) => {
 }
 
 const fetchGeneralConfig = async (storeId?: string) => {
-  // "use cache"
-  // cacheTag(storeConfigTags.all(storeId || "store"))
-  // cacheLife("max")
+  "use cache"
+  cacheTag(storeConfigTags.all(storeId || "store"))
+  cacheLife("max")
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=config",
@@ -143,7 +164,6 @@ export const siteConfigRepository = {
   async getAllConfig() {
     const storeId = await getCurrentStoreId()
     const allConfig = await fetchAllConfig(storeId)
-console.log(allConfig)
     return allConfig
 
   },
@@ -164,21 +184,35 @@ console.log(allConfig)
 
     const storeConfig = await fetchPuckPage(storeId)
 
-    if (storeConfig?.puck_data) {
-      puckData = storeConfig.puck_data
-      console.log("😍😍😍😍", puckData)
+    if (storeConfig?.puck_data && Object.keys(storeConfig.puck_data).length > 0) {
+      puckData = storeConfig.puck_data;
+      console.log("🚗🚗🚗🚗🚗🚗🚗")
     } else {
-      // Fallback to template.json when there is no store config
+      // Fallback to template.json when there is no store config or it's empty
       if (fs.existsSync(templatePath)) {
-        puckData = JSON.parse(fs.readFileSync(templatePath, "utf-8"))
+        puckData = JSON.parse(fs.readFileSync(templatePath, "utf-8"));
       }
-      console.log("🍕🍕🍕🍕", puckData)
-      
     }
-    
-    
+
+
     const page = path ? puckData[path] : puckData
     return page
+  },
+
+  async getPageFromAdmin(path?: string): Promise<any> {
+    const storeConfig = await fetchAdminPuckPage()
+    // if (storeConfig?.puck_data && Object.keys(storeConfig.puck_data).length > 0) {
+    //   puckData = storeConfig.puck_data;
+    // } else {
+    //   // Fallback to template.json when there is no store config or it's empty
+    //   if (fs.existsSync(templatePath)) {
+    //     puckData = JSON.parse(fs.readFileSync(templatePath, "utf-8"));
+    //   }
+    // }
+
+
+    // const page = path ? puckData[path] : puckData
+    return storeConfig
   },
 
   async getGeneralConfig() {
@@ -188,4 +222,5 @@ console.log(allConfig)
     return coreConfig
 
   },
+
 }

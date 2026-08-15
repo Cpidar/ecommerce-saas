@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
-export function AnnouncementBar({ announcement }: { announcement: string }) {
+export type AnnouncementBarProps = {
+  enabled: boolean;
+  text: string;
+  link_url: string;
+  dismissible: boolean;
+  position: "top";
+};
+
+export function AnnouncementBar({ announcement }: { announcement: AnnouncementBarProps }) {
   const [dismissed, setDismissed] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -18,11 +26,11 @@ export function AnnouncementBar({ announcement }: { announcement: string }) {
     sessionStorage.setItem("announcement-dismissed", "true");
   }
 
-  if (!mounted || dismissed || !announcement) return null;
+  if (!mounted || dismissed || !announcement?.enabled) return null;
 
   return (
     <div className="relative bg-foreground px-4 py-2.5 text-center text-xs font-medium text-background sm:text-sm">
-      <p>{announcement}</p>
+      <p>{announcement?.text}</p>
       <button
         onClick={handleDismiss}
         className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm p-1 text-background/60 hover:text-background"

@@ -7,23 +7,23 @@ import { Suspense, useEffect } from "react";
 
 export function Client({ data, path }: { data: Data; path: string }) {
   // this function save the server data in database.json
-  useEffect(() => {
-    const postData = async () => {
-      try {
-        await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/puck`, {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ data, path }),
-        });
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const postData = async () => {
+  //     try {
+  //       await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/puck`, {
+  //         method: "post",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ data, path }),
+  //       });
+  //     } catch (error) {
+  //       console.error("Error:", error);
+  //     }
+  //   };
 
-    postData();
-  }, []); // ⬅️ Empty array = runs only once after mount
+  //   postData();
+  // }, []); // ⬅️ Empty array = runs only once after mount
   return (
       <Render config={config} data={data} />
   );

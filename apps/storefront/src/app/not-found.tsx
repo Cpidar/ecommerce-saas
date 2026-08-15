@@ -17,17 +17,17 @@ export default async function NotFound() {
         <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
           <p className="text-sm font-medium text-muted-foreground">404</p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight">
-            Page not found
+            این مسیر وجود ندارد
           </h1>
           <p className="mt-4 text-muted-foreground">
-            Sorry, we couldn&apos;t find the page you&apos;re looking for.
+            متاسفانه صفحه ای که شما بدنبال آن هستند وجود ندارد یا قابل دسترس نیست.
           </p>
           <div className="mt-8 flex gap-4">
             <Button asChild>
-              <Link href="/">Go Home</Link>
+              <Link href="/">به صفحه اصلی سایت برو</Link>
             </Button>
             <Button variant="outline" asChild>
-              <Link href="/shop">Browse Products</Link>
+              <Link href="/shop">گشت و گذار در فروشگاه</Link>
             </Button>
           </div>
         </div>

@@ -65,7 +65,7 @@ function ResetPasswordContent() {
       subtitle="Enter the email this reset is for, plus your new password"
       footerText="Remember your password?"
       footerLinkText="Sign in"
-      footerLinkHref="/auth/login"
+      footerLinkHref="/customer-auth/login"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">

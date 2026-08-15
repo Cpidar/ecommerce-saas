@@ -132,7 +132,7 @@ export const CategoriesSlider: ComponentConfig<Props> = {
         <CategoryShowcase
           heading={heading}
           subHeading={subHeading}
-          data={(data && data.length < 5) ? data : mockProductCategories}
+          data={(data && data.length !== 0) ? data : mockProductCategories}
           categoryCardType={categoryCardType}
         />
       </Carousel>

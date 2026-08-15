@@ -27,6 +27,84 @@ services:
         max-size: "100m"
         max-file: "5"
 
+  # ========== postgres-backup-s3 ==========
+  backup:
+    image: eeshugerman/postgres-backup-s3:16
+    restart: unless-stopped
+    mem_limit: 128M
+    cpus: "0.3"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SCHEDULE: "@weekly" # optional
+      BACKUP_KEEP_DAYS: 7 # optional
+      PASSPHRASE: ${PASSPHRASE} # optional
+      S3_ENDPOINT: ${ARVAN_ENDPOINT}
+      S3_REGION: ${ARVAN_REGION}
+      S3_ACCESS_KEY_ID: ${ARVAN_ACCESS_KEY}
+      S3_SECRET_ACCESS_KEY: ${ARVAN_SECRET_KEY}
+      S3_BUCKET: ${ARVAN_BACKUP_BUCKET}
+      S3_PREFIX: backup
+      POSTGRES_HOST: postgres
+      POSTGRES_DATABASE: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - medusa_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ========== pgbackweb (Effortless PostgreSQL backups) ==========
+  # pgbackweb:
+  #   image: eduardolat/pgbackweb:latest
+  #   restart: unless-stopped
+  #   mem_limit: 128M
+  #   cpus: "0.3"
+  #   # Set in Caddyfile
+  #   # ports:
+  #   #   - "8085:8085" # Access the web interface at http://localhost:8085
+  #   environment:
+  #     # Optional environment variables are ignored, see the configuration section below for more details
+  #     PBW_ENCRYPTION_KEY: ${PGBACKWEB_SECRET_KEY} # Change this to a strong key
+  #     PBW_POSTGRES_CONN_STRING: "postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/pgbackweb?sslmode=disable"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - medusa_network
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "5"
+
+  # ========== dbx (PostgreSQL DBMS) ==========
+  dbx:
+    image: t8y2/dbx:latest
+    container_name: dbms
+    restart: unless-stopped
+    mem_limit: 128M
+    cpus: "0.5"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    pull_policy: always
+    ports:
+      - "4224:4224"
+    networks:
+      - medusa_network
+    volumes:
+      - dbx-data:/app/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
   # ========== REDIS (Cache & Queue) ==========
   redis:
     image: redis:8.8-alpine
@@ -78,7 +156,7 @@ services:
       - RUSTFS_CONSOLE_ADDRESS=${RUSTFS_CONSOLE_ADDRESS:-http://rustfs:3901}
       - RUSTFS_ADDRESS=${RUSTFS_ENDPOINT:-http://rustfs:3900}
     volumes:
-      - rustfs_data:/data  # CHANGED: Use named volume instead of bind mount
+      - rustfs_data:/data # CHANGED: Use named volume instead of bind mount
     command: server /data --address ":3900" --console-address ":3901"
     mem_limit: 256M
     cpus: "0.5"
@@ -96,7 +174,7 @@ services:
 
   # ========== MEDUSA BACKEND ==========
   medusa:
-    image: medusa:v1
+    image: registry.tabeshelecshop.ir/medusa:v3
     container_name: medusa_backend
     restart: unless-stopped
     depends_on:
@@ -121,7 +199,7 @@ services:
       # S3_ACCESS_KEY_ID: ${MINIO_USER}
       # S3_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
       S3_ENDPOINT: ${RUSTFS_ENDPOINT}
-      S3_FILE_URL: http://localhost:3900/${RUSTFS_BUCKET}
+      S3_FILE_URL: ${RUSTFS_FILE_URL}
       S3_BUCKET: ${RUSTFS_BUCKET}
       S3_REGION: ${RUSTFS_REGION:-us-east-1}
       S3_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY}
@@ -130,10 +208,19 @@ services:
       MEILISEARCH_API_KEY: ${MEILISEARCH_MASTER_KEY}
     env_file:
       - apps/backend/.env
+    # volumes:
+    # Mount your local config file into the container
+    # - ./apps/backend/medusa-config.js:/app/medusa-config.js:ro
     networks:
       - medusa_network
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:9000/health', r => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:9000/health', r => process.exit(r.statusCode === 200 ? 0 : 1))",
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -145,64 +232,86 @@ services:
         max-file: "5"
 
   # ========== STOREFRONT (Next.js) ==========
-  # storefront:
-  #   image: ghcr.io/YOUR_USER/ecommerce-saas-storefront:latest
-  #   container_name: medusa_storefront
-  #   restart: unless-stopped
-  #   mem_limit: 768M
-  #   cpus: "0.5"
-  #   depends_on:
-  #     medusa:
-  #       condition: service_healthy
-  #   ports:
-  #     - "127.0.0.1:8000:8000"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
-  #   env_file:
-  #     - apps/storefront/.env
-  #   networks:
-  #     - medusa_network
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8000"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 30s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "100m"
-  #       max-file: "5"
+  # Uncomment and update the image name when your storefront image is ready.
+  storefront:
+    image: registry.tabeshelecshop.ir/storefront:v1
+    container_name: medusa_storefront
+    restart: unless-stopped
+    mem_limit: 768M
+    cpus: "0.5"
+    depends_on:
+      medusa:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
+    env_file:
+      - apps/storefront/.env
+    networks:
+      - medusa_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
 
   # ========== PRIVATE DOCKER REGISTRY ==========
-  # registry:
-  #   image: registry:3
-  #   container_name: docker_registry
-  #   restart: unless-stopped
-  #   mem_limit: 256M
-  #   cpus: "0.3"
-  #   environment:
-  #     REGISTRY_AUTH: htpasswd
-  #     REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
-  #     REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-  #     REGISTRY_STORAGE_DELETE_ENABLED: "true"
-  #   volumes:
-  #     - ./registry/auth:/auth:ro
-  #     - registry_data:/var/lib/registry
-  #   networks:
-  #     - medusa_network
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/v2/"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 5s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "50m"
-  #       max-file: "3"
+  registry:
+    image: registry:3
+    container_name: docker_registry
+    restart: unless-stopped
+    mem_limit: 256M
+    cpus: "0.3"
+    ports:
+      - "5000:5000"
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      - ./registry/auth:/auth:ro
+      - ./registry/config.yml:/etc/distribution/config.yml:ro
+      - registry_data:/var/lib/registry
+    networks:
+      - medusa_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "wget --server-response --spider -q http://localhost:5000/v2/ 2>&1 | grep -qE 'HTTP/[0-9.]+ (200|401)'",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
+
+  # ========== DOCKER REGISTRY UI ==========
+
+  registry-ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry_ui
+    restart: unless-stopped
+    environment:
+      - REGISTRY_TITLE=My Registry
+      - DELETE_IMAGES=true
+      - SINGLE_REGISTRY=true
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+    networks:
+      - medusa_network
 
   # ========== CADDY REVERSE PROXY ==========
   caddy:
@@ -252,10 +361,12 @@ volumes:
     name: caddy_data
   caddy_config:
     name: caddy_config
-  # registry_data:
-  #   name: docker_registry_data
+  registry_data:
+    name: docker_registry_data
   rustfs_data:
-      name: medusa_rustfs_data
+    name: medusa_rustfs_data
+  dbx-data:
+    name: dbx_data
 
 # ========== NETWORKS ==========
 networks:

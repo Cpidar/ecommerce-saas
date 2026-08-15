@@ -43,6 +43,7 @@ export function ProductDetailView({
   brand,
   categoryAncestors = [],
 }: ProductDetailViewProps) {
+
   const [selectedVariantId, setSelectedVariantId] = useState(
     // [MY-FORK-PRODUCT] Default to first available variant with inventory, not just first variant
     product.variants.find(
@@ -181,7 +182,9 @@ export function ProductDetailView({
                   {isLast ? (
                     <BreadcrumbPage>{cat.name}</BreadcrumbPage>
                   ) : (
-                    <BreadcrumbLink render={<Link href={`/categories/${cat.slug}`} />}>
+                    <BreadcrumbLink
+                      render={<Link href={`/categories/${cat.slug}`} />}
+                    >
                       {cat.name}
                     </BreadcrumbLink>
                   )}

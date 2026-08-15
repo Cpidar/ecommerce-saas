@@ -57,7 +57,7 @@ export function CategoryView({
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink render={<Link href="/shop" />}>Shop</BreadcrumbLink>
+            <BreadcrumbLink render={<Link href="/shop" />}>فروشگاه</BreadcrumbLink>
           </BreadcrumbItem>
           {ancestors.map((cat, idx) => {
             const isLast = idx === ancestors.length - 1

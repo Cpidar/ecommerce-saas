@@ -13,76 +13,56 @@ import {
 } from "@medusajs/ui";
 import { useSaveStoreConfig, useStoreConfig } from "../../routes/store-config/hooks";
 import { StoreConfigInput } from "../../routes/store-config/types";
-import { basicSchema } from "../../routes/store-config/validation";
-import {
-  getErrorMessage,
-  toastValidationErrors,
-  zodErrorsToMap,
-} from "../../routes/store-config/errors";
+import { getErrorMessage } from "../../routes/store-config/errors";
 
 export const GeneralTab = () => {
   const { data: storeConfig, isLoading, isError } = useStoreConfig();
   const saveMutation = useSaveStoreConfig();
 
-  const [form, setForm] = useState<Partial<StoreConfigInput>>({});
-  const [errors, setErrors] = useState<Record<string, string>>({});
   const [initialized, setInitialized] = useState(false);
+  const [form, setForm] = useState<Partial<StoreConfigInput>>({
+    title: "",
+    handle: "",
+    domain: "",
+    description: "",
+    tagline: "",
+  });
 
-  // Sync form state when data loads
   if (storeConfig && !initialized) {
     setForm({
       title: storeConfig.title ?? "",
       handle: storeConfig.handle ?? "",
       domain: storeConfig.domain ?? "",
       description: storeConfig.description ?? "",
-      tagline: storeConfig.tagline ?? "",
-      medusa_store_id: storeConfig.medusa_store_id ?? "",
+      tagline: (storeConfig as any).tagline ?? "",
     });
     setInitialized(true);
   }
 
-  const setField = useCallback(
-    (key: keyof StoreConfigInput, value: string) => {
-      setForm((prev) => ({ ...prev, [key]: value }));
-      // Clear error on change
-      setErrors((prev) => {
-        const { [key]: _, ...rest } = prev;
-        return rest;
-      });
-    },
-    []
-  );
+  const setField = useCallback((key: keyof StoreConfigInput, value: string) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  }, []);
 
-  const handleSubmit = async () => {
-    const payload = {
-      ...form,
-      id: storeConfig?.id,
-    };
-
-    const result = basicSchema.safeParse(payload);
-    if (!result.success) {
-      setErrors(zodErrorsToMap(result.error));
-      toastValidationErrors(result.error);
-      return;
-    }
-
-    saveMutation.mutate(result.data, {
-      onSuccess: () => {
-        toast.success("تنظیمات اولیه ذخیره شد");
-      },
-      onError: (error) => {
-        toast.error(`خطا در ذخیره تنظیمات: ${getErrorMessage(error)}`);
-      },
-    });
+  const handleSubmit = () => {
+    // Only send what this tab owns — server does all validation/parsing
+    saveMutation.mutate(
+      {
+        id: storeConfig?.id,
+        title: form.title,
+        handle: form.handle,
+        domain: form.domain,
+        description: form.description,
+        tagline: form.tagline,
+      } as any,
+      {
+        onSuccess: () => toast.success("اطلاعات پایه ذخیره شد"),
+        onError: (error) => toast.error(`خطا در ذخیره تنظیمات: ${getErrorMessage(error)}`),
+      }
+    );
   };
 
-  if (isLoading) {
-    return <LoadingSkeleton />;
-  }
-
-  if (isError) {
-    return <ErrorState />;
-  }
+  if (isLoading) return <LoadingSkeleton />;
+  if (isError) return <ErrorState />;
 
   return (
     <Container className="p-6">
@@ -94,7 +74,7 @@ export const GeneralTab = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <FormField label="عنوان فروشگاه" error={errors.title}>
+        <FormField label="عنوان فروشگاه">
           <Input
             value={form.title ?? ""}
             onChange={(e) => setField("title", e.target.value)}
@@ -102,7 +82,7 @@ export const GeneralTab = () => {
           />
         </FormField>
 
-        <FormField label="شناسه فروشگاه" error={errors.handle}>
+        <FormField label="شناسه فروشگاه">
           <Input
             value={form.handle ?? ""}
             onChange={(e) => setField("handle", e.target.value)}
@@ -110,7 +90,7 @@ export const GeneralTab = () => {
           />
         </FormField>
 
-        <FormField label="دامنه" error={errors.domain}>
+        <FormField label="دامنه">
           <Input
             value={form.domain ?? ""}
             onChange={(e) => setField("domain", e.target.value)}
@@ -118,16 +98,16 @@ export const GeneralTab = () => {
           />
         </FormField>
 
-        <FormField label="شعار" error={errors.tagline}>
+        <FormField label="شعار">
           <Input
             value={form.tagline ?? ""}
-            onChange={(e) => setField("tagline", e.target.value)}
+            onChange={(e) => setField("tagline" as any, e.target.value)}
             placeholder="فروشگاه برتر آنلاین"
           />
         </FormField>
 
         <div className="md:col-span-2">
-          <FormField label="توضیحات" error={errors.description}>
+          <FormField label="توضیحات">
             <Textarea
               value={form.description ?? ""}
               onChange={(e) => setField("description", e.target.value)}
@@ -139,11 +119,7 @@ export const GeneralTab = () => {
       </div>
 
       <div className="flex justify-end mt-8">
-        <Button
-          isLoading={saveMutation.isPending}
-          onClick={handleSubmit}
-          size="large"
-        >
+        <Button isLoading={saveMutation.isPending} onClick={handleSubmit} size="large">
           ذخیره اطلاعات پایه
         </Button>
       </div>
@@ -151,25 +127,16 @@ export const GeneralTab = () => {
   );
 };
 
-// ---------- Reusable helpers ----------
-
 const FormField = ({
   label,
-  error,
   children,
 }: {
   label: string;
-  error?: string;
   children: React.ReactNode;
 }) => (
   <div className="grid gap-2">
     <Label>{label}</Label>
     {children}
-    {error && (
-      <Text size="small" className="text-ui-fg-error">
-        {error}
-      </Text>
-    )}
   </div>
 );
 
@@ -189,9 +156,7 @@ const LoadingSkeleton = () => (
 const ErrorState = () => (
   <Container className="flex flex-col items-center justify-center py-12">
     <Heading level="h2">خطا در دریافت تنظیمات</Heading>
-    <Text className="mt-2 text-ui-fg-subtle">
-      لطفا صفحه را مجدداً بارگذاری کنید
-    </Text>
+    <Text className="mt-2 text-ui-fg-subtle">لطفا صفحه را مجدداً بارگذاری کنید</Text>
     <Button className="mt-4" variant="secondary" onClick={() => window.location.reload()}>
       بارگذاری مجدد
     </Button>
