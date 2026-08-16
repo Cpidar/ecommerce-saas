@@ -15,15 +15,15 @@ export default async function sendOtpHandler({
     Modules.NOTIFICATION
   )
 
-  await notificationModuleService.createNotifications({
-    to: phone,
-    channel: "feed",
-    template: "otp-template",
-    data: {
-      otp,
-      // code: res.code
-    },
-  })
+  // await notificationModuleService.createNotifications({
+  //   to: phone,
+  //   channel: "feed",
+  //   template: "otp-template",
+  //   data: {
+  //     otp,
+  //     // code: res.code
+  //   },
+  // })
 }
 
 export const config: SubscriberConfig = {

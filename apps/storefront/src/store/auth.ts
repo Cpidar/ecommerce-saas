@@ -39,7 +39,7 @@ interface AuthState {
     first_name?: string
     last_name?: string
     phone: string
-  }) => Promise<void>
+  }) => Promise<any>
   logout: () => Promise<void>
   refresh: () => Promise<void>
   updateProfile: (data: {
@@ -159,7 +159,7 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
   register: async (data) => {
     set({ isLoading: true })
     try {
-      await authRegister(data)
+      return authRegister(data).then(console.log).catch(console.error)
     } finally {
       set({ isLoading: false })
     }
