@@ -165,7 +165,7 @@ export function Header({ categories = [], siteConfig }: HeaderProps) {
 
         {/* Logo */}
         <Link href={("/")} className="text-xl font-semibold tracking-tight">
-           { logoUrl ? <NcImage  src={logoUrl} width={140} height={30}/>  : (siteConfig.title || "نیتروکامرس") }
+           { logoUrl ? <NcImage  src={logoUrl} width={140} height={30} className="h-6"/>  : (siteConfig.title || "نیتروکامرس") }
         </Link>
 
         {/* Desktop nav — top-level Medusa categories (no parentId) */}

@@ -61,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
         <Image
           src={
-            image.url ? `${IMAGE_REMOTE_HOST}/${image.url}` : PLACEHOLDER_IMAGE
+            image?.url ? `${IMAGE_REMOTE_HOST}/${image.url}` : PLACEHOLDER_IMAGE
           }
           alt={image?.alt ?? product.name}
           fill

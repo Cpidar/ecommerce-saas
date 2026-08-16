@@ -252,7 +252,7 @@ async function fetchProductList(
   extraTags: string[] = []
 ): Promise<{ items: Product[]; count: number }> {
   "use cache"
-  cacheTag(productTags.all(storeId), ...extraTags)
+  cacheTag(productTags.all(storeId))
   cacheLife("products")
 
   const { products, count } = await sdk.store.product.list(params, { ...storeHeaders })

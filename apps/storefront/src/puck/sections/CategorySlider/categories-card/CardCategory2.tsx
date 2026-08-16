@@ -11,6 +11,7 @@ export interface CardCategory2Props {
   featuredImage?: string | StaticImageData;
   name: string;
   desc: string;
+  slug: string
 }
 
 const CardCategory2: FC<CardCategory2Props> = ({
@@ -20,15 +21,16 @@ const CardCategory2: FC<CardCategory2Props> = ({
   featuredImage = PLACEHOLDER_IMAGE,
   name,
   desc,
+  slug
 }) => {
   return (
     <Link
-      href={"/categories/${}"}
+      href={`/categories/${slug}`}
       className={`nc-CardCategory2 ${className}`}
       data-nc-id="CardCategory2"
     >
       <div
-        className={`flex-1 relative w-full h-48 rounded-2xl overflow-hidden group ${ratioClass} ${bgClass}`}
+        className={`flex-1 relative w-48 h-48 rounded-2xl overflow-hidden group ${ratioClass} ${bgClass}`}
       >
           <NcImage
             alt=""
