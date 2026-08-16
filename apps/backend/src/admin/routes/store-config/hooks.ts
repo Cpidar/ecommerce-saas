@@ -79,7 +79,7 @@ export const triggerStorefrontRevalidation = async ({
     return { ok: false, reason: "endpoint_not_set" }
   }
 
-  const res = await fetch(endpoint, {
+  const res = await fetch(`${endpoint}/store-configs`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

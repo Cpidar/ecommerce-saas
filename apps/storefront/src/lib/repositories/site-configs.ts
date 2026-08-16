@@ -173,31 +173,31 @@ const fetchGeneralConfig = async (storeId?: string) => {
 // ---------------------------------------------------------------------------
 export const siteConfigRevalidation = {
   async all(storeId: string) {
-    await revalidateTag(storeConfigTags.all(storeId), "layout")
+    await revalidateTag(storeConfigTags.all(storeId), "max")
   },
 
   async core(storeId: string) {
-    await revalidateTag(storeConfigTags.coreConfig(storeId), "layout")
+    await revalidateTag(storeConfigTags.coreConfig(storeId), "max")
   },
 
   async seo(storeId: string) {
-    await revalidateTag(storeConfigTags.seoConfig(storeId), "layout")
+    await revalidateTag(storeConfigTags.seoConfig(storeId), "max")
   },
 
   async general(storeId: string) {
-    await revalidateTag(storeConfigTags.generalConfig(storeId), "layout")
+    await revalidateTag(storeConfigTags.generalConfig(storeId), "max")
   },
 
   async payment(storeId: string) {
-    await revalidateTag(storeConfigTags.payment(storeId), "layout")
+    await revalidateTag(storeConfigTags.payment(storeId), "max")
   },
 
   async shipping(storeId: string) {
-    await revalidateTag(storeConfigTags.shipping(storeId), "layout")
+    await revalidateTag(storeConfigTags.shipping(storeId), "max")
   },
 
   async puck(storeId: string) {
-    await revalidateTag(storeConfigTags.puckData(storeId), "layout")
+    await revalidateTag(storeConfigTags.puckData(storeId), "max")
   },
 }
 

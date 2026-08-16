@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
     // Collect all relevant revalidation promises
     const tasks: Promise<unknown>[] = []
 
+    const affectsGrid = (data.affects_grid as boolean | undefined) ?? true
+
     if (productId) {
       tasks.push(productRevalidation.byId(storeId, productId))
     }
@@ -62,6 +64,11 @@ export async function POST(request: NextRequest) {
 
     // If it's a broad event (delete) or we can't be granular, invalidate "all"
     if (eventType?.includes("deleted") || (!productId && !collectionId && !categoryId)) {
+      tasks.push(productRevalidation.all(storeId))
+    }
+
+    // Price/inventory updates always affect grids
+    if (affectsGrid) {
       tasks.push(productRevalidation.all(storeId))
     }
 

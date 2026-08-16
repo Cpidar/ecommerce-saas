@@ -26,7 +26,7 @@ export default async function productVariantUpdatedEvent({
 
 
     try {
-        await fetch(REVALIDATION_ENDPOINT, {
+        await fetch(`${REVALIDATION_ENDPOINT}/products`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -39,6 +39,7 @@ export default async function productVariantUpdatedEvent({
                 data: {
                     id: product.id,
                     handle: product.handle,
+                    affects_grid: true,
                 },
             }),
         })

@@ -24,7 +24,12 @@ export default async function productUpdatedEvent({
     }
 
     try {
-        await fetch(REVALIDATION_ENDPOINT, {
+        // TODO: must be true only when price change
+        const affectsGrid = true
+            // typeof (product as Record<string, unknown>)?.variants !== "undefined" ||
+            // typeof (product as Record<string, unknown>)?.updated_at !== "undefined"
+
+        await fetch(`${REVALIDATION_ENDPOINT}/products`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -37,6 +42,7 @@ export default async function productUpdatedEvent({
                 data: {
                     id: product.id,
                     handle: product.handle,
+                    affects_grid: affectsGrid,
                 },
             }),
         })

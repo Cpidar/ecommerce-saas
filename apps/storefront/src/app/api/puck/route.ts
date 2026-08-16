@@ -3,16 +3,25 @@ import { NextResponse } from "next/server";
 import fs from 'fs';
 import path from 'path';
 import { sdk } from "@/lib/medusa";
-import { siteConfigRepository } from "@/lib/repositories/site-configs";
+import { siteConfigRepository, siteConfigRevalidation } from "@/lib/repositories/site-configs";
 import { cookies } from 'next/headers';
 import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
+import { getCurrentStoreId } from "@/lib/medusa/cookies";
 
 export async function POST(request: Request) {
   const payload = await request.json();
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_COOKIE)?.value;
 
-  console.log(token)
+  if (!token) {
+    return NextResponse.json({ message: "invalid token" }, { status: 401 })
+  }
+
+  const storeId = await getCurrentStoreId()
+  if (!storeId) {
+    return NextResponse.json({ message: "Invalid store context" }, { status: 400 })
+  }
+
   // Construct the full path
   // const dbPath = `puck-data/database.json`
 
@@ -33,7 +42,6 @@ export async function POST(request: Request) {
   const existingStoreConfig = await siteConfigRepository.getPageFromAdmin()
   const existingPuckDataForPath = existingStoreConfig?.puck_data?.[payload.path] ?? {}
 
-  console.log(existingStoreConfig)
   // 🟢 Write to the correct path
   // fs.writeFileSync(dbPath, JSON.stringify(payload.data, null, 2)); // Added pretty printing
 
@@ -55,7 +63,9 @@ export async function POST(request: Request) {
           }
         },
       }
-    ).then(res => console.log("🔥🔥🔥🔥", res))
+    )
+      .then(() => siteConfigRevalidation.puck(storeId))
+      .finally(() => console.log("🔥🔥🔥🔥 Puck Page Updated"))
   } catch (e) {
     console.error(e)
     throw new Error("Something was wrong")

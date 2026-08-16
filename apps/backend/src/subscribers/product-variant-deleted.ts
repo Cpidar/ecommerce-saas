@@ -26,7 +26,7 @@ export default async function productVariantDeletedEvent({
 
 
     try {
-        await fetch(REVALIDATION_ENDPOINT, {
+        await fetch(`${REVALIDATION_ENDPOINT}/products`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
