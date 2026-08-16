@@ -44,8 +44,8 @@ const PageLogin = () => {
       const { location } = response;
 
       return location === "register"
-        ? router.push(`/auth/register`)
-        : router.push(`/auth/password`);
+        ? router.push(`/customer-auth/register`)
+        : router.push(`/customer-auth/password`);
     } catch (err) {
       const message =
         err instanceof AuthError ? err.message : tAuth("invalidCredentials");

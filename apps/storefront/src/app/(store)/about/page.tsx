@@ -26,7 +26,7 @@ export async function generateMetadata({
   const data = await siteConfigRepository.getPage(path);
   
   return {
-    title: data?.root.props?.title,
+    title: data?.root.props?.title ?? "درباره ما",
   };
 }
 

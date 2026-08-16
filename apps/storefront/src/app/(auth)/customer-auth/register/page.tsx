@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
-// import logo from "@/data/logo.svg";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,13 +10,13 @@ import { Button } from "@/components/ui/button";
 import { AuthError } from "@/lib/utils/auth-error";
 import { registerSchema } from "@/lib/validators";
 import { useTranslations } from "next-intl";
+import { registerWithPhone } from "@/lib/medusa/auth-server";
 
 const Register = () => {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
 
   const router = useRouter();
-  const register = useAuthStore((s) => s.register);
   const phone = useAuthStore((s) => s.phone);
   const email = useAuthStore((s) => s.email);
   const [form, setForm] = useState({
@@ -47,19 +45,23 @@ const Register = () => {
     }
     setLoading(true);
     try {
-      await register({
+      const res = await registerWithPhone({
         first_name: form.firstName,
         last_name: form.lastName,
         email,
         phone,
         password: form.password,
       });
-      toast.success(t("accountCreated"));
-      router.push(`/auth/otp`);
+
+      if (res.location === "otp") {
+        // toast.success(t("accountCreated"));
+        router.push(`/customer-auth/otp`);
+      }
     } catch (err) {
+      console.error(err);
       const message =
         err instanceof AuthError ? err.message : t("createAccountFailed");
-      toast.error(message);
+      toast.error(t("createAccountFailed"));
     } finally {
       setLoading(false);
     }

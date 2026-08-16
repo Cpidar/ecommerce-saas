@@ -66,7 +66,7 @@ const PageLogin = () => {
         throw new Error(response);
       }
 
-      router.push(`/auth/otp`);
+      router.push(`/customer-auth/otp`);
     } catch (err) {
       const message =
         err instanceof AuthError ? err.message : t("invalidCredentials");

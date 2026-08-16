@@ -49,7 +49,7 @@ function ResetPasswordContent() {
     try {
       await completePasswordReset({ email, password, token })
       toast.success("Password updated — please sign in")
-      router.push(`/auth/login`)
+      router.push(`/customer-auth/login`)
     } catch (err) {
       const message =
         err instanceof AuthError ? err.message : "Couldn't reset password"
