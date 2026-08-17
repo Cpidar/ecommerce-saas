@@ -25,43 +25,6 @@ async function handleEditRoute(
     return NextResponse.redirect(new URL("/", request.url))
   }
 
-  const token = request.cookies.get(ADMIN_COOKIE)?.value
-
-  if (!token) {
-    return NextResponse.redirect(
-      new URL(
-        `/admin-portal/login?from=${pathWithoutEdit}/edit`,
-        request.url,
-      ),
-    )
-  }
-
-  try {
-    const verifyRes = await fetch(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/admin/users/me`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
-
-    if (!verifyRes.ok) {
-      return NextResponse.redirect(
-        new URL(
-          `/admin-portal/login?from=${pathWithoutEdit}/edit`,
-          request.url,
-        ),
-      )
-    }
-  } catch {
-    return NextResponse.redirect(
-      new URL(
-        `/admin-portal/login?from=${pathWithoutEdit}/edit`,
-        request.url,
-      ),
-    )
-  }
 
   const pathWithEditPrefix =
     `/admin-portal/puck${pathWithoutEdit}`
@@ -98,7 +61,6 @@ export async function proxy(request: NextRequest) {
 
   // Handle Puck edit routes
   if (
-    request.method === "GET" &&
     request.nextUrl.pathname.endsWith("/edit")
   ) {
     const response = await handleEditRoute(

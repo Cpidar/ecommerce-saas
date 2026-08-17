@@ -1,3 +1,4 @@
+import "server-only"
 import type { HttpTypes } from "@medusajs/types"
 import { sdk } from "@/lib/medusa"
 import { cacheLife, cacheTag, revalidateTag } from "next/cache"
@@ -53,6 +54,7 @@ async function fetchAllCollections(
     { limit: 200, fields: "id,handle,title,metadata" },
     { ...storeHeaders }
   )
+  console.log("😊😊😊😊😊", collections)
   return collections.map(transform)
 }
 

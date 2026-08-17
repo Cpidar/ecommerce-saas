@@ -2,6 +2,7 @@ import { ComponentConfig } from "@puckeditor/core";
 import IncredibleOffers, { IncredibleOffersSkeleton } from "./components";
 import mockData from "@/lib/static-data/products.json";
 import { Product } from "@/types";
+import { getCollections } from "./actions";
 
 interface MedusaCollection {
   id: string;
@@ -25,29 +26,31 @@ const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL;
 const publishableApiKey = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY;
 
 const collectionsList = async (): Promise<MedusaCollection[]> => {
-  if (!publishableApiKey || !backendUrl) {
-    throw new Error("Missing Medusa backend URL or publishable API key");
-  }
+  // if (!publishableApiKey || !backendUrl) {
+  //   throw new Error("Missing Medusa backend URL or publishable API key");
+  // }
 
-  const match = document.cookie.match(/current_store_id=([^;]+)/);
-  const storeIdCache = match && match[1];
-  console.log("sdk hit from client", storeIdCache);
+  // const match = document.cookie.match(/current_store_id=([^;]+)/);
+  // const storeIdCache = match && match[1];
+  // console.log("sdk hit from client", storeIdCache);
 
-  const headers: HeadersInit = {
-    "x-publishable-api-key": publishableApiKey,
-    "Content-Type": "application/json",
-    "x-store-id": storeIdCache || "store_01KVJBNGCHF9N47BJFRJ3BMWHY",
-  };
-  const res = await fetch(`${backendUrl}/store/collections`, {
-    method: "GET",
-    headers,
-  });
+  // const headers: HeadersInit = {
+  //   "x-publishable-api-key": publishableApiKey,
+  //   "Content-Type": "application/json",
+  //   "x-store-id": storeIdCache || "store_01KVJBNGCHF9N47BJFRJ3BMWHY",
+  // };
+  // const res = await fetch(`${backendUrl}/store/collections`, {
+  //   method: "GET",
+  //   headers,
+  // });
 
-  if (!res.ok) {
-    throw new Error(`HTTP error! status: ${res.status}`);
-  }
+  // if (!res.ok) {
+  //   throw new Error(`HTTP error! status: ${res.status}`);
+  // }
 
-  const { collections } = await res.json();
+  // const { collections } = await res.json();
+  const collections = await getCollections()
+
   return collections.map((collection: MedusaCollection) => ({
     id: collection.id,
     title: collection.title,
