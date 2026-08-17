@@ -17,7 +17,9 @@ import { Metadata } from "next";
 import { siteConfigRepository } from "@/lib/repositories/site-configs";
 import { DEFAULT_REGION } from "@/lib/medusa";
 import { shouldHandleEditPath } from "@/puck/utils/slug-matcher";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
 
 export async function generateMetadata({
   params,
@@ -48,6 +50,22 @@ export default async function Page({
     puckPath.length === 1 && puckPath[0] === "home"
       ? "/home"
       : `/${puckPath.join("/")}`;
+
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ADMIN_COOKIE)?.value;
+
+  if (!token) {
+    redirect(`/admin-portal/login?from=${path}/edit`);
+  }
+
+  const verifyRes = await fetch(
+    `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/admin/users/me`,
+    { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" },
+  );
+
+  if (!verifyRes.ok) {
+    redirect(`/admin-portal/login?from=${path}/edit`);
+  }
 
   const data = await siteConfigRepository.getPage(path);
 
