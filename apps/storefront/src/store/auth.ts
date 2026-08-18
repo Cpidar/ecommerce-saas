@@ -8,6 +8,7 @@ import {
   logout as authLogout,
   registerWithPhone as authRegister,
   tryGetCurrentCustomer,
+  authenticateWithPhone,
 } from "@/lib/medusa/auth-server"
 import {
   updateProfile as updateProfileApi,
@@ -31,7 +32,7 @@ interface AuthState {
 
   hydrate?: () => Promise<void>
   initialize(customer: Customer | null): void
-  reset():void
+  reset(): void
   login: (email: string, password: string) => Promise<void>
   register: (data: {
     email: string
@@ -95,19 +96,7 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
     set({ isLoading: true })
     set({ refPath })
     try {
-      const response = await sdk.client.fetch("/auth/customer/phone-auth", {
-        method: "POST",
-        body: {
-          phone,
-          email
-        }
-      }) as AuthRedirectResponse
-      if (
-        typeof response === "string" ||
-        !response.location
-      ) {
-        throw new Error("Failed to login")
-      }
+      const response = await authenticateWithPhone({ phone, email })
       set({ phone, email })
 
 
@@ -174,7 +163,7 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
         customer: null,
         phone: '',
         email: '',
-        refPath:'',
+        refPath: '',
         isAuthenticated: false,
         isLoading: false,
       })

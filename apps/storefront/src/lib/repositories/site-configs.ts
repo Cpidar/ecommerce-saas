@@ -110,8 +110,6 @@ const fetchPuckPage = async (storeId?: string) => {
     "/store/store-config?fields=puck_data",
   )
 
-  console.log("🐉🐉🐉", response)
-
   return response.store_config
 
 }
@@ -231,7 +229,7 @@ export const siteConfigRepository = {
 
     if (storeConfig?.puck_data && Object.keys(storeConfig.puck_data).length > 0) {
       puckData = storeConfig.puck_data;
-      console.log("🚗🚗🚗🚗🚗🚗🚗")
+
     } else {
       // Fallback to template.json when there is no store config or it's empty
       if (fs.existsSync(templatePath)) {

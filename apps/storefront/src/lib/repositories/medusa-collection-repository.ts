@@ -54,7 +54,7 @@ async function fetchAllCollections(
     { limit: 200, fields: "id,handle,title,metadata" },
     { ...storeHeaders }
   )
-  console.log("😊😊😊😊😊", collections)
+
   return collections.map(transform)
 }
 

@@ -230,7 +230,7 @@ export async function authenticateWithPhone({ phone, email }: { phone: string; e
     ) {
       throw new Error("Failed to login")
     }
-console.log(response)
+
     return response
   } catch (err) {
     if (err instanceof AuthError) throw err
