@@ -5,7 +5,7 @@ import { Product } from "@/types";
 import { getCollections } from "./actions";
 
 interface MedusaCollection {
-  id: string;
+  id?: string;
   title: string;
   handle: string;
   deleted_at?: string;
@@ -49,10 +49,10 @@ const collectionsList = async (): Promise<MedusaCollection[]> => {
   // }
 
   // const { collections } = await res.json();
-  const collections = await getCollections()
+  const collections = await getCollections();
 
   return collections.map((collection: MedusaCollection) => ({
-    id: collection.id,
+    // id: collection.id,
     title: collection.title,
     handle: collection.handle,
   }));
@@ -65,6 +65,8 @@ export const IncredibleOffersSection: ComponentConfig<Props> = {
       type: "external",
       label: "انتخاب کالکشن",
       fetchList: collectionsList,
+      placeholder: "کالکشن مورد نظر را انتخاب کنید",
+      getItemSummary: (item) => item.title,
     },
     categoryCardType: {
       type: "select",
