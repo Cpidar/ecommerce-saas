@@ -9,9 +9,12 @@ import { useTranslations } from "next-intl";
 import { useCartStore } from "@/store/cart";
 import { CartSummary } from "@/components/cart/cart-summary";
 import { formatPrice } from "@/lib/utils/utils";
-import { type PaymentProviderInfo } from "@/lib/medusa/cart-client";
+import {
+  listPaymentProviders,
+  type PaymentProviderInfo,
+} from "@/lib/medusa/cart-client";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
-import { CheckoutPaymentStep } from "@/components/checkout/checkout-payment-step";
+import { CheckoutPaymentStep } from "../_components/checkout-payment-step";
 
 export default function CheckoutPage() {
   const tCheckout = useTranslations("checkout");
@@ -22,13 +25,50 @@ export default function CheckoutPage() {
   const hasHydrated = useCartStore((s) => s.hasHydrated);
   const hydrate = useCartStore((s) => s.hydrate);
 
-  useEffect(() => {
-    if (!hasHydrated) void hydrate();
-  }, [hasHydrated, hydrate]);
-  // TODO: get list of payment providers and set
   const [paymentProviders, setPaymentProviders] = useState<
     PaymentProviderInfo[]
   >([]);
+  const [providersLoading, setProvidersLoading] = useState(true);
+  const [providersError, setProvidersError] = useState<string | null>(null);
+
+  // Hydrate cart
+  useEffect(() => {
+    if (!hasHydrated) void hydrate();
+  }, [hasHydrated, hydrate]);
+
+  // Fetch payment providers once
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProviders() {
+      try {
+        setProvidersLoading(true);
+        setProvidersError(null);
+        const providers = await listPaymentProviders();
+        if (!cancelled) {
+          setPaymentProviders(providers);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setProvidersError(
+            err instanceof Error
+              ? err.message
+              : "Failed to load payment methods",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setProvidersLoading(false);
+        }
+      }
+    }
+
+    void loadProviders();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!isReady || !customer) return null;
 

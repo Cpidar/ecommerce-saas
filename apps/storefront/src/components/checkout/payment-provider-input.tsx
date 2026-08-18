@@ -23,10 +23,14 @@ export interface ProviderInputProps {
  * touching the checkout flow.
  */
 export function PaymentProviderInput(props: ProviderInputProps) {
+
   if (isBehpardakhtProviderId(props.providerId)) {
     return <BehpardakhtPayment {...props} />;
   }
   if (props.providerId === "pp_system_default") {
+    return <SystemDefaultPayment {...props} />;
+  }
+  if (isZibalProviderId(props.providerId)) {
     return <SystemDefaultPayment {...props} />;
   }
   return <GenericPayment {...props} />;
@@ -34,6 +38,10 @@ export function PaymentProviderInput(props: ProviderInputProps) {
 
 function isBehpardakhtProviderId(id: string): boolean {
   return id.startsWith("pp_behpardakht") || id === "pp_behpardakht_behpardakht";
+}
+
+function isZibalProviderId(id: string): boolean {
+  return id.startsWith("pp_zibal") || id === "pp_zibal_zibal";
 }
 
 // ---------------------------------------------------------------------------
@@ -44,12 +52,12 @@ function SystemDefaultPayment({
   onSubmit,
   submitting,
   totalLabel,
-  session
+  session,
 }: ProviderInputProps) {
-    const { referenceId, resCode, errorMessage } =
+  const { referenceId, resCode, errorMessage } =
     (session?.data as Record<string, string> | undefined) || {};
 
-  // if (!referenceId) {
+    // if (!referenceId) {
   //   return (
   //     <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">
   //       {/* Couldn&apos;t get a PayPal order id from the payment session. Check that

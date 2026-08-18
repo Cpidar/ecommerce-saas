@@ -1,13 +1,17 @@
 import { BehpardakhtErrors } from "@/lib/constants";
 import { redirect } from "next/navigation";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
-    request: Request,
+    request: NextRequest,
     { params }: { params: Promise<{ provider: string }> }
 ) {
     const { provider } = await params;
     console.log(provider)
+    const searchParams = request.nextUrl.searchParams
+    const successUrl = searchParams.get('successUrl')
+    const failUrl = searchParams.get('failUrl')
+
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
 
     switch (provider) {
@@ -60,11 +64,18 @@ export async function POST(
                     // ✅ FIXED: Properly encode Persian text
                     const encodedError = encodeURIComponent(errorMessage);
 
+                    if (failUrl) {
+                        redirect(`${baseUrl}/${failUrl}?errorMessage=${encodedError}`);
+                    }
+
                     redirect(`${baseUrl}/checkout/failed?errorMessage=${encodedError}`);
                     return;
                 }
 
                 // Success
+                if (successUrl) {
+                    redirect(`${baseUrl}/${successUrl}?saleReferenceId=${encodeURIComponent(SaleReferenceId)}`);
+                }
                 redirect(`${baseUrl}/checkout/success?saleReferenceId=${encodeURIComponent(SaleReferenceId)}`);
             } catch (e) {
                 // Only catch real errors, ignore NEXT_REDIRECT

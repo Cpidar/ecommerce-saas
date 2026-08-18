@@ -75,29 +75,28 @@ export function CheckoutPaymentStep({
       toast.error(tCheckout("selectPaymentMethod"));
       return;
     }
-
     // setSubmitting(true);
     try {
       const res = await requestProvider({
         providerId: selectedProvider,
         amount: `${cart?.total}`,
-        successUrl: "checkout/success",
-        failUrl: "checkout/failed"
+        successUrl: "saas/checkout/success",
+        failUrl: "saas/checkout/failed",
       });
+      console.log("res 🍕🍕🍕🍕🍕🍕", res);
       if (!res) return;
       const { referenceId, url, method } = res;
-      console.log(referenceId)
+      console.log(referenceId);
 
       const session = await ensurePaymentSession(selectedProvider, {
         referenceId,
       });
       if (!session) return;
-      window.location.href = `http://localhost:3000/payment/${referenceId}`
-
+      window.location.href = `http://localhost:3000/payment/${referenceId}`;
     } catch (err) {
       console.error(err);
       toast.error(tCheckout("paymentFailed"));
-    } 
+    }
     // finally {
     //   setSubmitting(false);
     // }
