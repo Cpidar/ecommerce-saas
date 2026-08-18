@@ -70,6 +70,10 @@ module.exports = defineConfig({
             resolve: "./src/modules/behpardakht",
             id: "behpardakht",
           },
+          {
+            resolve: "./src/modules/zibal",
+            id: "zibal",
+          },
         ],
       },
     },
