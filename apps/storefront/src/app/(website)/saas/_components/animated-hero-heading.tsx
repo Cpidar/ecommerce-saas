@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 const TYPING_SPEED = 75 // in ms
 
-const FULL_HEADING = 'What are you building today?'
+const FULL_HEADING = 'یک پلتفرم فروشگاه ساز پیشرفته'
 
 export function AnimatedHeroHeading() {
   const [displayedText, setDisplayedText] = useState('')
