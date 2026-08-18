@@ -9,6 +9,8 @@ import { IRANSans } from "@/styles/font";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { tryGetCurrentCustomer } from "@/lib/medusa/auth-server";
 import { Suspense } from "react";
+import CartMismatchBanner from "@/components/layout/cart-mismatch-banner";
+import { retrieveCart } from "@/lib/medusa/cart-server";
 
 export const inter = Inter({
   variable: "--font-inter",
@@ -29,15 +31,20 @@ export const inter = Inter({
 //   },
 // };
 
-
 export async function Providers({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
   const messages = await getMessages();
   const customer = await tryGetCurrentCustomer();
+  const cart = await retrieveCart();
 
   return (
     <NextIntlClientProvider messages={messages}>
-      <AuthProvider customer={customer}>{children}</AuthProvider>
+      <AuthProvider customer={customer}>
+        {customer && cart && (
+          <CartMismatchBanner customer={customer} cart={cart} />
+        )}
+        {children}
+      </AuthProvider>
     </NextIntlClientProvider>
   );
 }
@@ -55,7 +62,6 @@ export default async function RootLayout({
       dir={locale === "fa" ? "rtl" : "ltr"}
     >
       <body className="min-h-full flex flex-col">
-
         <Suspense fallback={null}>
           <Providers>{children}</Providers>
         </Suspense>
