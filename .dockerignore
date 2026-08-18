@@ -17,6 +17,8 @@ out
 .env
 .env.local
 .env.*.local
+apps/storefront/.env.local
+apps/medusa/.env
 
 # Git
 .git
