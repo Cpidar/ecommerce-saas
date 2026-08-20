@@ -14,7 +14,7 @@ import {
   setCartId,
 } from "./cookies"
 import { resolveRegion } from "@/lib/medusa-region"
-import { getLocale } from "../medusa-origin/locale-actions"
+import { getLocale } from "./locale-actions"
 
 /**
  * Retrieves a cart by its ID. If no ID is provided, it will use the cart ID from the cookies.
