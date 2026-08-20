@@ -169,7 +169,7 @@ export default function PriceCard({
             : null;
 
           return (
-            <Card className="flex flex-col">
+            <Card className="flex flex-col" key={fo.id}>
               <CardHeader>
                 <CardTitle>{fo.label}</CardTitle>
                 <CardDescription>{fo.label}</CardDescription>
