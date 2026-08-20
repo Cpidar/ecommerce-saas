@@ -7,6 +7,10 @@ export const IMAGE_REMOTE_HOST = process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS;
 
 export const PLACEHOLDER_IMAGE = "/images/products/placeholder.svg"
 
+// COOKIES
+export const CART_COOKIE = "lumen_cart_id"
+export const ADMIN_COOKIE = "admin_session";
+
 /* Map of payment provider_id to their title and icon. Add in any payment providers you want to use. */
 export const paymentInfoMap: Record<
   string,

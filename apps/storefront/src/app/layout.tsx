@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Toaster } from "sonner";
-import { siteConfig } from "@/lib/config";
 import "./globals.css";
 import { IRANSans } from "@/styles/font";
 import { AuthProvider } from "@/components/auth/auth-provider";

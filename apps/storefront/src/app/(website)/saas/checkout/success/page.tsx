@@ -17,6 +17,7 @@ import {
 import { Cart } from "@/types";
 import { useCartStore } from "@/store/cart";
 import { ReorderStoreSubscriptionCheckoutResponse } from "@/types/subscription";
+import { transferCart } from "@/lib/medusa/auth-server";
 
 export default function CheckoutSuccessPage() {
   const hydrate = useCartStore((s) => s.hydrate);
@@ -61,6 +62,7 @@ async function placeSubscriptionOrder(
   hydrate: () => Promise<void>,
   tCheckout: ReturnType<typeof useTranslations>,
 ) {
+  await transferCart()
   const result = await completeSubscriptionCheckout(cartId);
   if (result.type === "order") {
     useCartStore.setState({ cart: null, hasHydrated: false });

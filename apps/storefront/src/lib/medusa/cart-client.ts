@@ -5,7 +5,7 @@ import { sdk, DEFAULT_REGION } from "../medusa"
 import type { Cart, CartItem } from "@/types"
 import { ReorderSubscriptionLineItemMetadataInput } from "@/types/subscription"
 
-const CART_COOKIE = "lumen_cart_id"
+const CART_COOKIE = "_medusa_cart_id"
 const CART_FIELDS =
   "*items,*items.variant,*items.variant.product,*items.variant.product.images,*items.thumbnail,*region"
 

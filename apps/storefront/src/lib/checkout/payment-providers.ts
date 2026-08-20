@@ -17,6 +17,7 @@ export async function requestProvider({
 
     switch (providerId) {
         case "pp_system_default":
+        case "pp_zibal_zibal":
             const res =
                 // const res = await PromiseWithTimeout(3000,
                 await fetch("http://localhost:3000/api/behpardakht/request", {

@@ -12,6 +12,7 @@ import {
 import { siteConfig as defaultConfig } from "@/lib/config";
 import { Providers } from "../layout";
 import { Metadata } from "next";
+import { connection } from "next/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const coreData = await siteConfigRepository.getCoreConfig();
@@ -33,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       default: composedTitle,
-      template: titleTemplate ?? `%s | ${composedTitle}`
+      template: titleTemplate ?? `%s | ${composedTitle}`,
     },
     description,
     alternates: {
@@ -73,7 +74,18 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function generateJsonLd() {
+async function DynamicMarker() {
+  await connection();
+  return null;
+}
+
+// export async function generateMetadata(): Promise<Metadata> {
+//   return {
+//     title: "خانه",
+//     description: "صفحه اصلی فروشگاه",
+//   };
+// }
+async function JsonLdProvider() {
   const coreData = await siteConfigRepository.getCoreConfig();
 
   const organizationJsonLd = {
@@ -95,7 +107,14 @@ async function generateJsonLd() {
     },
   };
 
-  return { organizationJsonLd, websiteJsonLd };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify([organizationJsonLd, websiteJsonLd]),
+      }}
+    />
+  );
 }
 
 async function HeaderProvider() {
@@ -127,15 +146,11 @@ export default async function StoreLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { organizationJsonLd, websiteJsonLd } = await generateJsonLd();
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify([organizationJsonLd, websiteJsonLd]),
-        }}
-      />
+      <Suspense fallback={null}>
+        <JsonLdProvider />
+      </Suspense>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring"
@@ -145,7 +160,6 @@ export default async function StoreLayout({
       <Suspense fallback={<HeaderSkeleton />}>
         <AnnouncementBarProvider />
       </Suspense>
-      {/* Wrap the dynamic part */}
       <Suspense fallback={<HeaderSkeleton />}>
         <HeaderProvider />
       </Suspense>
@@ -157,11 +171,13 @@ export default async function StoreLayout({
       </Suspense>
       <CartDrawer />
       <BackToTop />
+      <Suspense>
+        <DynamicMarker />
+      </Suspense>
     </>
   );
 }
 
-// Simple skeleton (optional but recommended)
 function HeaderSkeleton() {
   return <div className="h-16 bg-muted animate-pulse" />; // or your actual header skeleton
 }
