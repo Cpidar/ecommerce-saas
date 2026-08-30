@@ -1,12 +1,12 @@
 import "server-only"
 
-import { Content, Data } from "@puckeditor/core";
 import fs from "fs";
 import { sdk } from "../medusa";
 import { cacheLife, cacheTag, revalidateTag } from "next/cache";
-import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies";
+import { getCurrentStoreId } from "../medusa/cookies";
 import { cookies } from 'next/headers';
 import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
+import { STORE_CONFIG_CACHE_PROFILE } from "../constants";
 
 export type JsonRecord = Record<string, unknown>
 
@@ -80,7 +80,7 @@ const fetchAllConfig = async (
 ) => {
   "use cache"
   cacheTag(storeConfigTags.all(storeId || "store"))
-  cacheLife("max")
+  cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config",
@@ -93,7 +93,7 @@ const fetchCoreConfig = async (
 ) => {
   "use cache"
   cacheTag(storeConfigTags.coreConfig(storeId || "store"))
-  cacheLife("max")
+  cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=title,handle,domain,description,logo_url,logo_alt,favicon_url,seo_config.*,marketing_config.*",
@@ -104,7 +104,7 @@ const fetchCoreConfig = async (
 const fetchPuckPage = async (storeId?: string) => {
   "use cache"
   cacheTag(storeConfigTags.puckData(storeId || "store"))
-  cacheLife("max")
+  cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=puck_data",
@@ -134,7 +134,7 @@ const fetchAdminPuckPage = async () => {
 const fetchSeoConfig = async (storeId?: string) => {
   "use cache"
   cacheTag(storeConfigTags.seoConfig(storeId || "store"))
-  cacheLife("max")
+  cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=seo_config",
@@ -145,7 +145,7 @@ const fetchSeoConfig = async (storeId?: string) => {
 const fetchShippingAndPaymentconfig = async (storeId?: string) => {
   "use cache"
   cacheTag(storeConfigTags.payment(storeId || "store"), storeConfigTags.shipping(storeId || "store"))
-  cacheLife("max")
+  cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=payment_configs.*,shipping_method_configs.*",
@@ -157,7 +157,7 @@ const fetchShippingAndPaymentconfig = async (storeId?: string) => {
 const fetchGeneralConfig = async (storeId?: string) => {
   "use cache"
   cacheTag(storeConfigTags.generalConfig(storeId || "store"))
-  cacheLife("max")
+  cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=config",
@@ -171,31 +171,31 @@ const fetchGeneralConfig = async (storeId?: string) => {
 // ---------------------------------------------------------------------------
 export const siteConfigRevalidation = {
   async all(storeId: string) {
-    await revalidateTag(storeConfigTags.all(storeId), "max")
+    await revalidateTag(storeConfigTags.all(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async core(storeId: string) {
-    await revalidateTag(storeConfigTags.coreConfig(storeId), "max")
+    await revalidateTag(storeConfigTags.coreConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async seo(storeId: string) {
-    await revalidateTag(storeConfigTags.seoConfig(storeId), "max")
+    await revalidateTag(storeConfigTags.seoConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async general(storeId: string) {
-    await revalidateTag(storeConfigTags.generalConfig(storeId), "max")
+    await revalidateTag(storeConfigTags.generalConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async payment(storeId: string) {
-    await revalidateTag(storeConfigTags.payment(storeId), "max")
+    await revalidateTag(storeConfigTags.payment(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async shipping(storeId: string) {
-    await revalidateTag(storeConfigTags.shipping(storeId), "max")
+    await revalidateTag(storeConfigTags.shipping(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async puck(storeId: string) {
-    await revalidateTag(storeConfigTags.puckData(storeId), "max")
+    await revalidateTag(storeConfigTags.puckData(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 }
 

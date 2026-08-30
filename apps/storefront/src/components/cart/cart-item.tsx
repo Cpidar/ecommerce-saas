@@ -53,7 +53,7 @@ export function CartItem({ item }: CartItemProps) {
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              {formatPrice(item.price)} each
+              هر کدام {formatPrice(item.price)}
             </p>
           </div>
           <Button

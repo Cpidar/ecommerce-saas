@@ -14,6 +14,7 @@ type StoreCart = HttpTypes.StoreCart
 function readCookie(name: string): string | null {
   if (typeof document === "undefined") return null
   const m = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`))
+  console.log(m)
   return m ? decodeURIComponent(m[1]) : null
 }
 
@@ -284,10 +285,13 @@ export interface PaymentProviderInfo {
 }
 
 export async function listPaymentProviders(): Promise<PaymentProviderInfo[]> {
+          console.log("EFFECT MOUNTED"); // add this first
+
   const id = requireCartId()
   // Pull region_id from cart so we filter providers correctly.
   const cart = await fetchExistingCart(id)
   const regionId = cart?.region_id
+  console.log(cart, regionId)
   if (!regionId) return []
   const { payment_providers } = await sdk.store.payment.listPaymentProviders({
     region_id: regionId,

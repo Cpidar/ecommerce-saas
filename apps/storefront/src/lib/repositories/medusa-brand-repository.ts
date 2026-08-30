@@ -1,7 +1,8 @@
 import type { Brand } from "@/types"
 import { sdk } from "@/lib/medusa"
 import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies"
-import { cacheTag, cacheLife } from "next/cache"
+import { cacheTag, cacheLife, revalidateTag } from "next/cache"
+import { CATALOG_CACHE_PROFILE } from "../constants"
 
 /**
  * Medusa v2 has no native "brand" concept. This repository derives brands
@@ -19,7 +20,7 @@ import { cacheTag, cacheLife } from "next/cache"
 // ---------------------------------------------------------------------------
 const getTenantTag = (storeId: string, tag: string) => `${storeId}:${tag}`
 
-const brandTags = {
+export const brandTags = {
   all: (storeId: string) => getTenantTag(storeId, "brands"),
   byHandle: (storeId: string, slug: string) => getTenantTag(storeId, `brands:${slug}`),
 }
@@ -48,28 +49,26 @@ async function fetchAllBrands(
 ): Promise<Brand[]> {
   "use cache"
   cacheTag(brandTags.all(storeId))
-  cacheLife("catalogRef")   // or "days" / "weeks" depending on how often collections change
+  cacheLife(CATALOG_CACHE_PROFILE)   // or "days" / "weeks" depending on how often collections change
 
 
-  if (!cache) {
-    cache = sdk.store.product
-      .list({ fields: "id,type", limit: 200 }, { ...storeHeaders })
-      .then(({ products }) => {
-        const seen = new Map<string, Brand>()
-        for (const p of products) {
-          if (!p.type || !p.type.value) continue
-          if (seen.has(p.type.id)) continue
-          seen.set(p.type.id, {
-            id: p.type.id,
-            name: p.type.value,
-            slug: slugify(p.type.value),
-            description: "",
-          })
-        }
-        return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name))
-      })
+  const { products } = await sdk.store.product.list(
+    { fields: "id,type", limit: 200 },
+    { ...storeHeaders }
+  )
+
+  const seen = new Map<string, Brand>()
+  for (const p of products) {
+    if (!p.type || !p.type.value) continue
+    if (seen.has(p.type.id)) continue
+    seen.set(p.type.id, {
+      id: p.type.id,
+      name: p.type.value,
+      slug: slugify(p.type.value),
+      description: "",
+    })
   }
-  return cache
+  return [...seen.values()].sort((a, b) => a.name.localeCompare(b.name))
 }
 
 export const medusaBrandRepository = {
@@ -94,5 +93,18 @@ export const medusaBrandRepository = {
 
     const all = await fetchAllBrands(storeHeaders, storeId)
     return all.find((b) => b.id === id) ?? null
+  },
+}
+
+// ---------------------------------------------------------------------------
+// Revalidation Helpers (for Medusa webhooks)
+// ---------------------------------------------------------------------------
+export const brandRevalidation = {
+  async all(storeId: string) {
+    revalidateTag(brandTags.all(storeId), CATALOG_CACHE_PROFILE)
+  },
+
+  async byHandle(storeId: string, slug: string) {
+    revalidateTag(brandTags.byHandle(storeId, slug), CATALOG_CACHE_PROFILE)
   },
 }

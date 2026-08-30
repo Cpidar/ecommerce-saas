@@ -41,7 +41,7 @@ export const POST = async (
 
         // console.log(" 🐉🐉🐉 new file name: ", `${currentStore.id}/${safeName}-${randomUUID()}${ext.toLowerCase()}`)
         return {
-          filename: `${currentStore.id}__${f.originalname}`,
+          filename: `${currentStore.id}/${f.originalname}`,
           mimeType: f.mimetype,
           content: f.buffer.toString("base64"),
           access: "public",

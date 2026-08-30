@@ -1,8 +1,8 @@
 import { maybeApplyLinkFilter, MiddlewareRoute } from "@medusajs/framework";
 import { addStoreIdToFilterableFields } from "../../middlewares/admin/add-store-id-to-filterable-fields";
-import { moveIdsToQueryFromFilterableFields } from "../../middlewares/move-ids-to-query-from-filterable-fields";
-import { registerLoggedInUser } from "@techlabi/medusa-marketplace-plugin/api/middlewares/logged-in-user";
-import { registerCurrentStore } from "@techlabi/medusa-marketplace-plugin/api/middlewares/register-current-store";
+import { registerLoggedInUser } from "@sepidar/medusa-multistore-plugin/api/middlewares/logged-in-user";
+import { registerCurrentStore } from "@sepidar/medusa-multistore-plugin/api/middlewares/register-current-store";
+import { addStoreScope } from "../../middlewares/add-store-scope";
 
 export const adminProductsRoutesMiddlewares: MiddlewareRoute[] = [
     {
@@ -16,12 +16,17 @@ export const adminProductsRoutesMiddlewares: MiddlewareRoute[] = [
                 filterableField: "store_id",
             }),
             //   productStoreAccessMiddleware,
-            moveIdsToQueryFromFilterableFields,
+            // moveIdsToQueryFromFilterableFields,
         ],
     },
     {
         method: ["POST"],
-        matcher: "/admin/products/import",
-        middlewares: [registerLoggedInUser, registerCurrentStore],
+        matcher: "/admin/products/imports",
+        middlewares: [registerLoggedInUser, registerCurrentStore, addStoreScope],
+    },
+    {
+        method: ["POST"],
+        matcher: "/admin/products/imports/:transaction_id/confirm",
+        middlewares: [registerLoggedInUser, registerCurrentStore, addStoreScope],
     },
 ];

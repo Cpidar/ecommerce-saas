@@ -1,5 +1,5 @@
 import { Page } from "@/components/Saas/page";
-import { medusaProductRepository } from "@/lib/repositories/products";
+import { medusaProductRepository } from "@/lib/repositories/products-repository";
 import PriceCard from "../_components/price-card";
 import { notFound } from "next/navigation";
 

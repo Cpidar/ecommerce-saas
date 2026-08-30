@@ -5,10 +5,11 @@ import {
   getAuthHeaders,
   getCacheOptions,
   getCacheTag,
+  getCartId,
   removeCartId,
+  setSubscriptionId,
 } from "../medusa/cookies"
 import { revalidateTag } from "next/cache"
-import { redirect } from "next/navigation"
 import type {
   ReorderChangeSubscriptionFrequencyRequest,
   ReorderCustomerSubscriptionDetail,
@@ -24,12 +25,10 @@ import type {
   ReorderUpdateSubscriptionAddressRequest,
 } from "../../types/subscription"
 import { medusaError } from "../medusa-error"
+import { CARTS_CACHE_PROFILE, ORDERS_CACHE_PROFILE, SUBSCRIPTIONS_CACHE_PROFILE } from "../constants"
 
-const SUBSCRIPTIONS_CACHE_TAG = "subscriptions"
-const ORDERS_CACHE_TAG = "orders"
-const CARTS_CACHE_TAG = "carts"
 
-async function revalidateIfPresent(tag: string) {
+export async function revalidateIfPresent(tag: string) {
   const cacheTag = await getCacheTag(tag)
 
   if (cacheTag) {
@@ -96,7 +95,7 @@ export async function startSubscriptionCancellation(
       }
     )
     .then(async ({ cancellation_case }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return cancellation_case
     })
     .catch(medusaError)
@@ -121,7 +120,7 @@ export async function pauseCustomerSubscription(
       }
     )
     .then(async ({ subscription }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return subscription
     })
     .catch(medusaError)
@@ -146,7 +145,7 @@ export async function resumeCustomerSubscription(
       }
     )
     .then(async ({ subscription }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return subscription
     })
     .catch(medusaError)
@@ -167,7 +166,7 @@ export async function skipNextDelivery(_id: string) {
       }
     )
     .then(async ({ subscription }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return subscription
     })
     .catch(medusaError)
@@ -192,7 +191,7 @@ export async function changeSubscriptionFrequency(
       }
     )
     .then(async ({ subscription }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return subscription
     })
     .catch(medusaError)
@@ -217,7 +216,7 @@ export async function swapSubscriptionProduct(
       }
     )
     .then(async ({ subscription }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return subscription
     })
     .catch(medusaError)
@@ -239,7 +238,7 @@ export async function retrySubscriptionPayment(_id: string) {
       }
     )
     .then(async ({ subscription }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return subscription
     })
     .catch(medusaError)
@@ -264,18 +263,23 @@ export async function updateSubscriptionAddress(
       }
     )
     .then(async ({ subscription }) => {
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
       return subscription
     })
     .catch(medusaError)
 }
 
 export async function completeSubscriptionCheckout(
-  cartId: string,
-  countryCode?: string | null
+  // cartId?: string,
+  // countryCode?: string | null
 ) {
   const headers = {
     ...(await getAuthHeaders()),
+  }
+
+  const cartId = await getCartId()
+  if (!cartId) {
+    return
   }
 
   const response = await sdk.client
@@ -288,9 +292,9 @@ export async function completeSubscriptionCheckout(
       }
     )
     .then(async (response) => {
-      await revalidateIfPresent(CARTS_CACHE_TAG)
-      await revalidateIfPresent(ORDERS_CACHE_TAG)
-      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_TAG)
+      await revalidateIfPresent(CARTS_CACHE_PROFILE)
+      await revalidateIfPresent(ORDERS_CACHE_PROFILE)
+      await revalidateIfPresent(SUBSCRIPTIONS_CACHE_PROFILE)
 
       return response
     })
@@ -298,12 +302,13 @@ export async function completeSubscriptionCheckout(
 
   if (response.type === "order") {
     removeCartId()
+    setSubscriptionId(response.subscription.id)
 
-    if (countryCode) {
-      redirect(
-        `/${countryCode.toLowerCase()}/order/${response.order.id}/confirmed?subscription=created`
-      )
-    }
+    // if (countryCode) {
+    //   redirect(
+    //     `/${countryCode.toLowerCase()}/order/${response.order.id}/confirmed?subscription=created`
+    //   )
+    // }
   }
 
   return response

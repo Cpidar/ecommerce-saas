@@ -70,6 +70,7 @@ export type CreateStoreConfigWorkflowInput = {
 
   homepage_layout?: JsonRecord
   about_page_layout?: JsonRecord
+  puck_data?: JsonRecord
 
   seo_config?: StoreSeoConfigInput
   marketing_config?: StoreMarketingConfigInput
@@ -77,4 +78,8 @@ export type CreateStoreConfigWorkflowInput = {
 
   payment_configs?: Record<string, PaymentConfigInput>
   shipping_method_configs?: Record<string, ShippingMethodConfigInput>
+
+  /** Subscription billing fields seeded during store initialization. */
+  subscription_product_id?: string | null;
+  subscription_status?: string;
 }

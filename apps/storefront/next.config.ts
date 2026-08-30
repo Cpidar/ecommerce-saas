@@ -5,6 +5,8 @@ import { redirects as redirectRules } from "./src/lib/redirects";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || '';
+
 // Security headers — applied at the response layer by Next.js / the platform.
 // Lives here instead of in proxy.ts so the storefront has no runtime
 // middleware (cleaner deploy target for Cloud's OpenNext layer and for
@@ -15,7 +17,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https:",
+  `connect-src 'self' https: ${backendUrl}`,
   "frame-ancestors 'none'",
 ].join("; ");
 
@@ -47,15 +49,35 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   cacheLife: {
     products: {
-      stale: 3600, // 1 hour
-      revalidate: 3600, // 15 minutes
-      expire: 86400, // 1 day
+      stale: 3600 * 24 * 7, // 1 hour
+      revalidate: 3600 * 24, // 15 minutes
+      expire: 3600 * 24 * 7, // 1 day
     },
     catalogRef: {
       stale: 3600 * 24 * 7, // 1 hour
       revalidate: 3600 * 24, // 15 minutes
       expire: 3600 * 24 * 7, // 1 day
     },
+    storeConfig: {
+      stale: 3600 * 24 * 7, // 1 hour
+      revalidate: 3600 * 24, // 15 minutes
+      expire: 3600 * 24 * 7, // 1 day
+    },
+    orders: {
+      stale: 3600, // 1 hour
+      revalidate: 3600, // 15 minutes
+      expire: 3600 * 24, // 1 day 
+    },
+    subscription: {
+      stale: 3600, // 1 hour
+      revalidate: 3600, // 15 minutes
+      expire: 3600 * 24, // 1 day
+    },
+    carts: {
+      stale: 3600, // 1 hour
+      revalidate: 3600, // 15 minutes
+      expire: 3600 * 24, // 1 day
+    }
   },
 
 

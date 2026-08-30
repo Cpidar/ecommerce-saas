@@ -16,7 +16,8 @@ interface SlugPageProps {
 export async function generateMetadata({
   params,
 }: SlugPageProps): Promise<Metadata> {
-  const { slug } = await params
+  let { slug } = await params
+  slug = decodeURI(slug)
 
 
   const category = await categoryRepository.getBySlug(slug)
@@ -38,8 +39,8 @@ export async function generateMetadata({
 }
 
 export default async function SlugPage({ params }: SlugPageProps) {
-  const { slug } = await params
-
+  let { slug } = await params
+  slug = decodeURI(slug)
 
   // Check category
   const category = await categoryRepository.getBySlug(slug)

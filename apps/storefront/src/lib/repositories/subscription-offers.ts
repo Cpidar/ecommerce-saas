@@ -1,6 +1,6 @@
 import type { ReorderStoreProductSubscriptionOfferResponse } from "../../types/subscription"
 import { sdk } from "../medusa"
-import { medusaProductRepository } from "./products"
+import { medusaProductRepository } from "./products-repository"
 
 // export async function retrieveProductSubscriptionOffer(
 // ) {

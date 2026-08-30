@@ -4,6 +4,7 @@ import {
     type SubscriberConfig,
 } from "@medusajs/medusa"
 import { updateProductsWorkflow } from "@medusajs/medusa/core-flows"
+import { revalidate } from "../utils/revalidate"
 
 export default async function productCreatedEvent({
     event: { data: { id: productId } },
@@ -16,17 +17,14 @@ export default async function productCreatedEvent({
     const productModule = container.resolve(Modules.PRODUCT)
 
     const { handle } = await productModule.retrieveProduct(productId)
-    const uniquPostfix = Math.floor(1000 + Math.random() * 9000).toString()
 
-    const { result: [product] } = await updateProductsWorkflow(container).run({
-        input: {
-            selector: { id: productId },
-            update: {
-                handle: `ncp-${uniquPostfix}-${handle}`,
-            },
-        }
+
+    revalidate(container, "products", {
+        type: "product.created",
+        id: productId,
+        handle: handle,
+        affects_grid: true,
     })
-
 
 }
 

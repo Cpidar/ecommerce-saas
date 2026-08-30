@@ -5,6 +5,7 @@ import type { Category, CategoryImage, CategoryRepository } from "@/types"
 import { sdk } from "@/lib/medusa"
 import { cacheLife, cacheTag, revalidateTag } from "next/cache"
 import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies"
+import { CATALOG_CACHE_PROFILE } from "../constants"
 
 type StoreCategory = HttpTypes.StoreProductCategory & {
   product_category_image?: CategoryImage[]
@@ -19,6 +20,7 @@ const categoryTags = {
   all: (storeId: string) => getTenantTag(storeId, "categories"),
   byId: (storeId: string, id: string) => getTenantTag(storeId, `category:${id}`),
   bySlug: (storeId: string, slug: string) => getTenantTag(storeId, `category:slug:${slug}`),
+  byHandle: (storeId: string, handle: string) => getTenantTag(storeId, `category:handle:${handle}`),
 }
 
 // ---------------------------------------------------------------------------
@@ -54,7 +56,7 @@ async function fetchAllCategories(
 ): Promise<Category[]> {
   "use cache"
   cacheTag(categoryTags.all(storeId))
-  cacheLife("catalogRef")   // Adjust to "weeks" if categories change very rarely
+  cacheLife(CATALOG_CACHE_PROFILE)   // Adjust to "weeks" if categories change very rarely
 
   const { product_categories } = await sdk.store.category.list({
     limit: 200,
@@ -132,17 +134,17 @@ export const medusaCategoryRepository: CategoryRepository & {
 // ---------------------------------------------------------------------------
 export const categoryRevalidation = {
   async all(storeId: string) {
-    await revalidateTag(categoryTags.all(storeId), "catalogRef")
+    await revalidateTag(categoryTags.all(storeId), CATALOG_CACHE_PROFILE)
   },
 
   async byId(storeId: string, id: string) {
     await Promise.all([
-      revalidateTag(categoryTags.byId(storeId, id), "catalogRef"),
-      revalidateTag(categoryTags.all(storeId), "catalogRef"), // optional broad fallback
+      revalidateTag(categoryTags.byId(storeId, id), CATALOG_CACHE_PROFILE),
+      revalidateTag(categoryTags.all(storeId), CATALOG_CACHE_PROFILE),
     ])
   },
 
-  async bySlug(storeId: string, slug: string) {
-    await revalidateTag(categoryTags.bySlug(storeId, slug), "catalogRef")
+  async byHandle(storeId: string, handle: string) {
+    await revalidateTag(categoryTags.byHandle(storeId, handle), CATALOG_CACHE_PROFILE)
   },
 }

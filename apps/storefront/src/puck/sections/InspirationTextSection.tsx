@@ -21,7 +21,7 @@ export const InspirationTextSection: ComponentConfig<InspirationTextSectionProps
       contentEditable: true
     },
     description: {
-      type: "textarea",
+      type: "richtext",
       label: "Description",
       contentEditable: true
     },
@@ -43,7 +43,7 @@ export const InspirationTextSection: ComponentConfig<InspirationTextSectionProps
         <LayoutColumn start={1} end={{ base: 13, md: 8 }}>
           <h3 className="text-md mb-6 md:mb-16 md:text-2xl">{title}</h3>
           <div className="md:text-md max-md:mb-16 max-w-135">
-            <p>{description}</p>
+            {description}
           </div>
         </LayoutColumn>
       </Layout>

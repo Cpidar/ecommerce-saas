@@ -43,8 +43,8 @@ export default function CheckoutSuccessPage() {
   };
 
   const placeSubscriptionOrder = async () => {
-    const result = await completeSubscriptionCheckout(cart!.id);
-    if (result.type === "order") {
+    const result = await completeSubscriptionCheckout();
+    if (result?.type === "order") {
       useCartStore.setState({ cart: null, hasHydrated: false });
       return result;
     } else {

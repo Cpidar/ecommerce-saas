@@ -8,6 +8,7 @@ import { adminStoreMethodsRoutesMiddlewares } from "./admin/store-config/middlew
 import { adminCustomUploadsRoutesMiddlewares } from "./admin/uploads/middlewares";
 import { adminProductOptionRoutesMiddlewares } from "./admin/product-options/middlewares";
 import { storeStoreConfigRoutesMiddlewares } from "./store/store-config/middlewares";
+import { adminProductsRoutesMiddlewares } from "./admin/products/middleware";
 
 
 export default defineMiddlewares({
@@ -30,6 +31,7 @@ export default defineMiddlewares({
     ...adminProductCategoryRoutesMiddlewares,
     ...adminProductOptionRoutesMiddlewares,
     ...adminStoreMethodsRoutesMiddlewares,
-    ...adminCustomUploadsRoutesMiddlewares
+    ...adminCustomUploadsRoutesMiddlewares,
+    ...adminProductsRoutesMiddlewares
   ],
 });

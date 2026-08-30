@@ -3,6 +3,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { sdk } from "@/lib/medusa"
 import { cacheLife, cacheTag, revalidateTag } from "next/cache"
 import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies"
+import { CATALOG_CACHE_PROFILE } from "../constants"
 
 type StoreCollection = HttpTypes.StoreCollection
 
@@ -84,9 +85,9 @@ export const medusaCollectionRepository = {
 // ---------------------------------------------------------------------------
 export const collectionRevalidation = {
   async all(storeId: string) {
-    await revalidateTag(collectionTags.all(storeId), "catalogRef")
+    await revalidateTag(collectionTags.all(storeId), CATALOG_CACHE_PROFILE)
   },
   async byHandle(storeId: string, handle: string) {
-    await revalidateTag(collectionTags.byHandle(storeId, handle), "catalogRef")
+    await revalidateTag(collectionTags.byHandle(storeId, handle), CATALOG_CACHE_PROFILE)
   },
 }

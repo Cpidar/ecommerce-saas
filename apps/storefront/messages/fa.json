@@ -90,7 +90,7 @@
     "secureCheckout": "تسویه حساب امن",
     "decreaseQuantity": "کاهش تعداد",
     "increaseQuantity": "افزایش تعداد",
-    "sale":"فروش ویژه"
+    "sale": "فروش ویژه"
   },
   "cart": {
     "title": "سبد خرید",
@@ -183,7 +183,9 @@
     "confirmPassword": "تأیید رمز عبور",
     "currentPassword": "رمز عبور فعلی",
     "newPassword": "رمز عبور جدید",
-    "confirmNewPassword": "تأیید رمز عبور جدید"
+    "confirmNewPassword": "تأیید رمز عبور جدید",
+    "storeName": "عنوان فروشگاه",
+    "storeHandle": "آیدی فروشگاه"
   },
   "account": {
     "title": "حساب من",

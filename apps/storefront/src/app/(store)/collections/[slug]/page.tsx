@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { siteConfig } from "@/lib/config";
 import { CategoryView } from "./collection-view";
-import { listProductsByCollection } from "@/lib/repositories/products";
+import { listProductsByCollection } from "@/lib/repositories/products-repository";
 import { medusaCollectionRepository as collectionRepository } from "@/lib/repositories/medusa-collection-repository";
 
 interface SlugPageProps {
@@ -17,7 +17,8 @@ interface SlugPageProps {
 export async function generateMetadata({
   params,
 }: SlugPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  let { slug } = await params;
+  slug = decodeURI(slug)
 
   const collection = await collectionRepository.getByHandle(slug);
   if (collection) {
@@ -38,7 +39,8 @@ export async function generateMetadata({
 }
 
 export default async function SlugPage({ params }: SlugPageProps) {
-  const { slug } = await params;
+  let { slug } = await params;
+  slug = decodeURI(slug)
 
   // Check category
   const collection = await collectionRepository.getByHandle(slug);

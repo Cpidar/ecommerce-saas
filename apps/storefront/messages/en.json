@@ -181,7 +181,9 @@
     "confirmPassword": "Confirm password",
     "currentPassword": "Current password",
     "newPassword": "New password",
-    "confirmNewPassword": "Confirm new password"
+    "confirmNewPassword": "Confirm new password",
+    "storeName": "Store Name",
+    "storeHandle": "Store ID"
   },
   "account": {
     "title": "My Account",

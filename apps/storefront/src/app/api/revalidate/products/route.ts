@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { productRevalidation } from "@/lib/repositories/products"
+import { productRevalidation } from "@/lib/repositories/products-repository"
 import { getCurrentStoreId } from "@/lib/medusa/cookies"
 
 /**

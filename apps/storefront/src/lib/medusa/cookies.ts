@@ -1,5 +1,6 @@
 import "server-only"
 import { cookies as nextCookies } from "next/headers"
+import type { ReorderCustomerSubscriptionListItem } from "@/types/subscription"
 
 export async function getCurrentStoreId() {
   try {
@@ -152,5 +153,16 @@ export const removeCartId = async () => {
   const cookies = await nextCookies()
   cookies.set("_medusa_cart_id", "", {
     maxAge: -1,
+  })
+}
+
+// [MY-Fork]
+export const setSubscriptionId = async (subscriptionId: string) => {
+  const cookies = await nextCookies()
+  cookies.set("_medusa_subscription_id", subscriptionId, {
+    maxAge: 60 * 60 * 24 * 7,
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
   })
 }

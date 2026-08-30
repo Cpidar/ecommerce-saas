@@ -1,5 +1,5 @@
-import { MedusaContainer } from "@medusajs/framework";
 import { IStoreModuleService } from "@medusajs/framework/types";
+import { MedusaContainer } from "@medusajs/framework";
 import {
   ContainerRegistrationKeys,
   ModuleRegistrationName,
@@ -21,6 +21,7 @@ import {
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
+import { seedProgress } from "../utils/initialize-store-progress";
 
 const IMAGE_HOST = "https://your-image-host.com"; // Replace with your actual image host
 const PREFIX = "products"; // Replace with your actual prefix
@@ -37,13 +38,13 @@ const getRandomImageUrl = (prefix = PREFIX, totalImages = 10) => {
 // ============================================================
 // MAIN SEED FUNCTION
 // ============================================================
-export default async function default_data_seed({
+export async function default_data_seed({
   container,
   storeId
 }: {
   container: MedusaContainer;
   storeId: string
-}) {
+}): Promise<void> {
   // ============================================================
   // SETUP: Initialize services and variables
   // ============================================================
@@ -61,6 +62,7 @@ export default async function default_data_seed({
   const countries = ["ir"];
 
   logger.info("Seeding store data...");
+  seedProgress.update(5, "ایجاد کانال فروش و کلید API");
   const salesChannel = await salesChannelModuleService.listSalesChannels({ name: "Default Sales Channel" })
   let defaultSalesChannel = salesChannel[0]
   if (!defaultSalesChannel) {
@@ -110,31 +112,34 @@ export default async function default_data_seed({
 
   const storeModuleService: IStoreModuleService = container.resolve(Modules.STORE);
 
+  seedProgress.update(15, "راه‌اندازی فروشگاه");
+
   if (!container.hasRegistration('currentStore')) {
 
     let currentStore: any;
 
     if (!storeId) {
       logger.info('No store found. Creating new store...');
-      const {
-        result: [store],
-      } = await createStoresWorkflow(container).run({
-        input: {
-          stores: [
-            {
-              name: "فروشگاه تجهیزات الکتریکی",
-              supported_currencies: [
-                {
-                  currency_code: "irr",
-                  is_default: true,
-                }
-              ],
-              default_sales_channel_id: defaultSalesChannel.id,
-            },
-          ],
-        },
-      });
-      currentStore = store;
+      throw new Error(`فروشگاهی با شناسه ${storeId} یافت نشد`);
+      // const {
+      //   result: [store],
+      // } = await createStoresWorkflow(container).run({
+      //   input: {
+      //     stores: [
+      //       {
+      //         name: "فروشگاه تجهیزات الکتریکی",
+      //         supported_currencies: [
+      //           {
+      //             currency_code: "irr",
+      //             is_default: true,
+      //           }
+      //         ],
+      //         default_sales_channel_id: defaultSalesChannel.id,
+      //       },
+      //     ],
+      //   },
+      // });
+      // currentStore = store;
       logger.info(`New store created with ID: ${currentStore.id}`);
     } else {
 
@@ -164,6 +169,8 @@ export default async function default_data_seed({
   // SECTION 2: REGION SETUP
   // ============================================================
   logger.info("Creating region data...");
+  seedProgress.update(30, "ایجاد منطقه");
+
 
   const regionModuleService = container.resolve(Modules.REGION)
 
@@ -203,6 +210,8 @@ export default async function default_data_seed({
   // SECTION 4: STOCK LOCATIONS SETUP
   // ============================================================
   logger.info("Creating stock location data...");
+  seedProgress.update(45, "ایجاد انبار");
+
   const { result: stockLocationResult } = await createStockLocationsWorkflow(
     container
   ).run({
@@ -234,6 +243,8 @@ export default async function default_data_seed({
   // SECTION 5: FULFILLMENT SETS & SHIPPING OPTIONS SETUP
   // ============================================================
   logger.info("Creating shipping data...");
+  seedProgress.update(55, "تنظیمات ارسال");
+
   const { data: shippingProfileResult } = await query.graph({
     entity: "shipping_profile",
     fields: ["id"],
@@ -446,6 +457,8 @@ export default async function default_data_seed({
   // ============================================================
   // SECTION 6: LINK SALES CHANNELS TO STOCK LOCATION
   // ============================================================
+  seedProgress.update(65, "اتصال کانال فروش به انبار");
+
   await linkSalesChannelsToStockLocationWorkflow(container).run({
     input: {
       id: stockLocation.id,
@@ -458,6 +471,8 @@ export default async function default_data_seed({
   // SECTION 7: PRODUCT CATEGORIES SETUP
   // ============================================================
   logger.info("Creating product categories...");
+  seedProgress.update(75, "ایجاد دسته‌بندی محصولات");
+
   const { result: categoryResult } = await createProductCategoriesWorkflow(
     container
   ).run({
@@ -492,8 +507,9 @@ export default async function default_data_seed({
   // SECTION 8: PRODUCTS SETUP
   // ============================================================
   logger.info("Creating products...");
+  seedProgress.update(90, "ایجاد محصولات");
 
-    const { result: productOptionsResult } = await createProductOptionsWorkflow(
+  const { result: productOptionsResult } = await createProductOptionsWorkflow(
     container
   ).run({
     input: {
@@ -914,6 +930,7 @@ export default async function default_data_seed({
   // SECTION 9: INVENTORY LEVELS SETUP
   // ============================================================
   logger.info("Creating inventory levels...");
+  seedProgress.update(97, "ایجاد موجودی انبار");
 
   const { data: inventoryItems } = await query.graph({
     entity: "inventory_item",

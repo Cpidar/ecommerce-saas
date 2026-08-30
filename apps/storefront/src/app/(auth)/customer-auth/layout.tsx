@@ -1,9 +1,13 @@
+export const instant = false
+
 import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { tryGetCurrentCustomer } from "@/lib/medusa/auth-server";
 import { Smartphone } from "lucide-react";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "صفحه ورود",
@@ -16,9 +20,9 @@ export default async function PageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  await connection(); // wait for an actual request
+  // await connection(); // wait for an actual request
   const customer = await tryGetCurrentCustomer();
-
+  
   if (customer) {
     redirect("/account");
   }
@@ -44,3 +48,28 @@ export default async function PageLayout({
     </section>
   );
 }
+
+const LoginSkeleton: React.FC = () => {
+  return (
+    <section className="h-screen flex items-center justify-center bg-cover bg-[url('/images/bg.png')]">
+      <div className="flex-1 sm:w-full sm:max-w-105 px-4">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex flex-col items-center">
+              {/* Icon */}
+              <Skeleton className="w-14 h-14 rounded-2xl mb-6" />
+
+              {/* Form fields */}
+              <div className="w-full space-y-4">
+                <Skeleton className="h-10 w-full rounded-lg" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+                <Skeleton className="h-10 w-full rounded-lg" />
+                <Skeleton className="h-12 w-full rounded-lg mt-6" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+};

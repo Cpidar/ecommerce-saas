@@ -19,7 +19,8 @@ interface SlugPageProps {
 export async function generateMetadata({
   params,
 }: SlugPageProps): Promise<Metadata> {
-  const { slug } = await params;
+  let { slug } = await params;
+  slug = decodeURI(slug)
 
   const brand = await brandRepository.getBySlug(slug);
   if (brand) {
@@ -40,7 +41,8 @@ export async function generateMetadata({
 }
 
 export default async function SlugPage({ params }: SlugPageProps) {
-  const { slug } = await params;
+  let { slug } = await params;
+  slug = decodeURI(slug)
 
   // Check brand
   const brand = await brandRepository.getBySlug(slug);

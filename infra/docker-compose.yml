@@ -174,7 +174,7 @@ services:
 
   # ========== MEDUSA BACKEND ==========
   medusa:
-    image: registry.tabeshelecshop.ir/medusa:v3
+    image: registry.tabeshelecshop.ir/medusa:v8
     container_name: medusa_backend
     restart: unless-stopped
     depends_on:

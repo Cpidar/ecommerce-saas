@@ -274,6 +274,10 @@ export async function verifyOtp({
 // TODO: bug must be fixed: register must be after verify OTP
 // for using multi provider (emailpass and phone-auth): first register with emailpass and the create customer and link with it (by regToken).
 // then register with phone-auth to generate OTP and link it with the same customer (by passing customer_id in body) and then authenticate with phone to login
+// Alternate solution:
+// 1- after authenticate navigate to /register-phone page in that page register using phone-auth (dont register customer) and return auth-id
+// 2- then navigate to /register page, in that page register using email and password, 
+// after successfull registeration, post customer id to /api/link-customer-to-auth that run createAuthMetaDataWorkflow
 export async function registerWithPhone(args: {
   email: string
   password: string

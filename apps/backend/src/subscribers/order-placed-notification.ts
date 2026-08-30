@@ -60,12 +60,12 @@ export default async function sendOrderConfirmationHandler({
     filters: { id: order.customer_id! },
   });
 
-  await notificationModuleService.createNotifications({
-    to: order.email as string,
-    channel: 'email',
-    template: 'order-placed',
-    data: { order, customer },
-  });
+  // await notificationModuleService.createNotifications({
+  //   to: order.email as string,
+  //   channel: 'email',
+  //   template: 'order-placed',
+  //   data: { order, customer },
+  // });
 }
 
 export const config: SubscriberConfig = {

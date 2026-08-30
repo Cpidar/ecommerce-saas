@@ -63,9 +63,11 @@ async function placeSubscriptionOrder(
   tCheckout: ReturnType<typeof useTranslations>,
 ) {
   await transferCart()
-  const result = await completeSubscriptionCheckout(cartId);
-  if (result.type === "order") {
+  // TODO: must replace with retryPayment
+  const result = await completeSubscriptionCheckout();
+  if (result?.type === "order") {
     useCartStore.setState({ cart: null, hasHydrated: false });
+    toast.success(tCheckout("success"));
     return result;
   } else {
     toast.error(tCheckout("couldntComplete"));
@@ -85,6 +87,8 @@ const SubscriptionSummary = ({
   const subscriptionItem = (cart.items ?? []).find(
     (item) => parseSubscriptionLineItemMetadata(item.metadata).is_subscription,
   );
+
+  console.log("subscription item mode: ", subscriptionItem)
 
   if (!subscriptionItem) {
     return null;

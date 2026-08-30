@@ -100,7 +100,7 @@ export function CategoryView({
           {subcategories.map((sub) => (
             <Link
               key={sub.id}
-              href={`/${sub.slug}`}
+              href={`/categories/${sub.slug}`}
               className="rounded-full border border-border px-3 py-1 text-xs font-medium transition-colors hover:border-foreground"
             >
               {stripParentPrefix(sub.name, category.name)}

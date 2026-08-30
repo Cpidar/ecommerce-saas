@@ -1,8 +1,6 @@
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/medusa"
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
-
-const REVALIDATION_ENDPOINT = process.env.STOREFRONT_REVALIDATION_URL ?? ""
-const REVALIDATION_SECRET = process.env.MEDUSA_WEBHOOK_SECRET ?? ""
+import { revalidate } from "../utils/revalidate"
 
 export default async function productVariantUpdatedEvent({
     event: { data: { id: variantId } },
@@ -11,44 +9,18 @@ export default async function productVariantUpdatedEvent({
     const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
     logger.info(`[subscriber] Product Variant Updated Event — id: ${variantId}`)
 
-    if (!REVALIDATION_ENDPOINT) {
-        logger.warn("STOREFRONT_REVALIDATION_URL is not set; skipping webhook trigger.")
-        return
-    }
 
     const productModule = container.resolve(Modules.PRODUCT)
     const variant = await productModule.retrieveProductVariant(variantId)
     const product = await productModule.retrieveProduct(variant.product_id!)
 
-    if (!REVALIDATION_SECRET) {
-        logger.warn("MEDUSA_WEBHOOK_SECRET is not set; sending webhook without secret.")
-    }
+    revalidate(container, "products", {
+        type: "product-variant.updated",
+        id: product.id,
+        handle: product.handle,
+        affects_grid: true,
+    })
 
-
-    try {
-        await fetch(`${REVALIDATION_ENDPOINT}/products`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...(REVALIDATION_SECRET
-                    ? { Authorization: `Bearer ${REVALIDATION_SECRET}` }
-                    : {}),
-            },
-            body: JSON.stringify({
-                type: "product-variant.updated",
-                data: {
-                    id: product.id,
-                    handle: product.handle,
-                    affects_grid: true,
-                },
-            }),
-        })
-        logger.info(`[subscriber] Triggered revalidation webhook for variant ${variantId}`)
-    } catch (err) {
-        logger.error(
-            `[subscriber] Failed to trigger revalidation for variant ${variantId}: ${err}`
-        )
-    }
 }
 
 export const config: SubscriberConfig = {

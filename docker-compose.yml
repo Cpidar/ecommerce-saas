@@ -169,6 +169,7 @@ services:
       - RUSTFS_REGION=${RUSTFS_REGION:-us-east-1}
       - RUSTFS_CONSOLE_ADDRESS=${RUSTFS_CONSOLE_ADDRESS:-http://rustfs:3901}
       - RUSTFS_ADDRESS=${RUSTFS_ENDPOINT:-http://rustfs:3900}
+      - RUSTFS_CORS_ALLOWED_ORIGINS=*
     volumes:
       - ./rustfs_data:/data
     command: server /data --address ":3900" --console-address ":3901"
@@ -228,7 +229,7 @@ services:
 
   # ========== MEDUSA BACKEND ==========
   medusa:
-    image: medusa:v1
+    image: medusa:v8
     container_name: medusa_backend
     restart: unless-stopped
     depends_on:

@@ -5,7 +5,7 @@
 // concept. Swap them for a CMS connector (Sanity, Strapi, Contentful, etc.)
 // by implementing the same interfaces and changing these exports.
 
-export { medusaProductRepository as productRepository } from "./products"
+export { medusaProductRepository as productRepository } from "./products-repository"
 export { medusaCategoryRepository as categoryRepository } from "./medusa-category-repository"
 export { medusaBrandRepository as brandRepository } from "./medusa-brand-repository"
 export { medusaCollectionRepository as collectionRepository } from "./medusa-collection-repository"

@@ -1,40 +1,41 @@
 import { asValue } from "@medusajs/framework/awilix";
 import { IStoreModuleService, IEventBusModuleService } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
-// import { createProductsWorkflow } from "@medusajs/medusa/core-flows";
-import { createStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflows/create-store/index"
-import default_data_seed from "../../scripts/defaul-seed";
-import { createConfigWorkflow } from "../create-store-config";
-// import { linkProductToStoreWorkflow } from "@techlabi/medusa-marketplace-plugin/workflows/link-product-to-store/index"
+import { createStoreWorkflow } from "@sepidar/medusa-multistore-plugin/workflows/create-store/index";
+import { initializeStoreWorkflow } from "../initialize-store";
+import type { InitializeStoreWorkflowInput } from "../initialize-store/types";
 
-createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
+createStoreWorkflow.hooks.storeCreated(async ({ store: { storeId }, additional_data }, { container }) => {
   console.log("HOOK storeCreated", storeId);
-  const storeService: IStoreModuleService = container.resolve(Modules.STORE)
-  const event = container.resolve<IEventBusModuleService>(Modules.EVENT_BUS)
-  const store = await storeService.retrieveStore(storeId)
+  const storeService: IStoreModuleService = container.resolve(Modules.STORE);
+  const event = container.resolve<IEventBusModuleService>(Modules.EVENT_BUS);
 
-  // const SUPER_ADMIN_STORE_ID = process.env.SUPER_ADMIN_STORE_ID || "store_01KTJY1ZW9GNT71P3KE2DQ163D"
+  // Register the newly created store for downstream resolvers that depend on
+  // a "currentStore" binding inside the DI container.
+  container.register("currentStore", asValue({ id: storeId }));
 
-  container.register('currentStore', asValue({ id: storeId }))
+  const input: InitializeStoreWorkflowInput = {
+    storeId,
+    title: (additional_data?.name as string) ?? "",
+    handle: (additional_data?.handle as string) ?? null,
+    subscription_id: (additional_data?.subscription_id as string) ?? null,
+    subscription_status: (additional_data?.subscription_status as string) ?? "PENDING",
+    template: (additional_data?.template as InitializeStoreWorkflowInput["template"]) ?? undefined,
+  };
 
-  const { result: { storeConfig } } = await createConfigWorkflow(container).run({
-    input: {
-      title: store.name || '',
-      handle: store.metadata?.handle,
-      medusa_store_id: store.id,
-      // TODO: seed puck data json
-    }
-  })
+  const { result: { storeConfig } } = await initializeStoreWorkflow(container).run({ input });
 
-  console.log("Store config set: ", storeConfig)
+  console.log("Store config initialized: ", storeConfig);
 
-  default_data_seed({
-    container,
-    storeId: storeId
-  })
+  event.emit({
+    name: "store.created",
+    data: {
+      currentStoreId: storeId,
+    },
+  });
 
-
-  //   const { result: [product] } = await createProductsWorkflow(container).run({
+  // TODO: re-enable when a product-to-store linking workflow is required.
+  // const { result: [product] } = await createProductsWorkflow(container).run({
   //   input: {
   //     products: [{
   //       title: store.name,
@@ -47,13 +48,4 @@ createStoreWorkflow.hooks.storeCreated(async ({ storeId }, { container }) => {
   //     }],
   //   }
   // })
-  // console.log(product)
-
-  event.emit({
-    name: 'store.created',
-    data: {
-      currentStore: store
-    }
-  })
-
 });

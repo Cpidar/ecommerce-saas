@@ -14,6 +14,7 @@ import type {
 import { sdk } from "@/lib/medusa"
 import { resolveRegion } from "@/lib/medusa-region"
 import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies"
+import { PRODUCTS_CACHE_PROFILE } from "../constants"
 
 type StoreProduct = HttpTypes.StoreProduct
 type StoreProductVariant = HttpTypes.StoreProductVariant
@@ -222,7 +223,7 @@ async function resolveCategoryIdBySlug(
 ): Promise<string | null> {
   "use cache"
   cacheTag(productTags.categoryLookup(storeId, slug))
-  cacheLife("catalogRef")
+  cacheLife(PRODUCTS_CACHE_PROFILE)
 
   const { product_categories } = await sdk.store.category.list({ handle: slug, limit: 1 }, { ...storeHeaders })
   return product_categories[0]?.id ?? null
@@ -235,7 +236,7 @@ async function resolveCollectionIdBySlug(
 ): Promise<string | null> {
   "use cache"
   cacheTag(productTags.collectionLookup(storeId, handle))
-  cacheLife('catalogRef')
+  cacheLife(PRODUCTS_CACHE_PROFILE)
 
   const { collections } = await sdk.store.collection.list({ handle, limit: 1 }, { ...storeHeaders })
   return collections[0]?.id ?? null
@@ -253,7 +254,7 @@ async function fetchProductList(
 ): Promise<{ items: Product[]; count: number }> {
   "use cache"
   cacheTag(productTags.all(storeId))
-  cacheLife("products")
+  cacheLife(PRODUCTS_CACHE_PROFILE)
 
   const { products, count } = await sdk.store.product.list(params, { ...storeHeaders })
   return { items: products.map((p) => transformProduct(p, currency)), count }
@@ -268,7 +269,7 @@ async function fetchProductBySlug(
 ): Promise<Product | null> {
   "use cache"
   cacheTag(productTags.bySlug(storeId, slug))
-  cacheLife("products")
+  cacheLife(PRODUCTS_CACHE_PROFILE)
 
   try {
     const { products } = await sdk.store.product.list(
@@ -290,7 +291,7 @@ async function fetchProductById(
 ): Promise<Product | null> {
   "use cache"
   cacheTag(productTags.byId(storeId, id))
-  cacheLife("products")
+  cacheLife(PRODUCTS_CACHE_PROFILE)
 
   try {
     const { product } = await sdk.store.product.retrieve(
@@ -312,7 +313,7 @@ async function fetchFeatured(
 ): Promise<Product[]> {
   "use cache"
   cacheTag(productTags.all(storeId), productTags.featured(storeId))
-  cacheLife("products")
+  cacheLife(PRODUCTS_CACHE_PROFILE)
 
   const { products } = await sdk.store.product.list(
     { region_id: regionId, fields: LIST_FIELDS, limit: 50 },
@@ -329,7 +330,7 @@ async function fetchSubscriptionProduct(
 ): Promise<Product | null> {
   "use cache"
   cacheTag(productTags.subscription(storeId))
-  cacheLife("products")
+  cacheLife(PRODUCTS_CACHE_PROFILE)
 
   try {
     const { products } = await sdk.store.product.list(
@@ -449,32 +450,32 @@ export const medusaProductRepository: ProductRepository = {
 export const productRevalidation = {
   async byId(storeId: string, productId: string) {
     await Promise.all([
-      revalidateTag(productTags.byId(storeId, productId), "products"),
+      revalidateTag(productTags.byId(storeId, productId), PRODUCTS_CACHE_PROFILE),
       // revalidateTag(productTags.all(storeId)) // uncomment if you want broad revalidation
     ])
   },
 
   async bySlug(storeId: string, slug: string) {
-    await revalidateTag(productTags.bySlug(storeId, slug), "products")
+    await revalidateTag(productTags.bySlug(storeId, slug), PRODUCTS_CACHE_PROFILE)
   },
 
   async all(storeId: string) {
-    await revalidateTag(productTags.all(storeId), "products")
+    await revalidateTag(productTags.all(storeId), PRODUCTS_CACHE_PROFILE)
   },
 
   async byCategory(storeId: string, categoryId: string) {
-    await revalidateTag(productTags.byCategory(storeId, categoryId), "products")
+    await revalidateTag(productTags.byCategory(storeId, categoryId), PRODUCTS_CACHE_PROFILE)
   },
 
   async byCollection(storeId: string, collectionId: string) {
-    await revalidateTag(productTags.byCollection(storeId, collectionId), "products")
+    await revalidateTag(productTags.byCollection(storeId, collectionId), PRODUCTS_CACHE_PROFILE)
   },
 
   async featured(storeId: string) {
-    await revalidateTag(productTags.featured(storeId), "products")
+    await revalidateTag(productTags.featured(storeId), PRODUCTS_CACHE_PROFILE)
   },
 
   async subscription(storeId: string) {
-    await revalidateTag(productTags.subscription(storeId), "products")
+    await revalidateTag(productTags.subscription(storeId), PRODUCTS_CACHE_PROFILE)
   },
 }

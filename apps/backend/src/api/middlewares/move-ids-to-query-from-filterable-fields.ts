@@ -9,7 +9,7 @@ export async function moveIdsToQueryFromFilterableFields(
   res: MedusaResponse,
   next: MedusaNextFunction
 ) {
-  console.log("After LinkFilter: ", req.filterableFields)
+  // console.log("After LinkFilter: ", req.filterableFields)
   // do this, otherwise the 'filterableFields' will be overwritten in
   // https://github.com/medusajs/medusa/blob/develop/packages/medusa/src/api/admin/products/middlewares.ts#L49
   if (req.filterableFields) {

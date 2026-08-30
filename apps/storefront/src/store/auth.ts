@@ -27,7 +27,9 @@ interface AuthState {
   isLoading: boolean
   // [MY-FORK-AUTH] Phone auth state
   phone: string
+  phoneVerfied: boolean
   email: string
+  password: string
   refPath?: string | null
 
   hydrate?: () => Promise<void>
@@ -60,7 +62,9 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
   isLoading: false,
   // [MY-FORK-AUTH] Phone auth state
   phone: '',
+  phoneVerfied: false,
   email: '',
+  password: '',
   refPath: '',
 
 

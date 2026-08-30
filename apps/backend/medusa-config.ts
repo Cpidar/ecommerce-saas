@@ -25,11 +25,6 @@ module.exports = defineConfig({
     },
 
   },
-  admin: {
-    vite: (config) => {
-      config.define["__VITE_DISABLE_SIGNUP_WIDGET__"] = JSON.stringify(true);
-    },
-  },
   modules: [
     {
       resolve: "@medusajs/medusa/auth",
@@ -243,11 +238,11 @@ module.exports = defineConfig({
 
   plugins: [
     {
-      resolve: "@reorderjs/reorder",
+      resolve: "@sepidar/reorder",
       options: {},
     },
     {
-      resolve: "@techlabi/medusa-marketplace-plugin",
+      resolve: "@sepidar/medusa-multistore-plugin",
       options: {},
     },
   ],

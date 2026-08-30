@@ -10,6 +10,7 @@ import { formatPrice } from "@/lib/utils/utils"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
 import type { Product } from "@/types"
 import { searchProductsClient } from "@/lib/medusa-client-search"
+import { normalizePersianText } from "@/lib/utils/normalize-persian-text"
 
 const popularSearches = [
   "T-Shirt",
@@ -23,6 +24,7 @@ interface SearchModalProps {
   onClose: () => void
 }
 
+
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const t = useTranslations("search")
   const [query, setQuery] = useState("")
@@ -32,7 +34,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   // Debounced server-side search via Medusa.
   useEffect(() => {
-    const trimmed = query.trim()
+    const normalizedQuery = normalizePersianText(query)
+    console.log("Normalized Query:", normalizedQuery)  // Debugging line
+    const trimmed = normalizedQuery.trim()
     if (trimmed.length === 0) {
       setResults([])
       return

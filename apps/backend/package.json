@@ -22,27 +22,27 @@
     "test:unit": "TEST_TYPE=unit NODE_OPTIONS=--experimental-vm-modules jest --silent --runInBand --forceExit"
   },
   "dependencies": {
-    "@medusajs/admin-sdk": "2.18.0",
-    "@medusajs/admin-shared": "2.18.0",
-    "@medusajs/caching": "2.18.0",
-    "@medusajs/cli": "2.18.0",
-    "@medusajs/dashboard": "2.18.0",
-    "@medusajs/draft-order": "2.18.0",
-    "@medusajs/framework": "2.18.0",
-    "@medusajs/icons": "2.18.0",
-    "@medusajs/js-sdk": "^2.18.0",
-    "@medusajs/medusa": "2.18.0",
-    "@medusajs/ui": "4.1.15",
-    "@reorderjs/reorder": "^1.0.8",
+    "@medusajs/admin-sdk": "2.19.0",
+    "@medusajs/admin-shared": "2.19.0",
+    "@medusajs/caching": "2.19.0",
+    "@medusajs/cli": "2.19.0",
+    "@medusajs/dashboard": "2.19.0",
+    "@medusajs/draft-order": "2.19.0",
+    "@medusajs/framework": "2.19.0",
+    "@medusajs/icons": "2.19.0",
+    "@medusajs/js-sdk": "^2.19.0",
+    "@medusajs/medusa": "2.19.0",
+    "@medusajs/ui": "4.2.1",
+    "@sepidar/medusa-multistore-plugin": "^1.0.0",
+    "@sepidar/reorder": "^1.0.8",
     "@tanstack/react-query": "5.64.2",
-    "@techlabi/medusa-marketplace-plugin": "^0.62.0",
     "jsonwebtoken": "^9.0.3",
     "react-i18next": "13.5.0",
-    "react-router-dom": "6.30.4",
+    "react-router-dom": "7.18.2",
     "zod": "4.2.0"
   },
   "devDependencies": {
-    "@medusajs/test-utils": "2.18.0",
+    "@medusajs/test-utils": "2.19.0",
     "@swc/core": "^1.7.28",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.13",
@@ -58,11 +58,11 @@
     "react-dom": "^18.3.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2",
-    "vite": "^5.4.14",
+    "vite": "^7.3.6",
     "yalc": "^1.0.0-pre.53"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12.0"
   },
   "packageManager": "pnpm@10.27.0"
 }

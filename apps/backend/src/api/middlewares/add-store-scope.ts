@@ -3,10 +3,18 @@ import { type MedusaNextFunction, type MedusaRequest, type MedusaResponse } from
 import { StoreDTO } from "@medusajs/framework/types";
 
 import { asValue } from "@medusajs/framework/awilix";
+import { storeContext } from "../../utils/resolve-current-store";
 
 export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
 
-  const storeId = req.cookies['current_store_id'] || req?.headers['x-store-id'] as string || "store_01KVAPY42Q9STAS5V1NYWYBXCA";
+  let storeId
+  if (req.scope.hasRegistration("currentStore")) {
+    const store = req.scope.resolve("currentStore") as Pick<StoreDTO, "id">
+    console.log("✌️✌️✌️✌️", store)
+    storeId = store.id
+  } else {
+    storeId = req.cookies['current_store_id'] || req?.headers['x-store-id'] as string || "store_01KVAPY42Q9STAS5V1NYWYBXCA";
+  }
 
   if (!storeId) {
     res.status(403).json({
@@ -16,17 +24,16 @@ export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, nex
     return;
   }
 
-  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  // const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const sluggyfiedStoreId = storeId.toLowerCase().replace(/_/g, '-')
-  console.log(sluggyfiedStoreId)
-  const { data: [product] } = await query.graph({
-    entity: "product",
-    fields: ['id', 'handle', 'title', 'subscriptions.*'],
-    filters: { handle: sluggyfiedStoreId }
-  })
+  // const sluggyfiedStoreId = storeId.toLowerCase().replace(/_/g, '-')
 
-  console.log('🔥🔥 related product 🔥🔥: ', product)
+  // const { data: [product] } = await query.graph({
+  //   entity: "product",
+  //   fields: ['id', 'handle', 'title', 'subscriptions.*'],
+  //   filters: { handle: sluggyfiedStoreId }
+  // })
+
 
   // TODO: check subscription status of product and allow/disallow
   // if(product)
@@ -34,5 +41,9 @@ export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, nex
   req.scope.register({
     currentStore: asValue({ id: storeId }),
   });
-  return next();
+
+  return storeContext.run(
+    { storeId },
+    () => next()
+  );
 }

@@ -7,7 +7,7 @@ import { Suspense } from "react";
 import { siteConfigRepository } from "@/lib/repositories/site-configs";
 import { medusaCollectionRepository } from "@/lib/repositories/medusa-collection-repository";
 import { medusaCategoryRepository } from "@/lib/repositories/medusa-category-repository";
-import { listProductsByCollection } from "@/lib/repositories/products";
+import { listProductsByCollection } from "@/lib/repositories/products-repository";
 
 // ---------------------------------------------------------------------------
 // Metadata
@@ -33,7 +33,7 @@ async function EnrichedContent({ data }: { data: Data }) {
   const [collections, categories, incredibleOffers, ...collectionResults] =
     await Promise.all([
       medusaCollectionRepository.list(),
-      medusaCategoryRepository.list(),
+      medusaCategoryRepository.list().then((cats) => cats.filter((c) => !c.parentId)),
       listProductsByCollection("incredible_offers"),
       ...collectionHandles.map((handle) => listProductsByCollection(handle)),
     ]);
@@ -79,7 +79,7 @@ async function EnrichedContent({ data }: { data: Data }) {
         };
 
       case "CategoriesSlider":
-        if (categories.length < 4) return item;
+        // if (categories.length < 4) return item;
         return {
           ...item,
           props: {
