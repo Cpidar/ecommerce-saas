@@ -3,73 +3,126 @@
 # DNS resolution: Caddy uses Docker container names
 # ============================================
 {
+	# Disable automatic HTTPS completely
+	auto_https off
+
 	servers {
 		trusted_proxies static private_ranges
 	}
 }
-# {
-# 	# Disable automatic HTTPS completely
-# 	auto_https off
-# }
 
-# ========== SUBDOMAIN TENANTS ==========
-https://localhost:9852 {
+# ================= SAAS LANDING DOMAIN ===========================
+
+# tabeshelecshop.ir is tenant store domain, it must be main saas domain 
+api.tabeshelecshop.ir:80 {
+	reverse_proxy medusa:9000
+}
+
+tabeshelecshop.ir:80, www.tabeshelecshop.ir:80 {
+	# reverse_proxy medusa_storefront:8000/saas {
+	# 	# Add X-Store-Id header from subdomain
+	# 	header_up X-Store-Id "store_01KX1MP5CVCT65E2J2C934N6V9"
+	# }
+}
+
+registry.tabeshelecshop.ir:80, tabeshelecshop.ir:80/registry {
+	reverse_proxy registry:5000
+	request_body {
+		max_size 3GB
+	}
+}
+
+registry-ui.tabeshelecshop.ir:80 {
+	reverse_proxy registry-ui:80
+}
+
+s3.tabeshelecshop.ir:80 {
+	handle_path /upload/* {
+		# handle_path automatically removes /upload from the path
+		# Then we add the bucket name
+		rewrite /medusabucket{path}
+
+		reverse_proxy rustfs:3900 {
+			header_up X-Store-Id "store_01KX1MP5CVCT65E2J2C934N6V9"
+			header_up Host {host}
+		}
+	}
+
+	reverse_proxy rustfs:3900
+}
+
+# ========== SUBDOMAIN / DOMAIN TENANTS ==========
+mysaas.test:80, www.mysaas.test:80 {
 	# Enable debug logging
 	log {
 		output stdout
 		level DEBUG
 	}
 
+	vars store_id "store_01KX1MP5CVCT65E2J2C934N6V9"
+
 	# Handle exact /app path
 	handle /app {
-		reverse_proxy localhost:9000 {
-			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+		reverse_proxy medusa:9000 {
+			header_up X-Store-Id {vars.store_id}
 		}
 	}
 
 	# Explicitly match authentication paths
 	handle /auth/* {
-		reverse_proxy localhost:9000 {
+		reverse_proxy medusa:9000 {
 			# Add X-Store-Id header from subdomain (or default value)
-			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+			header_up X-Store-Id {vars.store_id}
 		}
 	}
 
 	# Match app paths
 	handle /app/* {
-		reverse_proxy localhost:9000 {
+		reverse_proxy medusa:9000 {
 			# Add X-Store-Id header from subdomain
-			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+			header_up X-Store-Id {vars.store_id}
 		}
 	}
 
 	# Match admin paths
 	handle /admin/* {
-		reverse_proxy localhost:9000 {
+		reverse_proxy medusa:9000 {
 			# Add X-Store-Id header from subdomain
-			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+			header_up X-Store-Id {vars.store_id}
 		}
 	}
 
-	handle /s3/* {
-		reverse_proxy localhost:3900
-	}
+	# # Match admin paths
+	# handle /store/* {
+	# 	reverse_proxy medusa:9000 {
+	# 		# Add X-Store-Id header from subdomain
+	# 		header_up X-Store-Id {vars.store_id}
+	# 	}
+	# }
 
-	handle /upload/* {
-		reverse_proxy localhost:3902
-	}
+	# # Match admin paths
+	# handle /hooks/* {
+	# 	reverse_proxy medusa:9000 {
+	# 		# Add X-Store-Id header from subdomain
+	# 		header_up X-Store-Id {vars.store_id}
+	# 	}
+	# }
+
+	# # Match admin paths
+	# handle /cloud/* {
+	# 	reverse_proxy medusa:9000 {
+	# 		# Add X-Store-Id header from subdomain
+	# 		header_up X-Store-Id {vars.store_id}
+	# 	}
+	# }
 
 	# Match admin paths
 	handle {
-		reverse_proxy localhost:8000 {
+		reverse_proxy medusa_storefront:8000 {
 			# Add X-Store-Id header from subdomain
-			header_up X-Store-Id "store_01KR1FSSPQ60MTNTDSKHBFT9XX"
+			header_up X-Store-Id {vars.store_id}
 		}
 	}
-}
-
-:5000 {
-	reverse_proxy registry:5000
 }
 
 # store2.localhost:9852 {

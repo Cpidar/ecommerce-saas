@@ -14,11 +14,12 @@ apps/storefront/.next
 out
 
 # Env files (pass secrets via ARG/ENV or build secrets instead)
-.env
+.env.*
 .env.local
 .env.*.local
 apps/storefront/.env.local
 apps/medusa/.env
+!**/.env.example
 
 # Git
 .git

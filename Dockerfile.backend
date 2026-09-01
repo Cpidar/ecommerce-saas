@@ -29,10 +29,36 @@ COPY apps/backend ./apps/backend
 WORKDIR /server/apps/backend
 
 # `medusa build` does not produce a runnable app in place — it outputs a
-# standalone application to .medusa/server (own package.json + lockfile),
-# which must be installed and started separately. See:
-# https://docs.medusajs.com/learn/build
-RUN pnpm build
+# standalone application to .medusa/server (own package.json), which must be
+# installed and started separately. See: https://docs.medusajs.com/learn/build
+#
+# Cache mounts for turbo/medusa's own build cache speed up local rebuilds
+# when only a few files changed. No effect on final image size — this
+# whole stage is discarded and never pushed.
+RUN --mount=type=cache,id=turbo,target=/server/.turbo \
+    pnpm build
+
+# .medusa/server ships a package.json but NO lockfile, which is why the
+# original runner used `--no-frozen-lockfile`. That means pnpm re-resolves
+# every dependency from the registry on every single build — if anything
+# upstream published a new patch version in the meantime, the entire
+# node_modules layer changes and gets re-pushed even when your app code is
+# the only thing that changed. Generating a lockfile here (using the same
+# pnpm store cache already warmed above, so this is fast/offline) makes the
+# runner's install fully reproducible: it only changes when your actual
+# dependencies change.
+#
+# IMPORTANT: .medusa/server lives inside the monorepo tree, so running
+# pnpm here would walk up and find /server/pnpm-workspace.yaml, treating
+# it as part of that workspace and writing the lockfile at the monorepo
+# root instead of alongside package.json. Copy the standalone output
+# completely outside /server first so pnpm sees it as its own project.
+RUN mkdir -p /medusa-standalone \
+ && cp -r /server/apps/backend/.medusa/server/. /medusa-standalone/
+
+WORKDIR /medusa-standalone
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --lockfile-only --config.package-import-method=copy
 
 # Bring along the .env so it can be copied into the standalone build output,
 # mirroring `cp ../../.env .env.production` from the docs. Safe to skip this
@@ -55,21 +81,32 @@ WORKDIR /app
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 ENV NODE_ENV=production
+# `medusa` is a --system user with no home directory, but corepack still
+# needs a writable $HOME/.cache/node/corepack even when the pinned pnpm
+# version is already prepared below. Point HOME at /app, which we chown
+# to medusa right after the install step.
+ENV HOME=/app
 
 RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
-# Copy only the standalone build output, not the whole monorepo/source tree.
-COPY --from=build /server/apps/backend/.medusa/server/package.json ./
+# Copy only package.json + the generated lockfile first, so this install
+# layer is cached and reused across builds unless dependencies actually
+# changed — independent of unrelated app-code changes.
+COPY --from=build /medusa-standalone/package.json ./
+COPY --from=build /medusa-standalone/pnpm-lock.yaml ./
 
 RUN --mount=type=cache,id=pnpm-runner,target=/pnpm/store \
-    pnpm install --prod --no-frozen-lockfile --config.package-import-method=copy
+    pnpm install --prod --frozen-lockfile --config.package-import-method=copy
 
-COPY --from=build /server/apps/backend/.medusa/server ./
-
+# Now layer in the actual compiled app on top of the cached node_modules.
+COPY --from=build /medusa-standalone ./
 
 # If you copied .env in the build stage, bring it along here too:
 # COPY --from=build /server/apps/backend/.env ./.env.production
 
 EXPOSE 9000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD node -e "require('http').get('http://127.0.0.1:9000/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
 
 CMD ["pnpm", "start"]

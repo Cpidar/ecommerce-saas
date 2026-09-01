@@ -1,48 +1,100 @@
 # syntax=docker/dockerfile:1.7
 
-
+# =============================================================================
+# base — shared tooling setup, cached almost forever
+# =============================================================================
 FROM node:22-bookworm-slim AS base
-
 WORKDIR /server
-
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 ENV PNPM_CONFIG_NODE_LINKER=hoisted
-# ENV PNPM_CONFIG_CHILD_CONCURRENCY=1
-
-# ENV NODE_OPTIONS=--max-old-space-size=1536
-# ENV NEXT_TELEMETRY_DISABLED=1
-
-
 RUN corepack enable && corepack prepare pnpm@10.27.0 --activate
 
+# =============================================================================
+# deps — only rebuilds when lockfile/package.json changes
+# =============================================================================
+FROM base AS deps
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY apps/storefront/package.json ./apps/storefront/package.json
-
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install \
       --filter ./apps/storefront... \
       --frozen-lockfile \
-      # --network-concurrency=1 \
-      # --child-concurrency=1
       --config.package-import-method=copy
 
+# =============================================================================
+# builder — compiles the app. This whole stage (incl. full node_modules,
+# devDependencies, .next cache) is discarded and never pushed — only the
+# `runner` stage below becomes the actual image.
+# =============================================================================
+FROM base AS builder
+COPY --from=deps /server /server
 COPY apps/storefront ./apps/storefront
-COPY apps/storefront/.env.production ./apps/storefront/.env.production
-
 WORKDIR /server/apps/storefront
 
-# ARG NEXT_PUBLIC_MEDUSA_BACKEND_URL
-# ARG NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+# --- Build-time only. NEXT_PUBLIC_* vars get inlined into the compiled JS
+# here and can't be changed later without rebuilding.
+ARG NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ARG NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_DEFAULT_REGION
+ARG NEXT_PUBLIC_DEFAULT_REGION_ID
+ARG NEXT_PUBLIC_DEFAULT_STORE_ID
+ARG NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE
+ARG NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG
+ARG NEXT_PUBLIC_FEATURE_SEARCH_ENABLED
+ARG NEXT_PUBLIC_SEARCH_ENDPOINT
+ARG NEXT_PUBLIC_SEARCH_API_KEY
+ARG NEXT_PUBLIC_EMAIL_DOMAIN
+ARG NEXT_PUBLIC_IMAGE_HOST_ADDRESS
 
-# ENV NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
-# ENV NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
+ENV NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+ENV NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
+ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+ENV NEXT_PUBLIC_DEFAULT_REGION=${NEXT_PUBLIC_DEFAULT_REGION}
+ENV NEXT_PUBLIC_DEFAULT_REGION_ID=${NEXT_PUBLIC_DEFAULT_REGION_ID}
+ENV NEXT_PUBLIC_DEFAULT_STORE_ID=${NEXT_PUBLIC_DEFAULT_STORE_ID}
+ENV NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE=${NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE}
+ENV NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG=${NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG}
+ENV NEXT_PUBLIC_FEATURE_SEARCH_ENABLED=${NEXT_PUBLIC_FEATURE_SEARCH_ENABLED}
+ENV NEXT_PUBLIC_SEARCH_ENDPOINT=${NEXT_PUBLIC_SEARCH_ENDPOINT}
+ENV NEXT_PUBLIC_SEARCH_API_KEY=${NEXT_PUBLIC_SEARCH_API_KEY}
+ENV NEXT_PUBLIC_EMAIL_DOMAIN=${NEXT_PUBLIC_EMAIL_DOMAIN}
+ENV NEXT_PUBLIC_IMAGE_HOST_ADDRESS=${NEXT_PUBLIC_IMAGE_HOST_ADDRESS}
 
-RUN pnpm build
+# Cache Next's own build cache across builds (speeds up rebuilds; does not
+# affect final image size since this stage is discarded anyway).
+RUN --mount=type=cache,id=next-cache,target=/server/apps/storefront/.next/cache \
+    pnpm build
+
+# Requires `output: 'standalone'` in apps/storefront/next.config.js
+# -> produces .next/standalone (pruned server + only-needed node_modules)
+#    and .next/static (client assets, NOT included in standalone by default)
+
+# =============================================================================
+# runner — the actual image that gets pushed. No devDependencies, no pnpm
+# store, no source. Only what's needed to run `node server.js`.
+# =============================================================================
+FROM node:22-bookworm-slim AS runner
+WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=8000
+ENV HOSTNAME=0.0.0.0
 
+RUN groupadd --system --gid 1001 nodejs \
+ && useradd --system --uid 1001 --gid nodejs nextjs
+
+# Standalone output mirrors the monorepo path (apps/storefront/server.js).
+# If your workspace layout differs, run once:
+#   docker build --target builder -t sf-builder -f Dockerfile.storefront .
+#   docker run --rm sf-builder find /server/apps/storefront/.next/standalone
+# to confirm the exact path before relying on this.
+COPY --from=builder --chown=nextjs:nodejs /server/apps/storefront/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /server/apps/storefront/.next/static ./apps/storefront/.next/static
+COPY --from=builder --chown=nextjs:nodejs /server/apps/storefront/public ./apps/storefront/public
+
+USER nextjs
 EXPOSE 8000
 
-CMD ["pnpm", "start", "-p", "8000"]
+CMD ["node", "apps/storefront/server.js"]

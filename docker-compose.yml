@@ -1,34 +1,3 @@
-# ============================================
-# COMPLETE PRODUCTION DOCKER COMPOSE FOR MULTI-TENANT MEDUSA
-# Includes: Medusa Backend, Storefront, PostgreSQL, Redis
-#           MinIO (file storage), Meilisearch (search)
-#           Caddy (reverse proxy with multi-tenant routing)
-#
-# UPGRADED: 2026-07-01
-#   - redis:        (untagged/latest) → redis:8.8-alpine
-#   - minio/minio:  RELEASE.2024-10-13 → quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-#   - minio/mc:     RELEASE.2024-10-08 → quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
-#   - meilisearch:  v1.12             → getmeili/meilisearch:v1.37
-#   - caddy:        2-alpine           → caddy:2.11.3-alpine
-#   - registry:     registry:2         → registry:3
-#
-# FIXES APPLIED:
-#   - redis: added auth to healthcheck (was silently passing without password)
-#   - minio: migrated from docker hub (abandoned Oct 2025) to quay.io mirror
-#   - minio: mem_limit raised 128M→256M (was OOM-killing under load)
-#   - minio: healthcheck updated to new /minio/health/live endpoint style
-#   - medusa: restart:no → restart:unless-stopped (was not recovering on crash)
-#   - medusa: added missing restart policy after first successful startup
-#   - caddy: pinned to exact patch version (2.11.3) for reproducibility
-#   - caddy: removed non-standard ACME_AGREE env var (not used by Caddy v2)
-#   - caddy: added healthcheck
-#   - registry: pinned to registry:3 (v2 is EOL as of 2025-Q2)
-#   - registry: added healthcheck
-#   - postgres: kept at :16 per user request (no upgrade)
-#   - all services: added missing cpus limits where absent
-#   - networks: added explicit healthcheck for createbuckets dependency chain
-# ============================================
-
 services:
   # ========== POSTGRESQL DATABASE ==========
   # NOTE: Kept at postgres:16 per user request. Latest LTS is postgres:17.
@@ -46,9 +15,6 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - medusa_network
-    #  Only for developement 
-    # ports:
-    #   - "127.0.0.1:5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 10s
@@ -61,6 +27,7 @@ services:
         max-size: "100m"
         max-file: "5"
 
+  # ========== postgres-backup-s3 ==========
   backup:
     image: eeshugerman/postgres-backup-s3:16
     restart: unless-stopped
@@ -72,16 +39,17 @@ services:
     environment:
       SCHEDULE: "@weekly" # optional
       BACKUP_KEEP_DAYS: 7 # optional
-      PASSPHRASE: passphrase # optional
-      S3_REGION: region
-      S3_ACCESS_KEY_ID: key
-      S3_SECRET_ACCESS_KEY: secret
-      S3_BUCKET: my-bucket
+      PASSPHRASE: ${PASSPHRASE} # optional
+      S3_ENDPOINT: ${ARVAN_ENDPOINT}
+      S3_REGION: ${ARVAN_REGION}
+      S3_ACCESS_KEY_ID: ${ARVAN_ACCESS_KEY}
+      S3_SECRET_ACCESS_KEY: ${ARVAN_SECRET_KEY}
+      S3_BUCKET: ${ARVAN_BACKUP_BUCKET}
       S3_PREFIX: backup
       POSTGRES_HOST: postgres
-      POSTGRES_DATABASE: dbname
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DATABASE: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     networks:
       - medusa_network
     logging:
@@ -89,17 +57,44 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-  
+
+  # ========== pgbackweb (Effortless PostgreSQL backups) ==========
+  pgbackweb:
+    image: eduardolat/pgbackweb:latest
+    restart: unless-stopped
+    mem_limit: 128M
+    cpus: "0.3"
+    # TODO: Set in Caddyfile
+    ports:
+      - "8085:8085" # Access the web interface at http://localhost:8085
+    environment:
+      # Optional environment variables are ignored, see the configuration section below for more details
+      PBW_ENCRYPTION_KEY: ${PGBACKWEB_SECRET_KEY} # Change this to a strong key
+      PBW_POSTGRES_CONN_STRING: "postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/pgbackweb?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - medusa_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ========== dbx (PostgreSQL DBMS) ==========
   dbx:
     image: t8y2/dbx:latest
     container_name: dbms
     restart: unless-stopped
     mem_limit: 128M
     cpus: "0.5"
-
-    # For faster pulls in China, use the CNB image instead:
-    # image: docker.cnb.cool/dbxio.com/dbx:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
     pull_policy: always
+    environment:
+      DBX_PASSWORD: ${DBX_PASSWORD}
     ports:
       - "4224:4224"
     networks:
@@ -109,15 +104,10 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "20m"
+        max-size: "10m"
         max-file: "5"
 
-
   # ========== REDIS (Cache & Queue) ==========
-  # UPGRADED: (untagged) → redis:8.8-alpine
-  # FIX: healthcheck now authenticates with password (was a false-positive before)
-  # NOTE: Redis 8.x re-licensed under AGPLv3/RSALv2/SSPLv1 triple license.
-  #       This is acceptable for self-hosted internal use.
   redis:
     image: redis:8.8-alpine
     container_name: medusa_redis
@@ -129,8 +119,6 @@ services:
       - redis_data:/data
     networks:
       - medusa_network
-    ports:
-      - "6379:6379"
     healthcheck:
       # FIX: must pass -a flag; without it the check always returned healthy
       # even when the server required a password and was rejecting connections.
@@ -159,8 +147,8 @@ services:
     container_name: rustfs
     restart: unless-stopped
     ports:
-      - "3900:3900" # S3 API (was 9000)
-      - "3901:3901" # Console (was 9001)
+      - "3900:3900"
+      - "3901:3901"
     networks:
       - medusa_network
     environment:
@@ -169,9 +157,9 @@ services:
       - RUSTFS_REGION=${RUSTFS_REGION:-us-east-1}
       - RUSTFS_CONSOLE_ADDRESS=${RUSTFS_CONSOLE_ADDRESS:-http://rustfs:3901}
       - RUSTFS_ADDRESS=${RUSTFS_ENDPOINT:-http://rustfs:3900}
-      - RUSTFS_CORS_ALLOWED_ORIGINS=*
+      - RUSTFS_CORS_ALLOWED_ORIGINS=${RUSTFS_CORS_ALLOWED_ORIGINS:-"https://tabeshelecshop.ir"}
     volumes:
-      - ./rustfs_data:/data
+      - rustfs_data:/data # CHANGED: Use named volume instead of bind mount
     command: server /data --address ":3900" --console-address ":3901"
     mem_limit: 256M
     cpus: "0.5"
@@ -187,49 +175,12 @@ services:
         max-size: "50m"
         max-file: "3"
 
-  # ========== MEILISEARCH (Search Engine) ==========
-  # UPGRADED: getmeili/meilisearch:v1.12 → getmeili/meilisearch:v1.37
-  #
-  # WARNING: Meilisearch requires a dump-and-reimport when upgrading across
-  # minor versions. If you have existing indexed data in the meilisearch_data
-  # volume, follow the migration steps before deploying:
-  #   1. POST http://localhost:7700/dumps  (create a dump)
-  #   2. Stop the old container
-  #   3. Deploy with the new image tag
-  #   4. Add --import-dump /meili_data/dumps/<file>.dump to command temporarily
-  #   5. Remove the --import-dump flag after successful import
-  # See: https://www.meilisearch.com/docs/learn/update_and_migration/updating
-  # meilisearch:
-  #   image: getmeili/meilisearch:v1.37
-  #   container_name: medusa_meilisearch
-  #   restart: unless-stopped
-  #   mem_limit: 256M
-  #   cpus: "0.5"
-  #   environment:
-  #     MEILI_MASTER_KEY: ${MEILISEARCH_MASTER_KEY}
-  #     MEILI_ENV: production
-  #     MEILI_NO_ANALYTICS: "true"
-  #   volumes:
-  #     - meilisearch_data:/meili_data
-  #   ports:
-  #     - "127.0.0.1:7700:7700"
-  #   networks:
-  #     - medusa_network
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:7700/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 15s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "100m"
-  #       max-file: "5"
-
   # ========== MEDUSA BACKEND ==========
   medusa:
-    image: medusa:v8
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: ${MEDUSA_TAG:-registry.tabeshelecshop.ir/medusa:v9}
     container_name: medusa_backend
     restart: unless-stopped
     depends_on:
@@ -242,8 +193,8 @@ services:
       rustfs:
         condition: service_healthy
     ports:
-      - "127.0.0.1:9000:9000"
-      - "127.0.0.1:5173:5173"
+      - "9000:9000"
+      - "5173:5173"
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}?sslmode=disable
@@ -254,7 +205,7 @@ services:
       # S3_ACCESS_KEY_ID: ${MINIO_USER}
       # S3_SECRET_ACCESS_KEY: ${MINIO_PASSWORD}
       S3_ENDPOINT: ${RUSTFS_ENDPOINT}
-      S3_FILE_URL: http://localhost:3900/${RUSTFS_BUCKET}
+      S3_FILE_URL: ${RUSTFS_FILE_URL}
       S3_BUCKET: ${RUSTFS_BUCKET}
       S3_REGION: ${RUSTFS_REGION:-us-east-1}
       S3_ACCESS_KEY_ID: ${RUSTFS_ACCESS_KEY}
@@ -263,10 +214,19 @@ services:
       MEILISEARCH_API_KEY: ${MEILISEARCH_MASTER_KEY}
     env_file:
       - apps/backend/.env
+    # volumes:
+    # Mount your local config file into the container
+    # - ./apps/backend/medusa-config.js:/app/medusa-config.js:ro
     networks:
       - medusa_network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:9000/health', r => process.exit(r.statusCode === 200 ? 0 : 1))",
+        ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -279,35 +239,52 @@ services:
 
   # ========== STOREFRONT (Next.js) ==========
   # Uncomment and update the image name when your storefront image is ready.
-  # storefront:
-  #   image: ghcr.io/YOUR_USER/ecommerce-saas-storefront:latest
-  #   container_name: medusa_storefront
-  #   restart: unless-stopped
-  #   mem_limit: 768M
-  #   cpus: "0.5"
-  #   depends_on:
-  #     medusa:
-  #       condition: service_healthy
-  #   ports:
-  #     - "127.0.0.1:8000:8000"
-  #   environment:
-  #     - NODE_ENV=production
-  #     - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
-  #   env_file:
-  #     - apps/storefront/.env
-  #   networks:
-  #     - medusa_network
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:8000"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 30s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "100m"
-  #       max-file: "5"
+  storefront:
+    build:
+      context: .
+      dockerfile: Dockerfile.storefront
+      args:
+        NEXT_PUBLIC_MEDUSA_BACKEND_URL: ${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+        NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+        NEXT_PUBLIC_DEFAULT_REGION: ${NEXT_PUBLIC_DEFAULT_REGION}
+        NEXT_PUBLIC_DEFAULT_REGION_ID: ${NEXT_PUBLIC_DEFAULT_REGION_ID}
+        NEXT_PUBLIC_DEFAULT_STORE_ID: ${NEXT_PUBLIC_DEFAULT_STORE_ID}
+        NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE: ${NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE}
+        NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG: ${NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG}
+        NEXT_PUBLIC_FEATURE_SEARCH_ENABLED: ${NEXT_PUBLIC_FEATURE_SEARCH_ENABLED}
+        NEXT_PUBLIC_SEARCH_ENDPOINT: ${NEXT_PUBLIC_SEARCH_ENDPOINT}
+        NEXT_PUBLIC_SEARCH_API_KEY: ${NEXT_PUBLIC_SEARCH_API_KEY}
+        NEXT_PUBLIC_EMAIL_DOMAIN: ${NEXT_PUBLIC_EMAIL_DOMAIN}
+        NEXT_PUBLIC_IMAGE_HOST_ADDRESS: ${NEXT_PUBLIC_IMAGE_HOST_ADDRESS}
+    image: ${STOREFRONT_TAG:-registry.tabeshelecshop.ir/storefront:v9}
+    container_name: medusa_storefront
+    restart: unless-stopped
+    mem_limit: 768M
+    cpus: "0.5"
+    depends_on:
+      medusa:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
+    env_file:
+      - apps/storefront/.env.production
+    networks:
+      - medusa_network
+    # healthcheck:
+    #   test: ["CMD", "nc", "-z", "localhost", "8000"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
 
   # ========== PRIVATE DOCKER REGISTRY ==========
   registry:
@@ -316,6 +293,8 @@ services:
     restart: unless-stopped
     mem_limit: 256M
     cpus: "0.3"
+    ports:
+      - "5000:5000"
     environment:
       REGISTRY_AUTH: htpasswd
       REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
@@ -323,11 +302,16 @@ services:
       REGISTRY_STORAGE_DELETE_ENABLED: "true"
     volumes:
       - ./registry/auth:/auth:ro
+      - ./registry/config.yml:/etc/distribution/config.yml:ro
       - registry_data:/var/lib/registry
     networks:
       - medusa_network
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/v2/"]
+      test:
+        [
+          "CMD-SHELL",
+          "wget --server-response --spider -q http://localhost:5000/v2/ 2>&1 | grep -qE 'HTTP/[0-9.]+ (200|401)'",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -338,50 +322,55 @@ services:
         max-size: "50m"
         max-file: "3"
 
+  # ========== DOCKER REGISTRY UI ==========
+
+  registry-ui:
+    image: joxit/docker-registry-ui:latest
+    container_name: registry_ui
+    restart: unless-stopped
+    environment:
+      - REGISTRY_TITLE=My Registry
+      - DELETE_IMAGES=true
+      - SINGLE_REGISTRY=true
+      - NGINX_PROXY_PASS_URL=http://registry:5000
+    networks:
+      - medusa_network
+
   # ========== CADDY REVERSE PROXY ==========
-  # UPGRADED: caddy:2-alpine → caddy:2.11.3-alpine
-  # Pinned to the exact patch version for reproducible builds.
-  # caddy:2-alpine is a floating tag — it silently changes on every Caddy release
-  # which can break your proxy config without warning.
-  # FIX: removed ACME_AGREE=true env var — this is not a valid Caddy v2 variable.
-  #   In Caddy v2, ACME agreement is implicit. The env var was a v1 leftover
-  #   being silently ignored this whole time.
-  # FIX: added healthcheck
-  # FIX: updated depends_on caddy → medusa to use service_healthy condition
-  # caddy:
-  #   image: caddy:2.11.3-alpine
-  #   container_name: caddy_proxy
-  #   restart: unless-stopped
-  #   mem_limit: 128M
-  #   cpus: "0.3"
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #     - "443:443/udp"
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile:ro
-  #     - caddy_data:/data
-  #     - caddy_config:/config
-  #   networks:
-  #     - medusa_network
-  #   depends_on:
-  #     medusa:
-  #       condition: service_healthy
-  #     registry:
-  #       condition: service_healthy
-  #     # storefront:
-  #     #   condition: service_healthy
-  #   healthcheck:
-  #     test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 5s
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "50m"
-  #       max-file: "3"
+  caddy:
+    image: caddy:2.11.3-alpine
+    container_name: caddy_proxy
+    restart: unless-stopped
+    mem_limit: 128M
+    cpus: "0.3"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - medusa_network
+    depends_on:
+      medusa:
+        condition: service_healthy
+      # registry:
+      #   condition: service_healthy
+      # storefront:
+      #   condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "3"
 
 # ========== VOLUMES ==========
 volumes:
@@ -389,22 +378,19 @@ volumes:
     name: medusa_postgres_data
   redis_data:
     name: medusa_redis_data
-  # minio_data:
-  #   name: medusa_minio_data
-  meilisearch_data:
-    name: medusa_meilisearch_data
+  # meilisearch_data:
+  #   name: medusa_meilisearch_data
   caddy_data:
     name: caddy_data
   caddy_config:
     name: caddy_config
   registry_data:
     name: docker_registry_data
-  garage_meta:
-    name: medusa_garage_meta
-  garage_data:
-    name: medusa_garage_data
+  rustfs_data:
+    name: medusa_rustfs_data
   dbx-data:
     name: dbx_data
+
 # ========== NETWORKS ==========
 networks:
   medusa_network:
