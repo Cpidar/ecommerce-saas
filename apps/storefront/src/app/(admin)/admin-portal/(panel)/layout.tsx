@@ -6,7 +6,7 @@ import { connection } from "next/server";
 export default async function AdminPanelLayout({ children }: { children: React.ReactNode }) {
     await connection() // wait for an actual request
   // Defense in depth — middleware already gates, but never render the panel unauthed.
-  if (!(await isAuthed())) redirect("/admin/login");
+  if (!(await isAuthed())) redirect("/admin-portal/login");
 
   return (
       <div className="flex min-h-screen bg-muted/40">

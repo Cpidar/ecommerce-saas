@@ -1,173 +1,139 @@
 /**
- *
- * @param text String
- * @returns {String}
- * @description This function remove all not-persian characters from text. and convert arabic characters to persian.
+ * Normalize Persian text by converting Arabic characters to Persian
+ * and removing diacritics while preserving spaces
+ * 
+ * @param text - Input string to normalize
+ * @returns Normalized Persian string
  */
 export const normalizePersianText = (text: string): string => {
   if (!text || text === "") return "";
 
   let normalized = text.toString();
 
+  // Convert characters using mapping
   normalized = normalized
-    .toString()
     .split("")
-    .map(function (c) {
-      const mapped = parsianMaping[String(c.charCodeAt(0))];
-      return typeof mapped === "undefined" ? "" : mapped;
+    .map((char) => {
+      const code = String(char.charCodeAt(0));
+      const mapped = persianMapping[code];
+      // If no mapping, keep the original character (including spaces)
+      return typeof mapped !== "undefined" ? mapped : char;
     })
     .join("");
 
-  // Remove Tashdid
-  normalized = normalized.replace(/[\u0651]/g, "");
+  // Remove Tashdid (Shadda) - 0651
+  normalized = normalized.replace(/\u0651/g, "");
 
-  return normalized;
+  // Remove other diacritics (optional)
+  // normalized = normalized.replace(/[\u064B-\u065F\u0670]/g, "");
+
+  // Normalize multiple spaces to single space
+  normalized = normalized.replace(/\s+/g, " ");
+
+  // Trim leading/trailing spaces
+  return normalized.trim();
 };
 
-const parsianMaping: Record<string, string> = {
-  "1570": "آ",
-  "1571": "ا",
-  "1574": "ی",
-  "1575": "ا",
-  "1576": "ب",
-  "1577": "ه",
-  "1578": "ت",
-  "1579": "ث",
-  "1580": "ج",
-  "1581": "ح",
-  "1582": "خ",
-  "1583": "د",
-  "1584": "ذ",
-  "1585": "ر",
-  "1586": "ز",
-  "1587": "س",
-  "1588": "ش",
-  "1589": "ص",
-  "1590": "ض",
-  "1591": "ط",
-  "1592": "ظ",
-  "1593": "ع",
-  "1594": "غ",
-  "1600": "",
-  "1601": "ف",
-  "1602": "ق",
-  "1603": "ک",
-  "1604": "ل",
-  "1605": "م",
-  "1606": "ن",
-  "1607": "ه",
-  "1608": "و",
-  "1609": "ی",
-  "1610": "ی",
-  "1611": "",
-  "1612": "",
-  "1613": "",
-  "1614": "",
-  "1615": "",
-  "1616": "",
-  "1617": "",
-  "1618": "",
-  "1662": "پ",
-  "1670": "چ",
-  "1688": "ژ",
-  "1705": "ک",
-  "1706": "ک",
-  "1711": "گ",
-  "1726": "ه",
-  "1729": "ه",
-  "1740": "ی",
-  "1746": "ی",
-  "8211": "",
-  "64343": "پ",
-  "64344": "پ",
-  "64345": "پ",
-  "64379": "چ",
-  "64380": "چ",
-  "64381": "چ",
-  "64395": "ژ",
-  "64403": "گ",
-  "64404": "گ",
-  "64405": "گ",
-  "64510": "ی",
-  "65010": "الله",
-  "65156": "ی",
-  "65158": "و",
-  "65163": "ی",
-  "65164": "ی",
-  "65166": "ا",
-  "65168": "ب",
-  "65169": "ب",
-  "65170": "ب",
-  "65172": "ه",
-  "65174": "ت",
-  "65175": "ت",
-  "65176": "ت",
-  "65178": "ث",
-  "65179": "ث",
-  "65180": "ث",
-  "65182": "ج",
-  "65183": "ج",
-  "65184": "ج",
-  "65186": "ح",
-  "65187": "ح",
-  "65188": "ح",
-  "65190": "خ",
-  "65191": "خ",
-  "65192": "خ",
-  "65194": "د",
-  "65196": "ذ",
-  "65198": "ر",
-  "65200": "ز",
-  "65202": "س",
-  "65203": "س",
-  "65204": "س",
-  "65206": "ش",
-  "65207": "ش",
-  "65208": "ش",
-  "65210": "ص",
-  "65211": "ص",
-  "65212": "ص",
-  "65214": "ض",
-  "65215": "ض",
-  "65216": "ض",
-  "65218": "ط",
-  "65219": "ط",
-  "65220": "ط",
-  "65222": "ظ",
-  "65223": "ظ",
-  "65224": "ظ",
-  "65226": "ع",
-  "65227": "ع",
-  "65228": "ع",
-  "65230": "غ",
-  "65231": "غ",
-  "65232": "غ",
-  "65234": "ف",
-  "65235": "ف",
-  "65236": "ف",
-  "65238": "ق",
-  "65239": "ق",
-  "65240": "ق",
-  "65242": "ک",
-  "65243": "ک",
-  "65244": "ک",
-  "65246": "ل",
-  "65247": "ل",
-  "65248": "ل",
-  "65250": "م",
-  "65251": "م",
-  "65252": "م",
-  "65254": "ن",
-  "65255": "ن",
-  "65256": "ن",
-  "65258": "ه",
-  "65259": "ه",
-  "65260": "ه",
-  "65262": "و",
-  "65264": "ی",
-  "65266": "ی",
-  "65267": "ی",
-  "65268": "ی",
-  "65275": "لا",
-  "65276": "لا"
-}
+const persianMapping: Record<string, string> = {
+  // Alef variations
+  "1570": "آ", // Alef with Madda
+  "1571": "ا", // Alef with Hamza Above
+  "1575": "ا", // Alef
+  "65166": "ا", // Alef (presentation form)
+
+  // Yeh variations (MOST IMPORTANT for your use case)
+  "1574": "ی", // Alef with Hamza Below -> ی
+  "1609": "ی", // Alef Maksura -> ی
+  "1610": "ی", // Yeh -> ی
+  "1740": "ی", // Farsi Yeh -> ی
+  "1746": "ی", // Farsi Yeh -> ی
+  "64510": "ی", // Yeh (presentation form)
+  "65156": "ی", // Yeh (presentation form)
+  "65163": "ی", // Yeh (presentation form)
+  "65164": "ی", // Yeh (presentation form)
+  "65264": "ی", // Yeh (presentation form)
+  "65266": "ی", // Yeh (presentation form)
+  "65267": "ی", // Yeh (presentation form)
+  "65268": "ی", // Yeh (presentation form)
+
+  // Kaf variations
+  "1603": "ک", // Kaf
+  "1705": "ک", // Arabic Kaf -> ک
+  "1706": "ک", // Arabic Kaf -> ک
+  "65242": "ک", // Kaf (presentation form)
+  "65243": "ک", // Kaf (presentation form)
+  "65244": "ک", // Kaf (presentation form)
+
+  // Heh variations
+  "1577": "ه", // Teh Marbuta -> ه
+  "1607": "ه", // Heh
+  "1726": "ه", // Heh
+  "1729": "ه", // Heh
+  "65172": "ه", // Heh (presentation form)
+  "65258": "ه", // Heh (presentation form)
+  "65259": "ه", // Heh (presentation form)
+  "65260": "ه", // Heh (presentation form)
+
+  // Vav variations
+  "1608": "و", // Vav
+  "65158": "و", // Vav (presentation form)
+  "65262": "و", // Vav (presentation form)
+
+  // Regular letters
+  "1576": "ب", // Beh
+  "1578": "ت", // Teh
+  "1579": "ث", // Theh
+  "1580": "ج", // Jeem
+  "1581": "ح", // Hah
+  "1582": "خ", // Khah
+  "1583": "د", // Dal
+  "1584": "ذ", // Thal
+  "1585": "ر", // Reh
+  "1586": "ز", // Zain
+  "1587": "س", // Seen
+  "1588": "ش", // Sheen
+  "1589": "ص", // Sad
+  "1590": "ض", // Dad
+  "1591": "ط", // Tah
+  "1592": "ظ", // Zah
+  "1593": "ع", // Ain
+  "1594": "غ", // Ghain
+  "1601": "ف", // Feh
+  "1602": "ق", // Qaf
+  "1604": "ل", // Lam
+  "1605": "م", // Meem
+  "1606": "ن", // Noon
+
+  // Persian specific letters
+  "1662": "پ", // Peh
+  "1670": "چ", // Cheh
+  "1688": "ژ", // Zheh
+  "1711": "گ", // Gaf
+  "64343": "پ", // Peh (presentation)
+  "64344": "پ", // Peh (presentation)
+  "64345": "پ", // Peh (presentation)
+  "64379": "چ", // Cheh (presentation)
+  "64380": "چ", // Cheh (presentation)
+  "64381": "چ", // Cheh (presentation)
+  "64395": "ژ", // Zheh (presentation)
+  "64403": "گ", // Gaf (presentation)
+  "64404": "گ", // Gaf (presentation)
+  "64405": "گ", // Gaf (presentation)
+
+  // Special
+  "65010": "الله", // Allah
+  "65275": "لا", // Lam-Alef
+  "65276": "لا", // Lam-Alef
+
+  // Diacritics (mapped to empty string)
+  "1600": "", // Tatweel/Kashida
+  "1611": "", // Fatha
+  "1612": "", // Damma
+  "1613": "", // Kasra
+  "1614": "", // Fatha
+  "1615": "", // Damma
+  "1616": "", // Kasra
+  "1617": "", // Shadda
+  "1618": "", // Sukun
+  "8211": "", // En dash
+};

@@ -1,5 +1,6 @@
 "use client";
 
+import { savePuckData } from "@/lib/medusa/stores-actions";
 import config from "@/puck/config";
 import type { Config, Data } from "@puckeditor/core";
 import {
@@ -80,10 +81,7 @@ export function Client({
                 <Button
                   onClick={async () => {
                     try {
-                      await fetch(`/api/puck`, {
-                        method: "post",
-                        body: JSON.stringify({ data, path }),
-                      });
+                      await savePuckData({ data, path });
                       toast.info("اطلاعات با موفقیت ذخیره شد", {
                         position: "top-center",
                         closeButton: true,

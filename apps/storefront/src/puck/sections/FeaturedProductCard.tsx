@@ -1,10 +1,11 @@
 // app/puck/components/FeaturedProductCard.tsx
-import { ComponentConfig } from "@puckeditor/core"
-import Image from "next/image"
-import { Link } from "@/components/ui/Link"
+import { ComponentConfig } from "@puckeditor/core";
+import Image from "next/image";
+import { Link } from "@/components/ui/Link";
 import { imagePickerField } from "../fields/image-picker";
 import { checkboxField } from "../fields/checkbox";
 import { LayoutColumn } from "@/components/layout/Layout";
+import { IMAGE_REMOTE_HOST } from "@/lib/constants";
 
 interface FeaturedProductCardProps {
   // Editable props
@@ -15,7 +16,7 @@ interface FeaturedProductCardProps {
   productHandle: string;
   imageAlt: string;
   showSection: boolean;
-  
+
   // Server props (none - this is a static featured product)
 }
 
@@ -48,7 +49,7 @@ export const FeaturedProductCard: ComponentConfig<FeaturedProductCardProps> = {
     },
     showSection: {
       label: "Show Section",
-      ...checkboxField
+      ...checkboxField,
     },
   },
   defaultProps: {
@@ -60,14 +61,22 @@ export const FeaturedProductCard: ComponentConfig<FeaturedProductCardProps> = {
     productHandle: "astrid-curve",
     showSection: true,
   },
-  render: ({ productImage, imageAlt, productName, productCategory, productPrice, productHandle, showSection }) => {
+  render: ({
+    productImage,
+    imageAlt,
+    productName,
+    productCategory,
+    productPrice,
+    productHandle,
+    showSection,
+  }) => {
     if (!showSection) return <></>;
-    
+
     return (
       <LayoutColumn start={{ base: 1, md: 9 }} end={13}>
         <Link href={`/products/${productHandle}`}>
           <Image
-            src={productImage}
+            src={`${IMAGE_REMOTE_HOST}/${productImage}`}
             width={768}
             height={572}
             alt={imageAlt}

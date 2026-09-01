@@ -17,6 +17,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ImageIcon, Upload, Link2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { sdk } from "@/lib/medusa";
+import { AdminFileListResponse } from "@medusajs/types";
+import { uploadAdminFile } from "@/lib/medusa/stores-actions";
+import { IMAGE_REMOTE_HOST, PLACEHOLDER_IMAGE } from "@/lib/constants";
 
 export type ImageSource = string | StaticImageData;
 
@@ -41,26 +45,6 @@ export const ImagePickerField = ({
   const [uploading, setUploading] = useState(false);
   const [urlInput, setUrlInput] = useState("");
 
-  const uploadAdminFile = async (file: File): Promise<string> => {
-    const formData = new FormData();
-    formData.append("files", file);
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/admin/uploads`, {
-      method: "POST",
-      body: formData,
-      credentials: "include", // sends admin_session cookie
-    });
-
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(error || "Unable to upload file");
-    }
-
-    const data = await response.json();
-
-    return data.files[0].url;
-  };
-
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -70,7 +54,7 @@ export const ImagePickerField = ({
 
       const imageUrl = await uploadAdminFile(file);
 
-      onChange(imageUrl);
+      onChange(`${IMAGE_REMOTE_HOST}/${imageUrl}`);
       setIsDialogOpen(false);
     } catch (err) {
       console.error(err);
@@ -108,7 +92,11 @@ export const ImagePickerField = ({
         <div className="relative group">
           <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border bg-muted">
             <Image
-              src={getImageSrc(value)}
+              src={
+                getImageSrc(value)
+                  ? `${IMAGE_REMOTE_HOST}/${getImageSrc(value)}`
+                  : PLACEHOLDER_IMAGE
+              }
               alt="Selected image"
               fill
               className="object-cover"

@@ -7,22 +7,22 @@ import { cn } from "@/lib/utils/utils";
 // import { cn } from "@ecom/ui";
 
 const items = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/admin/orders", label: "Orders", icon: Receipt, exact: false },
-  { href: "/admin/products", label: "Products", icon: ShoppingBag, exact: false },
-  { href: "/admin/categories", label: "Categories", icon: FolderTree, exact: false },
-  { href: "/admin/discounts", label: "Discounts", icon: Tag, exact: false },
-  { href: "/admin/price-lists", label: "Sales", icon: TicketPercent, exact: false },
-  { href: "/admin/customers", label: "Customers", icon: UserRound, exact: false },
-  { href: "/admin/pages", label: "Pages", icon: LayoutTemplate, exact: false },
-  { href: "/admin/navigation", label: "Navigation", icon: Navigation, exact: false },
-  { href: "/admin/popups", label: "Popups", icon: Megaphone, exact: false },
-  { href: "/admin/campaigns", label: "Campaigns", icon: Rocket, exact: false },
-  { href: "/admin/persona", label: "Persona", icon: ClipboardList, exact: false },
-  { href: "/admin/site", label: "Storefront", icon: LayoutTemplate, exact: false },
-  { href: "/admin/visual-search", label: "Visual Search", icon: ScanSearch, exact: false },
-  { href: "/admin/leads", label: "Guest Leads", icon: Users, exact: false },
-  { href: "/admin/settings", label: "Settings", icon: Settings, exact: false },
+  { href: "/admin-portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin-portal/orders", label: "Orders", icon: Receipt, exact: false },
+  { href: "/admin-portal/products", label: "Products", icon: ShoppingBag, exact: false },
+  { href: "/admin-portal/categories", label: "Categories", icon: FolderTree, exact: false },
+  { href: "/admin-portal/discounts", label: "Discounts", icon: Tag, exact: false },
+  { href: "/admin-portal/price-lists", label: "Sales", icon: TicketPercent, exact: false },
+  { href: "/admin-portal/customers", label: "Customers", icon: UserRound, exact: false },
+  { href: "/admin-portal/pages", label: "Pages", icon: LayoutTemplate, exact: false },
+  { href: "/admin-portal/navigation", label: "Navigation", icon: Navigation, exact: false },
+  { href: "/admin-portal/popups", label: "Popups", icon: Megaphone, exact: false },
+  { href: "/admin-portal/campaigns", label: "Campaigns", icon: Rocket, exact: false },
+  { href: "/admin-portal/persona", label: "Persona", icon: ClipboardList, exact: false },
+  { href: "/admin-portal/site", label: "Storefront", icon: LayoutTemplate, exact: false },
+  { href: "/admin-portal/visual-search", label: "Visual Search", icon: ScanSearch, exact: false },
+  { href: "/admin-portal/leads", label: "Guest Leads", icon: Users, exact: false },
+  { href: "/admin-portal/settings", label: "Settings", icon: Settings, exact: false }
 ] as const;
 
 export function AdminSidebar() {
@@ -31,7 +31,7 @@ export function AdminSidebar() {
 
   const logout = async () => {
     await fetch("/api/admin/login", { method: "DELETE" });
-    router.push("/admin/login");
+    router.push("/admin-portal/login");
     router.refresh();
   };
 

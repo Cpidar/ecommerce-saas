@@ -6,7 +6,7 @@ import { redirects as redirectRules } from "./src/lib/redirects";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const backendUrl = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL || process.env.MEDUSA_BACKEND_URL || '';
-
+const remoteImageHost = process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS || "s3.tabeshelecshop.ir"
 // Security headers — applied at the response layer by Next.js / the platform.
 // Lives here instead of in proxy.ts so the storefront has no runtime
 // middleware (cleaner deploy target for Cloud's OpenNext layer and for
@@ -46,6 +46,7 @@ const SECURITY_HEADERS = [
 ];
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   cacheComponents: true,
   cacheLife: {
     products: {

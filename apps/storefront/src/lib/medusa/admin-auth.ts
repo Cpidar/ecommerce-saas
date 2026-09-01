@@ -1,5 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { sdk } from "../medusa";
+import { AuthLoginResponse } from "@medusajs/js-sdk";
 
 export const ADMIN_COOKIE = "admin_session";
 
@@ -10,18 +12,16 @@ export async function isAuthed(): Promise<boolean> {
   if (!token) return false
 
   try {
-    const verifyRes = await fetch(
-      `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/admin/users/me`,
+    const verifyRes = await sdk.client.fetch(
+      `/admin/users/me`,
       {
+        method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
+    )
 
-    if (!verifyRes.ok) {
-      return false;
-    }
     return true
   } catch {
     return false;
@@ -39,22 +39,40 @@ async function setToken(token: string) {
   });
 }
 
-export async function loginAdmin(email: string, password: string) {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL}/auth/user/emailpass`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include", // important for cookies if you prefer session
-      cache: "no-store",
-    }
-  )
+export async function getToken(): Promise<string | undefined> {
+  const jar = await cookies();
+  return jar.get(ADMIN_COOKIE)?.value;
+}
 
-  if (res.ok) {
-    const { token } = await res.json() // JWT token
+export async function clearToken() {
+  const jar = await cookies();
+  jar.delete(ADMIN_COOKIE);
+}
+
+export async function loginAdmin(email: string, password: string) {
+  console.log("🦒🦒🦒🦒🦒🦒", email, password)
+  try {
+    const { token } = await sdk.client.fetch<{ token: string }>(
+      `/auth/user/emailpass`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: { email, password },
+        credentials: "include", // important for cookies if you prefer session
+        cache: "no-store",
+      }
+    )
+    if (typeof token !== "string") {
+      throw new Error("Authentication requires additional steps")
+      // replace with the redirect logic of your application
+      return
+    }
+
     await setToken(token)
-  } else {
-    alert("Invalid admin credentials")
+  }
+
+  catch (e) {
+    console.log("🦒🦒🦒🦒🦒🦒", e)
+    throw new Error("Invalid admin credentials")
   }
 }

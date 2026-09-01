@@ -11,7 +11,7 @@ import { AuthError } from "@/lib/utils/auth-error";
 import { registerSchema } from "@/lib/validators";
 import { useTranslations } from "next-intl";
 import { registerWithPhone, transferCart } from "@/lib/medusa/auth-server";
-import { initializeStore } from "@/lib/medusa/store-creation";
+import { initializeStore } from "@/lib/medusa/stores-actions";
 import { completeSubscriptionCheckout } from "@/lib/repositories/subscriptions";
 import { useCartStore } from "@/store/cart";
 import { AppMode } from "@/lib/utils/app-mode";

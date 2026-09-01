@@ -93,6 +93,8 @@ services:
       postgres:
         condition: service_healthy
     pull_policy: always
+    environment:
+      DBX_PASSWORD: ${DBX_PASSWORD}
     ports:
       - "4224:4224"
     networks:
@@ -155,6 +157,7 @@ services:
       - RUSTFS_REGION=${RUSTFS_REGION:-us-east-1}
       - RUSTFS_CONSOLE_ADDRESS=${RUSTFS_CONSOLE_ADDRESS:-http://rustfs:3901}
       - RUSTFS_ADDRESS=${RUSTFS_ENDPOINT:-http://rustfs:3900}
+      - RUSTFS_CORS_ALLOWED_ORIGINS=${RUSTFS_CORS_ALLOWED_ORIGINS:-"https://tabeshelecshop.ir"}
     volumes:
       - rustfs_data:/data # CHANGED: Use named volume instead of bind mount
     command: server /data --address ":3900" --console-address ":3901"
@@ -234,7 +237,24 @@ services:
   # ========== STOREFRONT (Next.js) ==========
   # Uncomment and update the image name when your storefront image is ready.
   storefront:
-    image: registry.tabeshelecshop.ir/storefront:v1
+    build:
+      context: .
+      dockerfile: Dockerfile.storefront
+      args:
+        NEXT_PUBLIC_MEDUSA_BACKEND_URL: ${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+        NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY: ${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+        NEXT_PUBLIC_DEFAULT_REGION: ${NEXT_PUBLIC_DEFAULT_REGION}
+        NEXT_PUBLIC_DEFAULT_REGION_ID: ${NEXT_PUBLIC_DEFAULT_REGION_ID}
+        NEXT_PUBLIC_DEFAULT_STORE_ID: ${NEXT_PUBLIC_DEFAULT_STORE_ID}
+        NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE: ${NEXT_PUBLIC_INCREDIBLE_OFFER_HANDLE}
+        NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG: ${NEXT_PUBLIC_SUBSCRIPTION_PRODUCT_SLUG}
+        NEXT_PUBLIC_FEATURE_SEARCH_ENABLED: ${NEXT_PUBLIC_FEATURE_SEARCH_ENABLED}
+        NEXT_PUBLIC_SEARCH_ENDPOINT: ${NEXT_PUBLIC_SEARCH_ENDPOINT}
+        NEXT_PUBLIC_SEARCH_API_KEY: ${NEXT_PUBLIC_SEARCH_API_KEY}
+        NEXT_PUBLIC_EMAIL_DOMAIN: ${NEXT_PUBLIC_EMAIL_DOMAIN}
+        NEXT_PUBLIC_IMAGE_HOST_ADDRESS: ${NEXT_PUBLIC_IMAGE_HOST_ADDRESS}
+    image: registry.tabeshelecshop.ir/storefront:v8
     container_name: medusa_storefront
     restart: unless-stopped
     mem_limit: 768M
@@ -251,12 +271,12 @@ services:
       - apps/storefront/.env
     networks:
       - medusa_network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+    # healthcheck:
+    #   test: ["CMD", "nc", "-z", "localhost", "8000"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
     logging:
       driver: "json-file"
       options:
