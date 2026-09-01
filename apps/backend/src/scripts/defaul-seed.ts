@@ -51,6 +51,7 @@ export async function default_data_seed({
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER);
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
+  const uniquPostfix = Math.floor(1000 + Math.random() * 9000).toString()
 
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL)
   const fulfillmentModuleService = container.resolve(
@@ -480,22 +481,22 @@ export async function default_data_seed({
       product_categories: [
         {
           name: "تی‌شرت",
-          handle: "t-shirt-789456",
+          handle: `t-shirt-789456-${uniquPostfix}`,
           is_active: true,
         },
         {
           name: "سویشرت‌",
-          handle: "sweet-shirt-789456",
+          handle: `sweet-shirt-789456-${uniquPostfix}`,
           is_active: true,
         },
         {
           name: "شلوار",
-          handle: "pants-789456",
+          handle: `pants-789456-${uniquPostfix}`,
           is_active: true,
         },
         {
           name: "محصولات جانبی",
-          handle: "accessories-789456",
+          handle: `accessories-789456-${uniquPostfix}`,
           is_active: true,
         },
       ],
@@ -515,18 +516,18 @@ export async function default_data_seed({
     input: {
       product_options: [
         {
-          title: "Size",
+          title: `Size-${uniquPostfix}`,
           values: ["S", "M", "L", "XL"],
         },
         {
-          title: "Color",
+          title: `Color-${uniquPostfix}`,
           values: ["مشکی", "سفید"],
         },
       ],
     },
   });
-  const sizeOption = productOptionsResult.find((o) => o.title === "Size")!;
-  const colorOption = productOptionsResult.find((o) => o.title === "Color")!;
+  const sizeOption = productOptionsResult.find((o) => o.title.startsWith("Size"))!;
+  const colorOption = productOptionsResult.find((o) => o.title.startsWith(`Color`))!;
 
   await createProductsWorkflow(container).run({
     input: {
@@ -534,11 +535,11 @@ export async function default_data_seed({
         {
           title: "تی‌شرت مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.handle === "t-shirt-789456")!.id,
+            categoryResult.find((cat) => cat.handle === `t-shirt-789456-${uniquPostfix}`)!.id,
           ],
           description:
             "حس یک تی‌شرت کلاسیک را دوباره تجربه کنید. با تی‌شرت‌های نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
-          handle: "t-shirt-789456",
+          handle: `t-shirt-789456-${uniquPostfix}`,
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
@@ -563,10 +564,10 @@ export async function default_data_seed({
           variants: [
             {
               title: "S / Black",
-              sku: "SHIRT-S-BLACK",
+              sku: `SHIRT-S-BLACK-${uniquPostfix}`,
               options: {
-                Size: "S",
-                Color: "مشکی",
+                [sizeOption.title]: "S",
+                [colorOption.title]: "مشکی",
               },
               prices: [
                 {
@@ -577,10 +578,10 @@ export async function default_data_seed({
             },
             {
               title: "S / White",
-              sku: "SHIRT-S-WHITE",
+              sku: `SHIRT-S-WHITE-${uniquPostfix}`,
               options: {
-                Size: "S",
-                Color: "سفید",
+                [sizeOption.title]: "S",
+                [colorOption.title]: "سفید",
               },
               prices: [
                 {
@@ -591,10 +592,10 @@ export async function default_data_seed({
             },
             {
               title: "M / Black",
-              sku: "SHIRT-M-BLACK",
+              sku: `SHIRT-M-BLACK-${uniquPostfix}`,
               options: {
-                Size: "M",
-                Color: "مشکی",
+                [sizeOption.title]: "M",
+                [colorOption.title]: "مشکی",
               },
               prices: [
                 {
@@ -605,10 +606,10 @@ export async function default_data_seed({
             },
             {
               title: "M / White",
-              sku: "SHIRT-M-WHITE",
+              sku: `SHIRT-M-WHITE-${uniquPostfix}`,
               options: {
-                Size: "M",
-                Color: "سفید",
+                [sizeOption.title]: "M",
+                [colorOption.title]: "سفید",
               },
               prices: [
                 {
@@ -619,10 +620,10 @@ export async function default_data_seed({
             },
             {
               title: "L / Black",
-              sku: "SHIRT-L-BLACK",
+              sku: `SHIRT-L-BLACK-${uniquPostfix}`,
               options: {
-                Size: "L",
-                Color: "مشکی",
+                [sizeOption.title]: "L",
+                [colorOption.title]: "مشکی",
               },
               prices: [
                 {
@@ -633,10 +634,10 @@ export async function default_data_seed({
             },
             {
               title: "L / White",
-              sku: "SHIRT-L-WHITE",
+              sku: `SHIRT-L-WHITE-${uniquPostfix}`,
               options: {
-                Size: "L",
-                Color: "سفید",
+                [sizeOption.title]: "L",
+                [colorOption.title]: "سفید",
               },
               prices: [
                 {
@@ -647,10 +648,10 @@ export async function default_data_seed({
             },
             {
               title: "XL / Black",
-              sku: "SHIRT-XL-BLACK",
+              sku: `SHIRT-XL-BLACK-${uniquPostfix}`,
               options: {
-                Size: "XL",
-                Color: "مشکی",
+                [sizeOption.title]: "XL",
+                [colorOption.title]: "مشکی",
               },
               prices: [
                 {
@@ -661,10 +662,10 @@ export async function default_data_seed({
             },
             {
               title: "XL / White",
-              sku: "SHIRT-XL-WHITE",
+              sku: `SHIRT-XL-WHITE-${uniquPostfix}`,
               options: {
-                Size: "XL",
-                Color: "سفید",
+                [sizeOption.title]: "XL",
+                [colorOption.title]: "سفید",
               },
               prices: [
                 {
@@ -683,11 +684,11 @@ export async function default_data_seed({
         {
           title: "سویشرت مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.handle === "sweet-shirt-789456")!.id,
+            categoryResult.find((cat) => cat.handle === `sweet-shirt-789456-${uniquPostfix}`)!.id,
           ],
           description:
             "حس یک سویشرت کلاسیک را دوباره تجربه کنید. با سویشرت نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
-          handle: "sweatshirt-789456",
+          handle: `sweatshirt-789456-${uniquPostfix}`,
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
@@ -703,9 +704,9 @@ export async function default_data_seed({
           variants: [
             {
               title: "S",
-              sku: "SWEATSHIRT-S",
+              sku: `SWEATSHIRT-S-${uniquPostfix}`,
               options: {
-                Size: "S",
+                [sizeOption.title]: "S",
               },
               prices: [
                 {
@@ -716,9 +717,9 @@ export async function default_data_seed({
             },
             {
               title: "M",
-              sku: "SWEATSHIRT-M",
+              sku: `SWEATSHIRT-M-${uniquPostfix}`,
               options: {
-                Size: "M",
+                [sizeOption.title]: "M",
               },
               prices: [
                 {
@@ -729,9 +730,9 @@ export async function default_data_seed({
             },
             {
               title: "L",
-              sku: "SWEATSHIRT-L",
+              sku: `SWEATSHIRT-L-${uniquPostfix}`,
               options: {
-                Size: "L",
+                [sizeOption.title]: "L",
               },
               prices: [
                 {
@@ -742,9 +743,9 @@ export async function default_data_seed({
             },
             {
               title: "XL",
-              sku: "SWEATSHIRT-XL",
+              sku: `SWEATSHIRT-XL-${uniquPostfix}`,
               options: {
-                Size: "XL",
+                [sizeOption.title]: "XL",
               },
               prices: [
                 {
@@ -763,11 +764,11 @@ export async function default_data_seed({
         {
           title: "شلوار اسلش مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.handle === "pants-789456")!.id,
+            categoryResult.find((cat) => cat.handle === `pants-789456-${uniquPostfix}`)!.id,
           ],
           description:
             "حس یک شلوار اسلش کلاسیک را دوباره تجربه کنید. با شلوار اسلش نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
-          handle: "sweatpants-789456",
+          handle: `sweatpants-789456-${uniquPostfix}`,
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
@@ -783,9 +784,9 @@ export async function default_data_seed({
           variants: [
             {
               title: "S",
-              sku: "SWEATPANTS-S",
+              sku: `SWEATPANTS-S-${uniquPostfix}`,
               options: {
-                Size: "S",
+                [sizeOption.title]: "S",
               },
               prices: [
                 {
@@ -796,9 +797,9 @@ export async function default_data_seed({
             },
             {
               title: "M",
-              sku: "SWEATPANTS-M",
+              sku: `SWEATPANTS-M-${uniquPostfix}`,
               options: {
-                Size: "M",
+                [sizeOption.title]: "M",
               },
               prices: [
                 {
@@ -809,9 +810,9 @@ export async function default_data_seed({
             },
             {
               title: "L",
-              sku: "SWEATPANTS-L",
+              sku: `SWEATPANTS-L-${uniquPostfix}`,
               options: {
-                Size: "L",
+                [sizeOption.title]: "L",
               },
               prices: [
                 {
@@ -822,9 +823,9 @@ export async function default_data_seed({
             },
             {
               title: "XL",
-              sku: "SWEATPANTS-XL",
+              sku: `SWEATPANTS-XL-${uniquPostfix}`,
               options: {
-                Size: "XL",
+                [sizeOption.title]: "XL",
               },
               prices: [
                 {
@@ -843,11 +844,11 @@ export async function default_data_seed({
         {
           title: "شلوارک مدوسا",
           category_ids: [
-            categoryResult.find((cat) => cat.handle === "accessories-789456")!.id,
+            categoryResult.find((cat) => cat.handle === `accessories-789456-${uniquPostfix}`)!.id,
           ],
           description:
             "حس یک شلوارک کلاسیک را دوباره تجربه کنید. با شلوارک نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
-          handle: "shorts-789456",
+          handle: `shorts-789456-${uniquPostfix}`,
           weight: 400,
           status: ProductStatus.PUBLISHED,
           shipping_profile_id: shippingProfile.id,
@@ -863,9 +864,9 @@ export async function default_data_seed({
           variants: [
             {
               title: "S",
-              sku: "SHORTS-S",
+              sku: `SHORTS-S-${uniquPostfix}`,
               options: {
-                Size: "S",
+                [sizeOption.title]: "S",
               },
               prices: [
                 {
@@ -876,9 +877,9 @@ export async function default_data_seed({
             },
             {
               title: "M",
-              sku: "SHORTS-M",
+              sku: `SHORTS-M-${uniquPostfix}`,
               options: {
-                Size: "M",
+                [sizeOption.title]: "M",
               },
               prices: [
                 {
@@ -889,9 +890,9 @@ export async function default_data_seed({
             },
             {
               title: "L",
-              sku: "SHORTS-L",
+              sku: `SHORTS-L-${uniquPostfix}`,
               options: {
-                Size: "L",
+                [sizeOption.title]: "L",
               },
               prices: [
                 {
@@ -902,9 +903,9 @@ export async function default_data_seed({
             },
             {
               title: "XL",
-              sku: "SHORTS-XL",
+              sku: `SHORTS-XL-${uniquPostfix}`,
               options: {
-                Size: "XL",
+                [sizeOption.title]: "XL",
               },
               prices: [
                 {
