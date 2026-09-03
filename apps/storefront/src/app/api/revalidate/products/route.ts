@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
     // Medusa payloads vary slightly by event type. We normalize the identifiers.
     const productId = (data.id ?? data.product_id) as string | undefined
     const slug = (data.handle ?? (data.metadata as Record<string, unknown>)?.handle) as string | undefined
-    const collectionId = (data.collection_id) as string | undefined
-    const categoryId = (data.category_id) as string | undefined
+    const collectionSlug = (data.collection_handle) as string | undefined
+    const categorySlug = (data.category_slug) as string | undefined
 
     // Collect all relevant revalidation promises
     const tasks: Promise<unknown>[] = []
@@ -55,15 +55,15 @@ export async function POST(request: NextRequest) {
       // bySlug uses the product's handle
       tasks.push(productRevalidation.bySlug(storeId, slug))
     }
-    if (collectionId) {
-      tasks.push(productRevalidation.byCollection(storeId, collectionId))
+    if (collectionSlug) {
+      tasks.push(productRevalidation.byCollection(storeId, collectionSlug))
     }
-    if (categoryId) {
-      tasks.push(productRevalidation.byCategory(storeId, categoryId))
+    if (categorySlug) {
+      tasks.push(productRevalidation.byCategory(storeId, categorySlug))
     }
 
     // If it's a broad event (delete) or we can't be granular, invalidate "all"
-    if (eventType?.includes("deleted") || (!productId && !collectionId && !categoryId)) {
+    if (eventType?.includes("deleted") || (!productId && !collectionSlug && !categorySlug)) {
       tasks.push(productRevalidation.all(storeId))
     }
 

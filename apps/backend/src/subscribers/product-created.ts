@@ -16,7 +16,7 @@ export default async function productCreatedEvent({
 
     const productModule = container.resolve(Modules.PRODUCT)
 
-    const { handle } = await productModule.retrieveProduct(productId)
+    const { handle, collection,  } = await productModule.retrieveProduct(productId)
 
 
     revalidate(container, "products", {

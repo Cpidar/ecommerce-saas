@@ -1,5 +1,5 @@
 import "server-only"
-import { cacheTag, cacheLife, revalidateTag } from "next/cache"
+import { cacheTag, cacheLife, revalidateTag, revalidatePath } from "next/cache"
 import type { HttpTypes } from "@medusajs/types"
 import type {
   PaginatedResult,
@@ -447,35 +447,69 @@ export const medusaProductRepository: ProductRepository = {
 // ---------------------------------------------------------------------------
 // Webhook Revalidation Helpers
 // ---------------------------------------------------------------------------
+
 export const productRevalidation = {
   async byId(storeId: string, productId: string) {
     await Promise.all([
       revalidateTag(productTags.byId(storeId, productId), PRODUCTS_CACHE_PROFILE),
+      revalidatePath('/shop'),
       // revalidateTag(productTags.all(storeId)) // uncomment if you want broad revalidation
     ])
   },
 
   async bySlug(storeId: string, slug: string) {
-    await revalidateTag(productTags.bySlug(storeId, slug), PRODUCTS_CACHE_PROFILE)
+    await Promise.all([
+      revalidateTag(productTags.bySlug(storeId, slug), PRODUCTS_CACHE_PROFILE),
+      // Revalidate the product detail page by slug
+      revalidatePath(`/products/${slug}`),
+      // Revalidate the shop listing page
+      revalidatePath('/shop'),
+    ])
   },
 
   async all(storeId: string) {
-    await revalidateTag(productTags.all(storeId), PRODUCTS_CACHE_PROFILE)
+    await Promise.all([
+      revalidateTag(productTags.all(storeId), PRODUCTS_CACHE_PROFILE),
+      // Revalidate the entire shop listing
+      revalidatePath('/shop'),
+    ])
   },
 
-  async byCategory(storeId: string, categoryId: string) {
-    await revalidateTag(productTags.byCategory(storeId, categoryId), PRODUCTS_CACHE_PROFILE)
+  async byCategory(storeId: string, categorySlug: string) {
+    await Promise.all([
+      revalidateTag(productTags.byCategory(storeId, categorySlug), PRODUCTS_CACHE_PROFILE),
+      // Also revalidate the shop listing
+      revalidatePath('/shop'),
+      revalidatePath(`/categories/${categorySlug}`),
+
+    ])
   },
 
-  async byCollection(storeId: string, collectionId: string) {
-    await revalidateTag(productTags.byCollection(storeId, collectionId), PRODUCTS_CACHE_PROFILE)
+  async byCollection(storeId: string, collectionSlug: string) {
+    await Promise.all([
+      revalidateTag(productTags.byCollection(storeId, collectionSlug), PRODUCTS_CACHE_PROFILE),
+      // Revalidate the collection page if you have one
+      revalidatePath(`/collections/${collectionSlug}`),
+      // Also revalidate the shop listing
+      revalidatePath('/shop'),
+    ])
   },
 
   async featured(storeId: string) {
-    await revalidateTag(productTags.featured(storeId), PRODUCTS_CACHE_PROFILE)
+    await Promise.all([
+      revalidateTag(productTags.featured(storeId), PRODUCTS_CACHE_PROFILE),
+      // Revalidate shop listing (featured products appear there)
+      revalidatePath('/shop'),
+      // Also revalidate home page if featured products appear there
+      revalidatePath('/'),
+    ])
   },
 
   async subscription(storeId: string) {
-    await revalidateTag(productTags.subscription(storeId), PRODUCTS_CACHE_PROFILE)
+    await Promise.all([
+      revalidateTag(productTags.subscription(storeId), PRODUCTS_CACHE_PROFILE),
+      // Revalidate subscription-specific page if you have one
+      revalidatePath('/saas/pricing'),
+    ])
   },
 }
