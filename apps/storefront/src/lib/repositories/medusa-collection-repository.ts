@@ -1,7 +1,7 @@
 import "server-only"
 import type { HttpTypes } from "@medusajs/types"
 import { sdk } from "@/lib/medusa"
-import { cacheLife, cacheTag, revalidateTag } from "next/cache"
+import { cacheLife, cacheTag, revalidatePath, revalidateTag } from "next/cache"
 import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies"
 import { CATALOG_CACHE_PROFILE } from "../constants"
 
@@ -85,9 +85,10 @@ export const medusaCollectionRepository = {
 // ---------------------------------------------------------------------------
 export const collectionRevalidation = {
   async all(storeId: string) {
-    await revalidateTag(collectionTags.all(storeId), CATALOG_CACHE_PROFILE)
+    revalidateTag(collectionTags.all(storeId), CATALOG_CACHE_PROFILE)
   },
   async byHandle(storeId: string, handle: string) {
-    await revalidateTag(collectionTags.byHandle(storeId, handle), CATALOG_CACHE_PROFILE)
+    revalidateTag(collectionTags.byHandle(storeId, handle), CATALOG_CACHE_PROFILE)
+    revalidatePath(`/collections/${handle}`)
   },
 }

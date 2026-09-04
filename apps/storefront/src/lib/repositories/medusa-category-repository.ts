@@ -6,6 +6,7 @@ import { sdk } from "@/lib/medusa"
 import { cacheLife, cacheTag, revalidateTag } from "next/cache"
 import { getCurrentStoreHeader, getCurrentStoreId } from "../medusa/cookies"
 import { CATALOG_CACHE_PROFILE } from "../constants"
+import { revalidatePath } from "next/cache"
 
 type StoreCategory = HttpTypes.StoreProductCategory & {
   product_category_image?: CategoryImage[]
@@ -134,7 +135,7 @@ export const medusaCategoryRepository: CategoryRepository & {
 // ---------------------------------------------------------------------------
 export const categoryRevalidation = {
   async all(storeId: string) {
-    await revalidateTag(categoryTags.all(storeId), CATALOG_CACHE_PROFILE)
+    revalidateTag(categoryTags.all(storeId), CATALOG_CACHE_PROFILE)
   },
 
   async byId(storeId: string, id: string) {
@@ -145,6 +146,7 @@ export const categoryRevalidation = {
   },
 
   async byHandle(storeId: string, handle: string) {
-    await revalidateTag(categoryTags.byHandle(storeId, handle), CATALOG_CACHE_PROFILE)
+    revalidateTag(categoryTags.byHandle(storeId, handle), CATALOG_CACHE_PROFILE)
+    revalidatePath(`/categories/${handle}`)
   },
 }
