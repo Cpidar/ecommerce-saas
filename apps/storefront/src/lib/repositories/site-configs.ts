@@ -265,6 +265,12 @@ export const siteConfigRepository = {
     return coreConfig
   },
 
+  async getShippingAndPaymentConfig() {
+    const storeId = await getCurrentStoreId()
+    const shippingAndPaymentConfig = await fetchShippingAndPaymentconfig(storeId)
+    return shippingAndPaymentConfig
+  },
+
   async getGeneralConfig() {
     const storeId = await getCurrentStoreId()
     const coreConfig = await fetchGeneralConfig(storeId)
