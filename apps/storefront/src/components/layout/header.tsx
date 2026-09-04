@@ -50,7 +50,7 @@ export function Header({ categories = [], siteConfig }: HeaderProps) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const openCart = useCartStore((s) => s.openCart)
-  const getItemCount = useCartStore((s) => s.getItemCount)
+  const itemCount = useCartStore((s) => s.cart?.itemCount ?? 0)
   const customer = useAuthStore((s) => s.customer)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   // const hasAuthHydrated = useAuthStore((s) => s.hasHydrated)
@@ -60,7 +60,7 @@ export function Header({ categories = [], siteConfig }: HeaderProps) {
 
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
-  const itemCount = mounted ? getItemCount() : 0
+  // const itemCount = mounted ? itemCount() : 0
 
   // useEffect(() => {
   //   if (mounted && !hasAuthHydrated) void hydrateAuth()
