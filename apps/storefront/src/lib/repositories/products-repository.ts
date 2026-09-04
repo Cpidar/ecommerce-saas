@@ -418,10 +418,8 @@ export const medusaProductRepository: ProductRepository = {
   },
 
   async getSubscriptionProduct() {
-    const { regionId, currency, storeId } = await resolveContext()
-    const storeHeaders = {
-      "x-store-id": process.env.NEXT_PUBLIC_SAAS_STORE_ID!,
-    } as const
+    const { regionId, currency, storeHeaders, storeId } = await resolveContext()
+
     return fetchSubscriptionProduct(regionId, storeHeaders, currency, storeId)
   },
 

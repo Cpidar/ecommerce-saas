@@ -154,7 +154,8 @@ export default function PriceCard({
       "",
       subscriptionMetadata,
     );
-    router.push("/saas/checkout");
+    // TODO: it must redirect to the account/subscription page, but for now we redirect to the authentication page
+    router.push("/customer-auth/authenticate");
   };
 
   return (
