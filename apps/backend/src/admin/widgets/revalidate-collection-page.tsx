@@ -1,10 +1,7 @@
 import { Button, Container, Heading, Text, toast } from "@medusajs/ui";
 import { ImageSparkle } from "@medusajs/icons";
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
-import {
-  AdminCollection,
-  DetailWidgetProps,
-} from "@medusajs/framework/types";
+import { AdminCollection, DetailWidgetProps } from "@medusajs/framework/types";
 import { revalidate } from "../../utils/revalidate";
 import { MedusaContainer } from "@medusajs/framework";
 import { useMutation } from "@tanstack/react-query";
@@ -18,12 +15,21 @@ const ProductCollectionRevalidateWidget = ({
 }: DetailWidgetProps<AdminCollection>) => {
   const revalidateFunc = useMutation({
     mutationFn: async () => {
-      const result = await revalidate({} as MedusaContainer, "collections", {
-        type: "manual",
-        handle: data.handle,
-        id: data.id,
-        affects_grid: true,
-      });
+      const result = await revalidate(
+        {} as MedusaContainer,
+        "collections",
+        {
+          type: "manual",
+          handle: data.handle,
+          id: data.id,
+          affects_grid: true,
+        },
+        {
+          revalidationEndpoint:
+            import.meta.env.VITE_STOREFRONT_REVALIDATION_URL ?? "",
+          revalidationSecret: import.meta.env.VITE_MEDUSA_WEBHOOK_SECRET ?? "",
+        },
+      );
       return result;
     },
     onSuccess: () => {
@@ -54,8 +60,7 @@ const ProductCollectionRevalidateWidget = ({
         </div>
         <div className="px-6 py-3">
           <Text size="small" className="text-ui-fg-subtle">
-            تغییرات اعمال‌شده در این مجموعه را بلافاصله در فروشگاه نمایش
-            دهید.
+            تغییرات اعمال‌شده در این مجموعه را بلافاصله در فروشگاه نمایش دهید.
           </Text>
         </div>
       </Container>

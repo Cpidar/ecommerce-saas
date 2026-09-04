@@ -23,6 +23,9 @@ const ProductCategoryRevalidateWidget = ({
         handle: data.handle,
         id: data.id,
         affects_grid: true,
+      }, {
+        revalidationEndpoint: import.meta.env.VITE_STOREFRONT_REVALIDATION_URL ?? "",
+        revalidationSecret: import.meta.env.VITE_MEDUSA_WEBHOOK_SECRET ?? "",
       });
       return result;
     },
