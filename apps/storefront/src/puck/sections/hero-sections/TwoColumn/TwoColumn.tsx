@@ -5,12 +5,11 @@ import Link from "next/link";
 import { SectionHeroProps } from "./config";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, LeafIcon } from "lucide-react";
+import { PLACEHOLDER_IMAGE } from "@/lib/constants";
+import { getFullImageUrl } from "@/lib/utils/image-url";
 
 const AUTO_SLIDE_INTERVAL = 5500;
 const PAUSE_AFTER_MANUAL_MS = 1000;
-
-// Placeholder image (you can replace with your own)
-const PLACEHOLDER_IMAGE = "/images/products/placeholder.svg"
 
 const SectionHero: FC<SectionHeroProps> = ({
   rightSection: { image: rightMedia, text: rightColumnText },
@@ -21,7 +20,7 @@ const SectionHero: FC<SectionHeroProps> = ({
   // Right media with fallback
   const rightMediaSrc =
     rightMedia && typeof rightMedia === "object" && (rightMedia.src)
-      ? `${/* getClientSideURL() */ ""}${rightMedia.src}`
+      ? getFullImageUrl(rightMedia.src)
       : rightMedia;
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -87,7 +86,7 @@ const SectionHero: FC<SectionHeroProps> = ({
   const leftMediaSrc =
     currentSlide?.sliderMedia && typeof currentSlide.sliderMedia === "object" && 
     (currentSlide.sliderMedia.src)
-      ? `${/* getClientSideURL() */ ""}${currentSlide.sliderMedia.src}`
+      ? getFullImageUrl(currentSlide.sliderMedia.src)
       : currentSlide.sliderMedia;
 
   return (

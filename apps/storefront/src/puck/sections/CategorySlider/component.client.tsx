@@ -3,6 +3,7 @@
 import { FC, lazy, Suspense } from "react";
 import { Category } from "@/types";
 import { PLACEHOLDER_IMAGE } from "@/lib/constants";
+import { getFullImageUrl } from "@/lib/utils/image-url";
 
 // Lazy load all card components
 const CardCategory1 = lazy(() => import("./categories-card/CardCategory1"));
@@ -52,9 +53,10 @@ const SectionSliderCategories: FC<SectionSliderCategoriesProps> = ({
         // Get the base props
         const { thumbnail, name, description, slug, ...rest } = item;
 
+
         // Create card props with explicit values and spread the rest
         const cardProps = {
-          featuredImage: thumbnail?.url || PLACEHOLDER_IMAGE,
+          featuredImage: thumbnail ? getFullImageUrl(thumbnail.url) : PLACEHOLDER_IMAGE,
           name: name,
           desc: description,
           slug,

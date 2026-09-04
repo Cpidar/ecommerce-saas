@@ -1,14 +1,15 @@
 // configs/components/ProductTypeCard.ts
-import { ComponentConfig } from "@puckeditor/core"
-import Image, { StaticImageData } from "next/image"
-import { Link } from "@/components/ui/Link"
-import { LayoutColumn } from "@/components/layout/Layout"
-import { imagePickerField } from "../fields/image-picker"
+import { ComponentConfig } from "@puckeditor/core";
+import Image, { StaticImageData } from "next/image";
+import { Link } from "@/components/ui/Link";
+import { LayoutColumn } from "@/components/layout/Layout";
+import { imagePickerField } from "../fields/image-picker";
+import { getFullImageUrl } from "@/lib/utils/image-url";
 
 interface ProductTypeCard {
-  value: string
-  image: string | StaticImageData
-  index: number
+  value: string;
+  image: string | StaticImageData;
+  index: number;
 }
 
 export const ProductTypeCard: ComponentConfig<ProductTypeCard> = {
@@ -40,7 +41,11 @@ export const ProductTypeCard: ComponentConfig<ProductTypeCard> = {
       <Link href={`/store?type=${value}`}>
         {image && (
           <Image
-            src={typeof image === 'string' ? image : image.src}
+            src={
+              typeof image === "string"
+                ? getFullImageUrl(image)
+                : getFullImageUrl(image.src)
+            }
             width={1200}
             height={900}
             alt={value}
@@ -51,4 +56,4 @@ export const ProductTypeCard: ComponentConfig<ProductTypeCard> = {
       </Link>
     </LayoutColumn>
   ),
-}
+};

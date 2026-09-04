@@ -12,6 +12,7 @@ import { useWishlistStore } from "@/store/wishlist";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import type { Product } from "@/types";
+import { getFullImageUrl } from "@/lib/utils/image-url";
 
 interface ProductCardProps {
   product: Product;
@@ -61,7 +62,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative aspect-square overflow-hidden rounded-lg bg-neutral-100">
         <Image
           src={
-            image?.url ? `${IMAGE_REMOTE_HOST}/${image.url}` : PLACEHOLDER_IMAGE
+            image?.url ? getFullImageUrl(image.url) : PLACEHOLDER_IMAGE
           }
           alt={image?.alt ?? product.name}
           fill

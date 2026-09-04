@@ -5,6 +5,7 @@ import { Layout, LayoutColumn } from "@/components/layout/Layout";
 import { Link } from "@/components/ui/Link";
 import { checkboxField } from "../fields/checkbox";
 import { imagePickerField } from "../fields/image-picker";
+import { getFullImageUrl } from "@/lib/utils/image-url";
 
 interface AboutSection {
   showSection: boolean;
@@ -96,7 +97,7 @@ export const AboutSection: ComponentConfig<AboutSection> = {
         <LayoutColumn className="col-span-full">
           <h3 className="text-md md:text-2xl mb-8 md:mb-16">{title}</h3>
           <Image
-            src={typeof mainImage === "string" ? mainImage : mainImage.src}
+            src={typeof mainImage === "string" ? getFullImageUrl(mainImage) : getFullImageUrl(mainImage.src)}
             width={2496}
             height={1400}
             alt={mainImageAlt}

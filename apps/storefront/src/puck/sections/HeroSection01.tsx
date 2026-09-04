@@ -1,11 +1,12 @@
 // configs/components/HeroSection.ts
-import { imagePickerField } from "../fields/image-picker"
-import { ComponentConfig } from "@puckeditor/core"
-import Image, { StaticImageData } from "next/image"
+import { getFullImageUrl } from "@/lib/utils/image-url";
+import { imagePickerField } from "../fields/image-picker";
+import { ComponentConfig } from "@puckeditor/core";
+import Image, { StaticImageData } from "next/image";
 
 interface HeroSection {
-  image: string | StaticImageData
-  imageAlt: string
+  image: string | StaticImageData;
+  imageAlt: string;
 }
 
 export const HeroSection: ComponentConfig<HeroSection> = {
@@ -25,14 +26,18 @@ export const HeroSection: ComponentConfig<HeroSection> = {
     },
   },
   render: ({ image, imageAlt }) => (
-      <div className="max-md:pt-18 pb-8 md:pb-26">
-        <Image
-          src={typeof image === "string" ? image : image.src}
-          width={2880}
-          height={1500}
-          alt={imageAlt}
-          className="md:h-screen md:object-cover"
-        />
-      </div>
+    <div className="max-md:pt-18 pb-8 md:pb-26">
+      <Image
+        src={
+          typeof image === "string"
+            ? getFullImageUrl(image)
+            : getFullImageUrl(image.src)
+        }
+        width={2880}
+        height={1500}
+        alt={imageAlt}
+        className="md:h-screen md:object-cover"
+      />
+    </div>
   ),
-}
+};

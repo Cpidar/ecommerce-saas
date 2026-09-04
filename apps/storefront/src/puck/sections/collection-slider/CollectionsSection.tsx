@@ -4,6 +4,7 @@ import { StoreCollection } from "@medusajs/types";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/Link";
 import { Skeleton } from '@/components/ui/skeleton';
+import { getFullImageUrl } from "@/lib/utils/image-url";
 
 export const CollectionsSection: React.FC<{
   className?: string;
@@ -41,7 +42,7 @@ export const CollectionsSection: React.FC<{
               typeof collection.metadata.image.url === "string" && (
                 <div className="relative mb-4 md:mb-10 w-full aspect-[3/4]">
                   <Image
-                    src={collection.metadata.image.url}
+                    src={getFullImageUrl(collection.metadata.image.url)}
                     alt={collection.title}
                     fill
                   />

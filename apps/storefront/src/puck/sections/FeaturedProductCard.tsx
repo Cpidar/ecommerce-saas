@@ -6,6 +6,7 @@ import { imagePickerField } from "../fields/image-picker";
 import { checkboxField } from "../fields/checkbox";
 import { LayoutColumn } from "@/components/layout/Layout";
 import { IMAGE_REMOTE_HOST } from "@/lib/constants";
+import { getFullImageUrl } from "@/lib/utils/image-url";
 
 interface FeaturedProductCardProps {
   // Editable props
@@ -76,7 +77,7 @@ export const FeaturedProductCard: ComponentConfig<FeaturedProductCardProps> = {
       <LayoutColumn start={{ base: 1, md: 9 }} end={13}>
         <Link href={`/products/${productHandle}`}>
           <Image
-            src={`${IMAGE_REMOTE_HOST}/${productImage}`}
+            src={getFullImageUrl(productImage)}
             width={768}
             height={572}
             alt={imageAlt}
