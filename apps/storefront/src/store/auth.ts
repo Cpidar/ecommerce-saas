@@ -19,6 +19,7 @@ import { verifyOtp } from "../lib/medusa/auth-server"
 import { AuthError } from "@/lib/utils/auth-error"
 
 type Customer = HttpTypes.StoreCustomer
+type Location = "auth" | "verify" | "otp" | "password" | "reset-password" | "register"
 
 interface AuthState {
   customer: Customer | null
@@ -26,6 +27,7 @@ interface AuthState {
   hasHydrated: boolean
   isLoading: boolean
   // [MY-FORK-AUTH] Phone auth state
+  location: Location
   phone: string
   phoneVerfied: boolean
   email: string
@@ -51,7 +53,7 @@ interface AuthState {
     phone?: string
   }) => Promise<void>
   // [MY-FORK-AUTH] Phone auth state
-  authenticate: ({ phone, email, refPath }: { phone: string; email: string; refPath?: string | null }) => Promise<AuthRedirectResponse>
+  authenticate: ({ phone, email, refPath, byOtp  }: { phone: string; email: string; refPath?: string | null, byOtp?: boolean }) => Promise<AuthRedirectResponse>
   loginWithOTP: (phone: string, otp: string, email: string) => Promise<void>
 }
 
@@ -61,6 +63,7 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
   hasHydrated: false,
   isLoading: false,
   // [MY-FORK-AUTH] Phone auth state
+  location: "auth",
   phone: '',
   phoneVerfied: false,
   email: '',
@@ -96,12 +99,12 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
   },
 
   // [MY-FORK-AUTH] Phone auth method
-  authenticate: async ({ phone, email, refPath }) => {
+  authenticate: async ({ phone, email, refPath, byOtp }) => {
     set({ isLoading: true })
     set({ refPath })
     try {
-      const response = await authenticateWithPhone({ phone, email })
-      set({ phone, email })
+      const response = await authenticateWithPhone({ phone, email, byOtp })
+      set({ phone, email, location: response.location as Location })
 
 
       return response

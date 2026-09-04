@@ -1,7 +1,8 @@
 import {
   AbstractAuthModuleProvider,
   AbstractEventBusModuleService,
-  MedusaError} from "@medusajs/framework/utils"
+  MedusaError
+} from "@medusajs/framework/utils"
 import {
   AuthenticationInput,
   AuthIdentityProviderService,
@@ -125,7 +126,7 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
     data: AuthenticationInput,
     authIdentityProviderService: AuthIdentityProviderService
   ): Promise<AuthenticationResponse> {
-    const { phone, email } = data.body || {}
+    const { phone, email, byOtp } = data.body || {}
 
     if (!phone || !email) {
       return {
@@ -146,25 +147,33 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
       }
     }
 
-    const { hashedOTP, otp } = await this.generateOTP(phone)
+    if (byOtp === "true") {
 
-    await authIdentityProviderService.update(email, {
-      provider_metadata: {
-        otp: hashedOTP,
-      }
-    })
+      const { hashedOTP, otp } = await this.generateOTP(phone)
 
-    await this.event_bus.emit({
-      name: "phone-auth.otp.generated",
-      data: {
-        otp,
-        phone,
+      await authIdentityProviderService.update(email, {
+        provider_metadata: {
+          otp: hashedOTP,
+        }
+      })
+
+      await this.event_bus.emit({
+        name: "phone-auth.otp.generated",
+        data: {
+          otp,
+          phone,
+        }
+      }, {})
+
+      return {
+        success: true,
+        location: "otp"
       }
-    }, {})
+    }
 
     return {
       success: true,
-      location: "otp"
+      location: "password"
     }
   }
 

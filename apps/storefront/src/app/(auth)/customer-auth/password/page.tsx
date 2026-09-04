@@ -60,7 +60,7 @@ const PageLogin = () => {
     }
     setLoading(true);
     try {
-      const response = await authenticate({ phone, email });
+      const response = await authenticate({ phone, email, byOtp: true });
 
       if (typeof response === "string") {
         throw new Error(response);
@@ -88,7 +88,7 @@ const PageLogin = () => {
             type="password"
             required
             minLength={4}
-              className="h-11 text-center tracking-widest"
+            className="h-11 text-center tracking-widest"
             name="password"
             onChange={(e) => setPassword(e.target.value)}
           />
