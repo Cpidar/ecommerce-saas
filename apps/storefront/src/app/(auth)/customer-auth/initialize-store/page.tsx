@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import { useCartStore } from "@/store/cart";
 import { initializeStore } from "@/lib/medusa/stores-actions";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/auth";
+import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { siteConfigRepository } from "@/lib/repositories/site-configs";
 
 type SeedState = {
   status: "idle" | "running" | "completed" | "failed";
@@ -35,6 +37,7 @@ const MILESTONES = [
 ];
 
 export function SeedProgressTracker() {
+  const { customer, isReady } = useAuthGuard();
   const router = useRouter();
   const [state, setState] = useState<SeedState>({
     status: "idle",
@@ -47,11 +50,14 @@ export function SeedProgressTracker() {
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  if (!isReady || !customer) return notFound();
+
   // Kick off the seed job once on mount
   useEffect(() => {
     const start = async () => {
       try {
         await transferCart();
+        const uniqueStoreId = await siteConfigRepository.getUniqueId();
 
         const result = await completeSubscriptionCheckout();
 
@@ -64,7 +70,7 @@ export function SeedProgressTracker() {
             email,
             password: storeData.name,
             storeName: storeData.name,
-            handle: storeData.handle,
+            handle: uniqueStoreId,
             subscription: result.subscription,
           });
 

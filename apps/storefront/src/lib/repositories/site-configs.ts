@@ -72,8 +72,46 @@ export const storeConfigTags = {
 }
 
 // ---------------------------------------------------------------------------
+// Helper functions
+// ---------------------------------------------------------------------------
+
+// Simpler functional approach if you don't need the full class
+
+const ID_POOL = [
+  "aB3xK9mQ", "P2nR7vL1", "kM9nX2pR", "3Wg7FqL1", "T5hJ8wN3",
+  "rS6fD2gH", "yU7iE4oP", "qW9eR1tY", "zX8cV4bN", "mK3lJ9hG",
+  "vC6xF2dS", "nB5gH7jK", "lP9oI3uY", "eR6tW8qA", "dF4gH2jK",
+  "sD3fG6hJ", "uY7iK4lP", "wE2rT5yU", "oI9uY7tR", "pA3sD5fG",
+  "hJ8kL2zX", "cV4bN6mK", "jH7gF3dS", "kL9zX8cV", "bN4mK3jH",
+  "gF6dS2aP", "tR5yU7iK", "eW2qA4zX", "rT5yU8iK", "yU7iK4lP",
+  "qW9eR1tY", "zX8cV4bN", "mK3lJ9hG", "vC6xF2dS", "nB5gH7jK",
+  "lP9oI3uY", "eR6tW8qA", "dF4gH2jK", "sD3fG6hJ", "uY7iK4lP",
+  "wE2rT5yU", "oI9uY7tR", "pA3sD5fG", "hJ8kL2zX", "cV4bN6mK",
+  "jH7gF3dS", "kL9zX8cV", "bN4mK3jH", "gF6dS2aP", "tR5yU7iK",
+  "eW2qA4zX", "rT5yU8iK", "yU7iK4lP", "qW9eR1tY", "zX8cV4bN",
+  "mK3lJ9hG", "vC6xF2dS", "nB5gH7jK", "lP9oI3uY", "eR6tW8qA",
+  "dF4gH2jK", "sD3fG6hJ", "uY7iK4lP", "wE2rT5yU", "oI9uY7tR",
+  "pA3sD5fG", "hJ8kL2zX", "cV4bN6mK", "jH7gF3dS", "kL9zX8cV",
+  "bN4mK3jH", "gF6dS2aP", "tR5yU7iK", "eW2qA4zX", "rT5yU8iK",
+  "aB3xK9mQ", "P2nR7vL1", "kM9nX2pR", "3Wg7FqL1", "T5hJ8wN3",
+  "rS6fD2gH", "yU7iE4oP", "qW9eR1tY", "zX8cV4bN", "mK3lJ9hG",
+  "vC6xF2dS", "nB5gH7jK", "lP9oI3uY", "eR6tW8qA", "dF4gH2jK",
+  "sD3fG6hJ", "uY7iK4lP", "wE2rT5yU", "oI9uY7tR", "pA3sD5fG"
+]
+
+// ---------------------------------------------------------------------------
 // Cached lookups
 // ---------------------------------------------------------------------------
+// TODO: API must be implemented
+const fetchAllStoreHandles = async (): Promise<string[]> => {
+  "use cache"
+  cacheLife("max")
+
+  const response = await sdk.client.fetch<{ store_handles: string[] }>(
+    "/store/store-config/handles",
+  )
+  return response.store_handles
+}
 
 const fetchAllConfig = async (
   storeId?: string
@@ -204,6 +242,21 @@ export const siteConfigRevalidation = {
 // ---------------------------------------------------------------------------
 
 export const siteConfigRepository = {
+  async getUniqueId(): Promise<string> {
+    const usedIds = await fetchAllStoreHandles().then(handles => new Set(handles))
+    const available = ID_POOL.filter(id => !usedIds.has(id))
+
+    if (available.length === 0) {
+      throw new Error('No more unique IDs available')
+    }
+
+    const randomIndex = Math.floor(Math.random() * available.length)
+    const selectedId = available[randomIndex]
+    usedIds.add(selectedId)
+
+    return selectedId
+  },
+  
   async getAllConfig() {
     const storeId = await getCurrentStoreId()
     const allConfig = await fetchAllConfig(storeId)
