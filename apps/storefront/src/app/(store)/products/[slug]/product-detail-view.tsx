@@ -43,7 +43,6 @@ export function ProductDetailView({
   brand,
   categoryAncestors = [],
 }: ProductDetailViewProps) {
-
   const [selectedVariantId, setSelectedVariantId] = useState(
     // [MY-FORK-PRODUCT] Default to first available variant with inventory, not just first variant
     product.variants.find(
@@ -98,13 +97,30 @@ export function ProductDetailView({
   const isOnSale =
     selectedVariant.compareAtPrice &&
     selectedVariant.compareAtPrice > selectedVariant.price;
+
   const inStock =
     selectedVariant.inventory.quantity > 0 ||
     selectedVariant.inventory.allowBackorder;
 
+    // [MY-FORK-PRODUCT]
+  const canAddNewItem = useCartStore((state) => {
+    const item = state.cart?.items.find((i) => i.variantId === selectedVariantId);
+
+    if (item) {
+      return (item.quantity ?? 0) + 1 < (selectedVariant.inventory.quantity ?? Infinity);
+    }
+    // in default this function return true
+    return inStock;
+  });
+
   async function handleAddToCart() {
     try {
-      await addToCart(selectedVariant!.id, quantity);
+      await addToCart(
+        selectedVariant!.id,
+        quantity,
+        selectedVariant?.price,
+        selectedVariant?.inventory.quantity,
+      );
       openCart();
     } catch (err) {
       console.error("Add to cart failed", err);
@@ -285,7 +301,7 @@ export function ProductDetailView({
             <Button
               size="lg"
               className="w-full sm:flex-1"
-              disabled={!inStock}
+              disabled={!canAddNewItem}
               onClick={handleAddToCart}
             >
               <ShoppingBag className="mr-2 h-4 w-4" />

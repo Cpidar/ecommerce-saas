@@ -1,25 +1,50 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { QuantitySelector } from "@/components/products/quantity-selector"
-import { formatPrice } from "@/lib/utils/utils"
-import { PLACEHOLDER_IMAGE } from "@/lib/constants"
-import { useCartStore } from "@/store/cart"
-import type { CartItem as CartItemType } from "@/types"
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { QuantitySelector } from "@/components/products/quantity-selector";
+import { formatPrice } from "@/lib/utils/utils";
+import { PLACEHOLDER_IMAGE } from "@/lib/constants";
+import { useCartStore } from "@/store/cart";
+import type { CartItem as CartItemType } from "@/types";
+import { productRepository } from "@/lib/repositories";
+import { sdk } from "@/lib/medusa";
+import { StoreProductResponse } from "@medusajs/types";
 
 interface CartItemProps {
-  item: CartItemType
+  item: CartItemType;
 }
 
 export function CartItem({ item }: CartItemProps) {
-  const updateQuantity = useCartStore((s) => s.updateQuantity)
-  const removeItem = useCartStore((s) => s.removeItem)
-  const [imgSrc, setImgSrc] = useState(item.image?.url || PLACEHOLDER_IMAGE)
+  const updateQuantity = useCartStore((s) => s.updateQuantity);
+  const removeItem = useCartStore((s) => s.removeItem);
+  const [imgSrc, setImgSrc] = useState(item.image?.url || PLACEHOLDER_IMAGE);
+  const [inventory, setInventory] = useState<number | null>();
 
+  useEffect(() => {
+    let cancelled = false;
+
+    sdk.client
+      .fetch<StoreProductResponse>(`/store/products/${item.productId}`)
+      .then(({ product }) =>
+        product.variants?.find((v) => v.id === item.variantId),
+      )
+      .then((v) => {
+        if (!cancelled) {
+          console.log(v);
+          setInventory(v?.inventory_quantity);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  console.log(inventory);
   return (
     <div className="flex gap-4 py-4">
       {/* Image */}
@@ -73,6 +98,7 @@ export function CartItem({ item }: CartItemProps) {
             onQuantityChange={(q) =>
               updateQuantity(item.lineItemId ?? item.id, q)
             }
+            max={inventory ?? 99}
           />
           <span className="shrink-0 text-sm font-medium tabular-nums">
             {formatPrice(item.lineTotal)}
@@ -80,5 +106,5 @@ export function CartItem({ item }: CartItemProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }
