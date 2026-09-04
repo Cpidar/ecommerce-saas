@@ -10,12 +10,11 @@ export const revalidate = async (container: MedusaContainer, path: string, data:
     // }
 
     if (!REVALIDATION_ENDPOINT) {
-        console.warn("STOREFRONT_REVALIDATION_URL is not set; skipping webhook trigger.")
-        return
+        throw new Error("STOREFRONT_REVALIDATION_URL is not set; skipping webhook trigger.")
     }
 
     if (!REVALIDATION_SECRET) {
-        console.warn("MEDUSA_WEBHOOK_SECRET is not set; sending webhook without secret.")
+        throw new Error("MEDUSA_WEBHOOK_SECRET is not set; sending webhook without secret.")
     }
 
     const normalizedPath = path.startsWith("/") ? path : `/${path}`
@@ -28,8 +27,8 @@ export const revalidate = async (container: MedusaContainer, path: string, data:
         }).catch(() => null)
 
         if (!healthCheck || !healthCheck.ok) {
-            console.warn(
-                `[subscriber] Skipping revalidation webhook for product ${data.id}; endpoint is not reachable: ${targetUrl}`
+            throw new Error(
+                `[subscriber] Skipping revalidation webhook for item ${data.id}; endpoint is not reachable: ${targetUrl}`
             )
             return
         }
@@ -53,10 +52,10 @@ export const revalidate = async (container: MedusaContainer, path: string, data:
             signal: AbortSignal.timeout(5000),
         })
 
-        console.info(`[subscriber] Triggered revalidation webhook for product ${data.id}`)
+        console.info(`[subscriber] Triggered revalidation webhook for item ${data.id}`)
     } catch (err) {
-        console.error(
-            `[subscriber] Failed to trigger revalidation for product ${data.id}: ${err}`
+        throw new Error(
+            `[subscriber] Failed to trigger revalidation for item ${data.id}: ${err}`
         )
     }
 }
