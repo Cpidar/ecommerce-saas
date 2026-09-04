@@ -16,4 +16,19 @@ export const storeProductsRoutesMiddlewares: MiddlewareRoute[] = [
       moveIdsToQueryFromFilterableFields,
     ],
   },
+  {
+    method: ["GET"],
+    matcher: "/store/products/:id",
+    middlewares: [
+      addStoreIdToFilterableFields,
+      maybeApplyLinkFilter({
+        entryPoint: "product_store",
+        resourceId: "product_id",
+        filterableField: "store_id",
+      }),
+      moveIdsToQueryFromFilterableFields,
+      
+    ],
+
+  }
 ];

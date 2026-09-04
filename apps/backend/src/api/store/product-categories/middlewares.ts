@@ -17,4 +17,17 @@ export const storeProductCategoriesRoutesMiddlewares: MiddlewareRoute[] = [
       moveIdsToQueryFromFilterableFields,
     ],
   },
+  {
+    method: ["GET"],
+    matcher: "/store/product-categories/:id",
+    middlewares: [
+      addStoreIdToFilterableFields,
+      maybeApplyLinkFilter({
+        entryPoint: "product_category_store",
+        resourceId: "product_category_id",
+        filterableField: "store_id",
+      }),
+      moveIdsToQueryFromFilterableFields,
+    ],
+  },
 ];
