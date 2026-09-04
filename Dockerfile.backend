@@ -22,7 +22,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install \
       --filter @dtc/backend \
       --frozen-lockfile \
-      --config.package-import-method=copy
+      --config.package-import-method=copy \
+      --registry https://package-mirror.liara.ir/repository/npm/
 
 COPY apps/backend ./apps/backend
 
@@ -58,7 +59,9 @@ RUN mkdir -p /medusa-standalone \
 
 WORKDIR /medusa-standalone
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --lockfile-only --config.package-import-method=copy
+    pnpm install --lockfile-only --config.package-import-method=copy \
+        --registry https://package-mirror.liara.ir/repository/npm/
+
 
 # Bring along the .env so it can be copied into the standalone build output,
 # mirroring `cp ../../.env .env.production` from the docs. Safe to skip this

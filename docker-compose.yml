@@ -115,6 +115,8 @@ services:
     mem_limit: 128M
     cpus: "0.3"
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
