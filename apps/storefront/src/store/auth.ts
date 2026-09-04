@@ -169,8 +169,8 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
       set({
         location: res.location as Location,
         hasHydrated: true,
-        tempStoreData: data.storeData,
         email: data.email,
+        phone: data.phone,        
       })
       return res
     } finally {

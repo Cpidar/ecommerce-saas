@@ -57,6 +57,14 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
         password: form.password,
       });
 
+      useAuthStore.setState({
+        tempStoreData: {
+          name: form.storeName,
+          handle: form.storeHandle,
+          passwaord: form.password,
+        },
+      });
+
       if (res.location === "otp") {
         // toast.success(t("accountCreated"));
         router.push(`/customer-auth/otp`);
@@ -141,7 +149,7 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
                 required
               />
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="storeHandle">{t("storeHandle")}</Label>
               <Input
                 id="storeHandle"
@@ -151,7 +159,7 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
                 onChange={handleChange}
                 required
               />
-            </div>
+            </div> */}
           </>
         )}
         <Button type="submit" className="w-full" disabled={loading}>
