@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { notFound, useRouter, useSearchParams } from "next/navigation";
+import { notFound, useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/store/auth";
@@ -10,10 +10,6 @@ import { Button } from "@/components/ui/button";
 import { AuthError } from "@/lib/utils/auth-error";
 import { registerSchema } from "@/lib/validators";
 import { useTranslations } from "next-intl";
-import { registerWithPhone, transferCart } from "@/lib/medusa/auth-server";
-import { initializeStore } from "@/lib/medusa/stores-actions";
-import { completeSubscriptionCheckout } from "@/lib/repositories/subscriptions";
-import { useCartStore } from "@/store/cart";
 import { AppMode } from "@/lib/utils/app-mode";
 
 const Register = ({ appMode }: { appMode: AppMode }) => {
@@ -21,8 +17,8 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
   const tCommon = useTranslations("common");
 
   const router = useRouter();
+  const register = useAuthStore((s) => s.register);
   const phone = useAuthStore((s) => s.phone);
-  const phoneVerfied = useAuthStore(s => s.phoneVerfied)
   const email = useAuthStore((s) => s.email);
   const [form, setForm] = useState({
     firstName: "",
@@ -53,7 +49,7 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
     }
     setLoading(true);
     try {
-      const res = await registerWithPhone({
+      const res = await register({
         first_name: form.firstName,
         last_name: form.lastName,
         email,
@@ -61,35 +57,12 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
         password: form.password,
       });
 
-      if (appMode === "saas") {
-        await transferCart();
-        const result = await completeSubscriptionCheckout();
-        if (result?.type === "order") {
-          useCartStore.setState({ cart: null, hasHydrated: false });
-          await initializeStore({
-            email,
-            password: form.password,
-            storeName: form.storeName,
-            handle: form.storeHandle,
-            subscription: result.subscription,
-          });
-          toast.success("");
-          router.push(`/customer-auth/initialize-store`)
-          return result;
-        } else {
-          toast.error("");
-          return null;
-        }
-      }
-
       if (res.location === "otp") {
         // toast.success(t("accountCreated"));
         router.push(`/customer-auth/otp`);
       }
     } catch (err) {
       console.error(err);
-      const message =
-        err instanceof AuthError ? err.message : t("createAccountFailed");
       toast.error(t("createAccountFailed"));
     } finally {
       setLoading(false);

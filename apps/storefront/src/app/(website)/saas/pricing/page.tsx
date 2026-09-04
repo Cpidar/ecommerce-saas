@@ -4,9 +4,8 @@ import PriceCard from "../_components/price-card";
 import { notFound } from "next/navigation";
 
 export default async function PricingPage() {
-  const defaultPlanProduct = await medusaProductRepository.getSubscriptionProduct!();
 
-  console.log(defaultPlanProduct)
+  const defaultPlanProduct = await medusaProductRepository.getSubscriptionProduct();
 
   if (!defaultPlanProduct?.id) {
     return notFound();

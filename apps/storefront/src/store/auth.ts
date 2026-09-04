@@ -20,6 +20,7 @@ import { AuthError } from "@/lib/utils/auth-error"
 
 type Customer = HttpTypes.StoreCustomer
 type Location = "auth" | "verify" | "otp" | "password" | "reset-password" | "register"
+type StoreRegisterationData = { name: string; handle: string; passwaord: string }
 
 interface AuthState {
   customer: Customer | null
@@ -28,10 +29,11 @@ interface AuthState {
   isLoading: boolean
   // [MY-FORK-AUTH] Phone auth state
   location: Location
+  onBoarding: boolean
   phone: string
   phoneVerfied: boolean
   email: string
-  password: string
+  tempStoreData: StoreRegisterationData
   refPath?: string | null
 
   hydrate?: () => Promise<void>
@@ -43,7 +45,8 @@ interface AuthState {
     password: string
     first_name?: string
     last_name?: string
-    phone: string
+    phone: string,
+    storeData?: StoreRegisterationData
   }) => Promise<any>
   logout: () => Promise<void>
   refresh: () => Promise<void>
@@ -53,7 +56,7 @@ interface AuthState {
     phone?: string
   }) => Promise<void>
   // [MY-FORK-AUTH] Phone auth state
-  authenticate: ({ phone, email, refPath, byOtp  }: { phone: string; email: string; refPath?: string | null, byOtp?: boolean }) => Promise<AuthRedirectResponse>
+  authenticate: ({ phone, email, refPath, byOtp }: { phone: string; email: string; refPath?: string | null, byOtp?: boolean }) => Promise<AuthRedirectResponse>
   loginWithOTP: (phone: string, otp: string, email: string) => Promise<void>
 }
 
@@ -64,10 +67,11 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
   isLoading: false,
   // [MY-FORK-AUTH] Phone auth state
   location: "auth",
+  onBoarding: false,
   phone: '',
   phoneVerfied: false,
   email: '',
-  password: '',
+  tempStoreData: { name: '', handle: '', passwaord: '' },
   refPath: '',
 
 
@@ -105,6 +109,12 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
     try {
       const response = await authenticateWithPhone({ phone, email, byOtp })
       set({ phone, email, location: response.location as Location })
+      if (
+        window !== undefined &&
+        response.location === "register" &&
+        window.location.host === process.env.SAAS_SITE_NAME) {
+        set({ onBoarding: true })
+      }
 
 
       return response
@@ -155,7 +165,14 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
   register: async (data) => {
     set({ isLoading: true })
     try {
-      return authRegister(data).then(console.log).catch(console.error)
+      const res = await authRegister(data)
+      set({
+        location: res.location as Location,
+        hasHydrated: true,
+        tempStoreData: data.storeData,
+        email: data.email,
+      })
+      return res
     } finally {
       set({ isLoading: false })
     }

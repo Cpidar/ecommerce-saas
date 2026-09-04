@@ -3,7 +3,7 @@ import type { ReorderStoreSubscriptionCheckoutResponse, ReorderSubscriptionRecor
 import { sdk } from "../medusa"
 import { medusaError } from "../medusa-error"
 import { getAuthHeaders } from "./cookies-client"
-import { AdminFileListResponse } from "@medusajs/types"
+import { AdminFileListResponse, StoreDTO } from "@medusajs/types"
 import { getToken } from "./admin-auth"
 import { redirect } from "next/navigation"
 import { getCurrentStoreId } from "./cookies"
@@ -28,7 +28,7 @@ export async function initializeStore({
     }
 
     const response = await sdk.client
-        .fetch(
+        .fetch<{ store: StoreDTO }>(
             `/stores/regular`,
             {
                 method: "POST",

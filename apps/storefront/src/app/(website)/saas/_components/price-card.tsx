@@ -41,7 +41,7 @@ export default function PriceCard({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const addToCart = useCartStore((s) => s.addItem);
-  const clearCart = useCartStore(s => s.clear)
+  const clearCart = useCartStore((s) => s.clear);
 
   const [selectedVariantId, setSelectedVariantId] = useState(
     // [MY-FORK-PRODUCT] Default to first available variant with inventory, not just first variant
@@ -145,9 +145,16 @@ export default function PriceCard({
           }
         : undefined;
 
-    await clearCart()
-    await addToCart(selectedVariant!.id, 1, "", subscriptionMetadata);
-    router.push("/saas/checkout")
+    await clearCart();
+    await addToCart(
+      selectedVariant!.id,
+      1,
+      selectedVariant.price,
+      Infinity,
+      "",
+      subscriptionMetadata,
+    );
+    router.push("/saas/checkout");
   };
 
   return (

@@ -418,13 +418,31 @@ export const medusaProductRepository: ProductRepository = {
   },
 
   async getSubscriptionProduct() {
-    const { regionId, currency, storeHeaders, storeId } = await resolveContext()
+    const { regionId, currency, storeId } = await resolveContext()
+    const storeHeaders = {
+      "x-store-id": process.env.NEXT_PUBLIC_SAAS_STORE_ID!,
+    } as const
     return fetchSubscriptionProduct(regionId, storeHeaders, currency, storeId)
   },
 
   async getById(id) {
     const { regionId, currency, storeHeaders, storeId } = await resolveContext()
     return fetchProductById(id, regionId, storeHeaders, currency, storeId)
+  },
+
+  async getVariantInventory(productId: string, variantId: string): Promise<number> {
+    const { regionId, currency, storeHeaders, storeId } = await resolveContext()
+    try {
+      const { product } = await sdk.store.product.retrieve(
+        productId,
+        { region_id: regionId, fields: "variants(id,inventory_quantity)" },
+        { ...storeHeaders }
+      )
+      const variant = product?.variants?.find((v: any) => v.id === variantId)
+      return variant?.inventory_quantity ?? 0
+    } catch {
+      return 0
+    }
   },
 
   async getFeatured(limit = 4) {

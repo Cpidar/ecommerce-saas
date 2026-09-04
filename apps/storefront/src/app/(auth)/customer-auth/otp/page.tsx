@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 // import logo from "@/data/logo.svg";
-import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +13,6 @@ import { notFound, useRouter } from "next/navigation";
 import {
   InputOTP,
   InputOTPGroup,
-  InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
@@ -31,6 +28,7 @@ const PageLogin = () => {
   const phone = useAuthStore((s) => s.phone);
   const email = useAuthStore((s) => s.email);
   const refPath = useAuthStore((s) => s.refPath);
+  const onBoarding = useAuthStore((s) => s.onBoarding);
 
   const [loading, setLoading] = useState(false);
   const [otp, setOTP] = useState("");
@@ -91,7 +89,11 @@ const PageLogin = () => {
     try {
       await loginWithOTP(phone, otp, email);
       toast.success(t("welcomeBackUser"));
+      if (onBoarding) {
+        router.replace(`/saas/checkout/success`);
+      } else {
       refPath ? router.replace(refPath) : router.replace(`/account`);
+      }
     } catch (err) {
       const message =
         err instanceof AuthError ? err.message : t("invalidCredentials");

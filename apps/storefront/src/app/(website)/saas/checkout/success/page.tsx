@@ -1,10 +1,11 @@
 "use client";
 
 import { Suspense, use, useEffect, useRef } from "react";
-import type { HttpTypes } from "@medusajs/types";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { completeSubscriptionCheckout } from "@/lib/repositories/subscriptions";
+import {
+  retrySubscriptionPayment,
+} from "@/lib/repositories/subscriptions";
 import {
   formatNextDeliveryDate,
   formatSubscriptionCadence,
@@ -16,7 +17,6 @@ import {
 } from "@/lib/utils/subscriptions";
 import { Cart } from "@/types";
 import { useCartStore } from "@/store/cart";
-import { ReorderStoreSubscriptionCheckoutResponse } from "@/types/subscription";
 import { transferCart } from "@/lib/medusa/auth-server";
 
 export default function CheckoutSuccessPage() {
@@ -36,12 +36,16 @@ export default function CheckoutSuccessPage() {
   const isSubscripitionMode = purchaseMode === "subscription";
 
   // Cache the promise so it's only created ONCE, not on every render
-  const orderPromiseRef = useRef<Promise<ReorderStoreSubscriptionCheckoutResponse | null> | null>(
-    null,
-  );
+  const orderPromiseRef = useRef<ReturnType<
+    typeof placeSubscriptionOrder
+  > | null>(null);
 
   if (hasHydrated && isSubscripitionMode && !orderPromiseRef.current) {
-    orderPromiseRef.current = placeSubscriptionOrder(cart!.id, hydrate, tCheckout);
+    orderPromiseRef.current = placeSubscriptionOrder(
+      cart!.id,
+      hydrate,
+      tCheckout,
+    );
   }
 
   if (!hasHydrated) {
@@ -51,7 +55,10 @@ export default function CheckoutSuccessPage() {
   return (
     <Suspense fallback={<CheckoutSuccessLoading />}>
       {isSubscripitionMode && orderPromiseRef.current && (
-        <SubscriptionSummary cart={cart!} orderPromise={orderPromiseRef.current} />
+        <SubscriptionSummary
+          cart={cart!}
+          orderPromise={orderPromiseRef.current}
+        />
       )}
     </Suspense>
   );
@@ -62,10 +69,10 @@ async function placeSubscriptionOrder(
   hydrate: () => Promise<void>,
   tCheckout: ReturnType<typeof useTranslations>,
 ) {
-  await transferCart()
-  // TODO: must replace with retryPayment
-  const result = await completeSubscriptionCheckout();
-  if (result?.type === "order") {
+  await transferCart();
+  // TODO: retrive Subscription id from url search params or cookie
+  const result = await retrySubscriptionPayment("Subscription_id");
+  if (result?.status === "active") {
     useCartStore.setState({ cart: null, hasHydrated: false });
     toast.success(tCheckout("success"));
     return result;
@@ -81,14 +88,14 @@ const SubscriptionSummary = ({
   orderPromise,
 }: {
   cart: Cart;
-  orderPromise: Promise<ReorderStoreSubscriptionCheckoutResponse | null>;
+  orderPromise: ReturnType<typeof placeSubscriptionOrder>;
 }) => {
   const response = use(orderPromise);
   const subscriptionItem = (cart.items ?? []).find(
     (item) => parseSubscriptionLineItemMetadata(item.metadata).is_subscription,
   );
 
-  console.log("subscription item mode: ", subscriptionItem)
+  console.log("subscription item mode: ", subscriptionItem);
 
   if (!subscriptionItem) {
     return null;
@@ -100,9 +107,14 @@ const SubscriptionSummary = ({
     metadata.frequency_value,
   );
   const nextDeliveryLabel = formatNextDeliveryDate(
-    getEstimatedNextDeliveryDate(metadata.frequency_interval, metadata.frequency_value),
+    getEstimatedNextDeliveryDate(
+      metadata.frequency_interval,
+      metadata.frequency_value,
+    ),
   );
-  const pricingMetadata = parseSubscriptionLineItemPricingMetadata(subscriptionItem.metadata);
+  const pricingMetadata = parseSubscriptionLineItemPricingMetadata(
+    subscriptionItem.metadata,
+  );
   const priceSummary = getSubscriptionPriceSummary({
     amount: subscriptionItem.price ?? 0,
     currencyCode: cart.currency ?? "irr",
@@ -114,9 +126,17 @@ const SubscriptionSummary = ({
       <p className="txt-medium-plus text-ui-fg-base">Subscription summary</p>
       <div className="mt-4 flex flex-col gap-y-3 text-sm text-ui-fg-muted">
         {cadenceLabel && <SummaryRow label="Frequency" value={cadenceLabel} />}
-        {nextDeliveryLabel && <SummaryRow label="Next delivery" value={nextDeliveryLabel} />}
-        <SummaryRow label="One-time price" value={priceSummary.formattedOriginalAmount} />
-        <SummaryRow label="Recurring price" value={priceSummary.formattedSubscriptionAmount} />
+        {nextDeliveryLabel && (
+          <SummaryRow label="Next delivery" value={nextDeliveryLabel} />
+        )}
+        <SummaryRow
+          label="One-time price"
+          value={priceSummary.formattedOriginalAmount}
+        />
+        <SummaryRow
+          label="Recurring price"
+          value={priceSummary.formattedSubscriptionAmount}
+        />
         <SummaryRow
           label="Delivery terms"
           value="Recurring orders renew automatically until you cancel."
@@ -142,7 +162,9 @@ function CheckoutSuccessLoading() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">در حال بازگشت به سایت ..</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          در حال بازگشت به سایت ..
+        </h1>
       </div>
     </div>
   );
