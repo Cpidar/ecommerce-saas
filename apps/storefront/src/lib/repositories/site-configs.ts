@@ -96,7 +96,7 @@ const fetchCoreConfig = async (
   cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
-    "/store/store-config?fields=title,handle,domain,description,logo_url,logo_alt,favicon_url,seo_config.*,marketing_config.*",
+    "/store/store-config?fields=title,handle,domain,description,logo_url,logo_alt,favicon_url,seo_config,marketing_config",
   )
   return response.store_config
 }
@@ -148,7 +148,7 @@ const fetchShippingAndPaymentconfig = async (storeId?: string) => {
   cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
-    "/store/store-config?fields=payment_configs.*,shipping_method_configs.*",
+    "/store/store-config?fields=payment_configs,shipping_method_configs",
   )
   return response.store_config
 
