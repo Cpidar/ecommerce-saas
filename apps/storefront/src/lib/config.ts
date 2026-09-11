@@ -1,3 +1,5 @@
+// import "server-only";
+
 // ============================================================================
 // Store Configuration — Single source of truth for all store-wide settings.
 // Edit this file to customize the store name, contact info, social links, etc.
@@ -126,5 +128,32 @@ export const BASE_SUBSCRIPTION_OFFERS: ReorderStoreProductSubscriptionOfferRespo
   }
 }
 
+// lib/config.ts
+
+export function getIncludedSlugs(): Set<string> {
+  const envSlugs = process.env.INCLUDED_SLUGS;
+
+  if (envSlugs) {
+    const slugs = envSlugs.split(',').map(s => s.trim());
+    return new Set(slugs);
+  }
+
+  // Default fallback
+  return new Set([
+    "/",
+    "/home",
+    "/about",
+    "/policies/terms",
+    "/policies/shipping",
+    "/policies/returns",
+    "/policies/privacy",
+    "/faq",
+  ]);
+}
+
+export function isSlugEditable(slug: string): boolean {
+  const includedSlugs = getIncludedSlugs();
+  return includedSlugs.has(slug);
+}
 
 export type SiteConfig = typeof siteConfig

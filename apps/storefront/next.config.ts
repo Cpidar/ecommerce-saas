@@ -48,6 +48,8 @@ const SECURITY_HEADERS = [
 const nextConfig: NextConfig = {
   output: "standalone",
   cacheComponents: true,
+  partialPrefetching: true,
+
   cacheLife: {
     products: {
       stale: 3600 * 24 * 7, // 1 hour

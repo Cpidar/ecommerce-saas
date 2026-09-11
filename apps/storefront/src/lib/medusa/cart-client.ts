@@ -7,7 +7,7 @@ import { ReorderSubscriptionLineItemMetadataInput } from "@/types/subscription"
 
 const CART_COOKIE = "_medusa_cart_id"
 const CART_FIELDS =
-  "*items,*items.variant,*items.variant.product,*items.variant.product.images,*items.thumbnail,*region"
+  "*items"
 
 type StoreCart = HttpTypes.StoreCart
 
@@ -282,6 +282,7 @@ export async function addShippingMethod(optionId: string): Promise<Cart> {
 export interface PaymentProviderInfo {
   id: string
   isEnabled: boolean
+  config?: Record<string, string>
 }
 
 export async function listPaymentProviders(): Promise<PaymentProviderInfo[]> {
@@ -360,11 +361,11 @@ function findActiveSession(
  * Complete the cart. Returns either an order (success) or a cart (failure
  * with details on what went wrong).
  */
-export async function completeCart(): Promise<
+export async function completeCart(cartId?: string): Promise<
   | { type: "order"; order: HttpTypes.StoreOrder }
   | { type: "cart"; cart: Cart; error?: string }
 > {
-  const id = requireCartId()
+  const id = cartId ?? requireCartId()
   const result = await sdk.store.cart.complete(id)
   if (result.type === "order") {
     clearCookie(CART_COOKIE)
