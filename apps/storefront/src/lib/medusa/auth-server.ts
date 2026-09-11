@@ -288,40 +288,22 @@ export async function registerWithPhone(args: {
   try {
     const { first_name, last_name, phone, email, password } = args
 
-    const { token: regToken } = await sdk.client.fetch<
-      { token: string }
-    >(`/auth/customer/emailpass/register`, {
-      method: "POST",
-      body: {
-        email,
-        password
-      },
-    })
-
-    const customerData = {
-      email,
-      first_name: first_name,
-      last_name: last_name,
-      phone,
-    }
-
-    
-    const { customer: { id: customer_id } } = await sdk.store.customer.create(
-      customerData,
-      {},
-      { authorization: `Bearer ${regToken}` }
+    // This single call now handles: emailpass reg, customer creation, phone-auth reg, and OTP triggering
+    const response = await sdk.client.fetch<{ transactionId: string }>(
+      "/store/register-phone",
+      {
+        method: "POST",
+        body: args,
+      }
     )
-    
-    await sdk.client.fetch<
-      { token: string }
-    >(`/auth/customer/phone-auth/register`, {
-      method: "POST",
-      body: { phone, email, customer_id },
-    })
+    return response
+// sample response
+    // {
+    //   "success": true,
+    //   "transactionId": "auto-01M1SKVHWM8ZTE6AQMGGQ6D3FK",
+    //   "message": "OTP sent to your phone"
+    // }
 
-    // The OTP flow finishes (and the auth cookie gets set) in verifyOtp,
-    // once the customer enters the code they receive.
-    return await authenticateWithPhone({ email, phone })
   } catch (err) {
     const message = (err as { message?: string })?.message ?? "Could not create customer record"
     throw new AuthError(message)

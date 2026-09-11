@@ -14,6 +14,7 @@ import { getCurrentStoreId } from "@/lib/medusa/cookies"
  */
 
 export async function POST(request: NextRequest) {
+    console.log("Product Revalidation Started")
   try {
     // --- Verify the secret token ---
     const authHeader = request.headers.get("authorization")

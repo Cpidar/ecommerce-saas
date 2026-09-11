@@ -13,6 +13,8 @@ import { getCurrentStoreId } from "@/lib/medusa/cookies"
  * Security: Set `REVALIDATION_WEBHOOK_SECRET` in env and send in `Authorization: Bearer <secret>`.
  */
 export async function POST(request: NextRequest) {
+    console.log("Collection Config Revalidation Started")
+
   try {
     const authHeader = request.headers.get("authorization")
     const token = authHeader?.replace(/^Bearer\s+/i, "")

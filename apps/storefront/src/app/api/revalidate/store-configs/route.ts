@@ -17,6 +17,7 @@ import {
  * Security: Set `REVALIDATION_WEBHOOK_SECRET` in env and send in `Authorization: Bearer <secret>`.
  */
 export async function POST(request: NextRequest) {
+  console.log("Store Config Revalidation Started")
   try {
     const authHeader = request.headers.get("authorization")
     const token = authHeader?.replace(/^Bearer\s+/i, "")
@@ -44,6 +45,8 @@ export async function POST(request: NextRequest) {
           siteConfigRevalidation.seo(storeId),
           siteConfigRevalidation.general(storeId),
           siteConfigRevalidation.puck(storeId),
+          siteConfigRevalidation.shipping(storeId),
+          siteConfigRevalidation.payment(storeId)
         ])
         break
 
