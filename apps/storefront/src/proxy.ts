@@ -2,18 +2,31 @@ import { notFound } from "next/navigation"
 import { NextRequest, NextResponse } from "next/server"
 import { ADMIN_COOKIE } from "./lib/medusa/admin-auth"
 
-async function handleEditRoute(
-  request: NextRequest,
-  requestHeaders: Headers,
-) {
-  const INCLUDED_SLUGS = new Set([
+export function getEditablePagesSlugs(): Set<string> {
+  const envSlugs = process.env.EDITABLE_PAGES_SLUGS;
+  
+  if (envSlugs) {
+    const slugs = envSlugs.split(',').map(s => s.trim());
+    return new Set(slugs);
+  }
+  
+  // Default fallback
+  return new Set([
     "/home",
     "/about",
     "/policies/terms",
     "/policies/shipping",
     "/policies/returns",
     "/policies/privacy",
-  ])
+    "/faq",
+  ]);
+}
+
+async function handleEditRoute(
+  request: NextRequest,
+  requestHeaders: Headers,
+) {
+  const EDITABLE_PAGES_SLUGS = new Set(getEditablePagesSlugs())
 
   const pathWithoutEdit =
     request.nextUrl.pathname.slice(
@@ -21,7 +34,7 @@ async function handleEditRoute(
       request.nextUrl.pathname.length - 5,
     ) || "/home"
 
-  if (!INCLUDED_SLUGS.has(pathWithoutEdit)) {
+  if (!EDITABLE_PAGES_SLUGS.has(pathWithoutEdit)) {
     return NextResponse.redirect(new URL("/", request.url))
   }
 

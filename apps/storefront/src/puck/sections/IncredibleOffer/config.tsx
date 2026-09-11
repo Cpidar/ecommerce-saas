@@ -99,12 +99,14 @@ export const IncredibleOffersSection: ComponentConfig<Props> = {
     subHeading: "",
     data: mockData.products as unknown as Product[],
   },
-  render: ({ heading, subHeading, data, puck: { isEditing } }) => {
+  render: ({ heading, subHeading, data, collection, puck: { isEditing } }) => {
     if (isEditing) {
       return (
         <IncredibleOffers
           heading={heading}
+          subHeading={subHeading}
           data={mockData.products as unknown as Product[]}
+          handle={collection.handle}
         />
       );
     }
@@ -112,6 +114,13 @@ export const IncredibleOffersSection: ComponentConfig<Props> = {
       return <IncredibleOffersSkeleton />;
     }
 
-    return <IncredibleOffers heading={heading} data={data} />;
+    return (
+      <IncredibleOffers
+        heading={heading}
+        subHeading={subHeading}
+        data={data}
+        handle={collection.handle}
+      />
+    );
   },
 };

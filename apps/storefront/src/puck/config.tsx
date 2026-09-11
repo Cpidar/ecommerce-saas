@@ -17,6 +17,7 @@ import { CategoriesSlider } from "./sections/CategorySlider/config";
 import { CollectionProductsSliderSection } from "./sections/collectionProducts-slider/config";
 import { FullPageRichText } from "./sections/FullPageRichText/config";
 import { FeaturesSection } from "./sections/FeaturesSections";
+import { FAQSection } from "./sections/FAQ";
 
 // Define the root categories for better organization in the editor
 export const config: Config = {
@@ -36,6 +37,7 @@ export const config: Config = {
     FullWidthImageSection,
     FullPageRichText,
     FeaturesSection,
+    FAQSection,
     // layout
     Space,
     // Nested Components (can only be placed inside specific sections)
@@ -72,7 +74,8 @@ desc: {  type: "text"},
         "FeaturedProductCard",
         "FullWidthImageSection",
         "FullPageRichText",
-        "FeaturesSection"
+        "FeaturesSection",
+        "FAQSection"
       ],
       title: "Page Sections",
     },

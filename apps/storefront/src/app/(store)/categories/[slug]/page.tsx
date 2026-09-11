@@ -1,11 +1,15 @@
-import { notFound } from "next/navigation"
-import type { Metadata } from "next"
-import { productRepository, categoryRepository } from "@/lib/repositories"
-import { siteConfig } from "@/lib/config"
-import { CategoryView } from "./category-view"
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { productRepository, categoryRepository } from "@/lib/repositories";
+import { siteConfig } from "@/lib/config";
+import { CategoryView } from "./category-view";
 
 interface SlugPageProps {
-  params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{
+    page?: string;
+    sort?: string;
+  }>;
 }
 
 // Catalog data is dynamic in Medusa — products, categories, and brands can
@@ -15,12 +19,12 @@ interface SlugPageProps {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: SlugPageProps): Promise<Metadata> {
-  let { slug } = await params
-  slug = decodeURI(slug)
+  let { slug } = await params;
+  slug = decodeURI(slug);
 
-
-  const category = await categoryRepository.getBySlug(slug)
+  const category = await categoryRepository.getBySlug(slug);
   if (category) {
     return {
       title: category.name,
@@ -32,27 +36,33 @@ export async function generateMetadata({
         type: "website",
         url: `${siteConfig.url}/categories/${category.slug}`,
       },
-    }
+    };
   }
 
-  return { title: "Not Found" }
+  return { title: "Not Found" };
 }
 
-export default async function SlugPage({ params }: SlugPageProps) {
-  let { slug } = await params
-  slug = decodeURI(slug)
+export default async function SlugPage({
+  params,
+  searchParams,
+}: SlugPageProps) {
+  let { slug } = await params;
+  slug = decodeURI(slug);
+
+  const sParams = await searchParams;
+  const page = Number(sParams.page) || 1;
 
   // Check category
-  const category = await categoryRepository.getBySlug(slug)
-  if(!category) return notFound()
+  const category = await categoryRepository.getBySlug(slug);
+  if (!category) return notFound();
 
-    const [{ items: products, pagination }, subcategories, ancestors] =
-      await Promise.all([
-        productRepository.getByCategory(slug, { page: 1, limit: 40 }),
-        categoryRepository.getChildren(category.id),
-        categoryRepository.getAncestors(category.id),
-      ])
-    return (
+  const [{ items: products, pagination }, subcategories, ancestors] =
+    await Promise.all([
+      productRepository.getByCategory(slug, { page, limit: 40 }),
+      categoryRepository.getChildren(category.id),
+      categoryRepository.getAncestors(category.id),
+    ]);
+  return (
       <CategoryView
         category={category}
         products={products}
@@ -60,7 +70,5 @@ export default async function SlugPage({ params }: SlugPageProps) {
         subcategories={subcategories}
         ancestors={ancestors}
       />
-    )
-
-
+  );
 }

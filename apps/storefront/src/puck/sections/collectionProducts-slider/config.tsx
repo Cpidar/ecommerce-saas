@@ -146,11 +146,12 @@ export const CollectionProductsSliderSection: ComponentConfig<Props> = {
     subHeading: "",
     data: mockData.products as unknown as Product[],
   },
-  render: ({ heading, subHeading, data, puck: { isEditing } }) => {
+  render: ({ heading, subHeading, data, puck: { isEditing }, collection }) => {
     if (isEditing) {
       return (
         <CollectionProductsSlider
           heading={heading}
+          handle={collection.handle}
           data={mockData.products as unknown as Product[]}
         />
       );
@@ -158,6 +159,12 @@ export const CollectionProductsSliderSection: ComponentConfig<Props> = {
     if (!data) {
       return <CollectionSliderSkeleton />;
     }
-    return <CollectionProductsSlider heading={heading} data={data} />;
+    return (
+      <CollectionProductsSlider
+        handle={collection.handle}
+        heading={heading}
+        data={data}
+      />
+    );
   },
 };

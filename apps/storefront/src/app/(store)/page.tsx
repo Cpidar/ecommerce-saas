@@ -8,6 +8,7 @@ import { siteConfigRepository } from "@/lib/repositories/site-configs";
 import { medusaCollectionRepository } from "@/lib/repositories/medusa-collection-repository";
 import { medusaCategoryRepository } from "@/lib/repositories/medusa-category-repository";
 import { listProductsByCollection } from "@/lib/repositories/products-repository";
+import { Product } from "@/types";
 
 // ---------------------------------------------------------------------------
 // Metadata
@@ -25,21 +26,21 @@ import { listProductsByCollection } from "@/lib/repositories/products-repository
 async function EnrichedContent({ data }: { data: Data }) {
   // Collect needed collection handles
   const collectionHandles = data.content
-    .filter((item) => item.type === "CollectionProductsSliderSection")
+    .filter((item) => item.type === "CollectionProductsSliderSection" || item.type === "IncredibleOffersSection")
     .map((item) => item.props.collection?.handle)
     .filter(Boolean) as string[];
 
   // Fetch everything in parallel
-  const [collections, categories, incredibleOffers, ...collectionResults] =
+  const [collections, categories, ...collectionResults] =
     await Promise.all([
       medusaCollectionRepository.list(),
-      medusaCategoryRepository.list().then((cats) => cats.filter((c) => !c.parentId)),
-      listProductsByCollection("incredible_offers"),
+      medusaCategoryRepository
+        .list()
+        .then((cats) => cats.filter((c) => !c.parentId)),
       ...collectionHandles.map((handle) => listProductsByCollection(handle)),
     ]);
 
-  const productsByHandle: Record<string, any[]> = {
-    incredible_offers: incredibleOffers.items,
+  const productsByHandle: Record<string, Product[]> = {
   };
 
   collectionHandles.forEach((handle, index) => {
@@ -61,11 +62,12 @@ async function EnrichedContent({ data }: { data: Data }) {
       }
 
       case "IncredibleOffersSection":
+        const handle = item.props.collection?.handle;
         return {
           ...item,
           props: {
             ...item.props,
-            data: productsByHandle.incredible_offers ?? [],
+            data: productsByHandle[handle] ?? [],
           },
         };
 
