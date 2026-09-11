@@ -10,7 +10,9 @@ import {
   StoreConfigInput,
 } from "@/lib/repositories/site-configs";
 import { siteConfig as defaultConfig } from "@/lib/config";
-
+import { clearToken, isAuthed } from "@/lib/medusa/admin-auth";
+import { AdminBar } from "@/components/admin/admin-bar";
+import { redirect } from "next/navigation";
 
 async function HeaderProvider() {
   const categories = await categoryRepository.list();
@@ -36,6 +38,24 @@ async function AnnouncementBarProvider() {
   return <AnnouncementBar announcement={announcement} />;
 }
 
+export async function AdminBarProvider() {
+  const isAuthenticated = await isAuthed();
+  const handleLogout = async () => {
+    "use server";
+    await clearToken();
+    redirect("/admin-portal/login");
+  };
+
+  return (
+    <AdminBar 
+      isAuthenticated={isAuthenticated} 
+      onLogout={handleLogout}
+      adminName="John Doe" // You can fetch this from your admin session
+    />
+  );
+
+}
+
 export default async function StoreLayout({
   children,
 }: {
@@ -50,6 +70,9 @@ export default async function StoreLayout({
         Skip to content
       </a>
       <Suspense fallback={<HeaderSkeleton />}>
+        <AdminBarProvider />
+      </Suspense>
+      <Suspense fallback={<HeaderSkeleton />}>
         <AnnouncementBarProvider />
       </Suspense>
       <Suspense fallback={<HeaderSkeleton />}>
@@ -63,9 +86,7 @@ export default async function StoreLayout({
       </Suspense>
       <CartDrawer />
       <BackToTop />
-      <Suspense>
-        {/* <DynamicMarker /> */}
-      </Suspense>
+      <Suspense>{/* <DynamicMarker /> */}</Suspense>
     </>
   );
 }
