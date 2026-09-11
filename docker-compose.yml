@@ -272,6 +272,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
+      - ENAMAD_CODE=${ENAMAD_CODE}
     env_file:
       - apps/storefront/.env.production
     networks:

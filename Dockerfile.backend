@@ -22,8 +22,8 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install \
       --filter @dtc/backend \
       --frozen-lockfile \
-      --config.package-import-method=copy \
-      --registry https://package-mirror.liara.ir/repository/npm/
+      --config.package-import-method=copy 
+    #   --registry https://package-mirror.liara.ir/repository/npm/
 
 COPY apps/backend ./apps/backend
 
@@ -99,7 +99,8 @@ COPY --from=build /medusa-standalone/package.json ./
 COPY --from=build /medusa-standalone/pnpm-lock.yaml ./
 
 RUN --mount=type=cache,id=pnpm-runner,target=/pnpm/store \
-    pnpm install --prod --frozen-lockfile --config.package-import-method=copy
+    pnpm install --prod --frozen-lockfile --config.package-import-method=copy \
+        --registry https://package-mirror.liara.ir/repository/npm/
 
 # Now layer in the actual compiled app on top of the cached node_modules.
 COPY --from=build /medusa-standalone ./
