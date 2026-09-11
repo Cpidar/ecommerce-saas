@@ -33,7 +33,10 @@ export function CheckoutPaymentStep({
   const tCommon = useTranslations("common");
   const [isPending, startTransition] = useTransition();
 
-  const [selectedProvider, setSelectedProvider] = useState<string>(
+  const [selectedProvider, setSelectedProvider] = useState<PaymentProviderInfo>(
+    paymentProviders[0],
+  );
+  const [selectedProviderId, setSelectedProviderId] = useState<string>(
     paymentProviders[0]?.id ?? "",
   );
   const [activeSession, setActiveSession] =
@@ -66,20 +69,22 @@ export function CheckoutPaymentStep({
   };
 
   const handleProviderPick = async (providerId: string) => {
-    setSelectedProvider(providerId);
+    setSelectedProviderId(providerId);
     await ensurePaymentSession(providerId);
   };
 
   const handlePayment = async () => {
-    if (!selectedProvider) {
+    if (!selectedProviderId) {
       toast.error(tCheckout("selectPaymentMethod"));
       return;
     }
     // setSubmitting(true);
     try {
       const res = await requestProvider({
-        providerId: selectedProvider,
+        cartId: cart?.id ?? "",
+        providerId: selectedProviderId,
         amount: `${cart?.total}`,
+        config: selectedProvider.config ?? {},
         successUrl: "saas/checkout/success",
         failUrl: "saas/checkout/failed",
       });
@@ -88,7 +93,7 @@ export function CheckoutPaymentStep({
       const { referenceId, url, method } = res;
       console.log(referenceId);
 
-      const session = await ensurePaymentSession(selectedProvider, {
+      const session = await ensurePaymentSession(selectedProviderId, {
         referenceId,
       });
       if (!session) return;
@@ -118,14 +123,14 @@ export function CheckoutPaymentStep({
           {paymentProviders.map((p) => (
             <label
               key={p.id}
-              className={`flex items-center justify-between rounded-md border p-4 cursor-pointer transition-colors ${selectedProvider === p.id ? "border-foreground bg-neutral-50" : "border-border"}`}
+              className={`flex items-center justify-between rounded-md border p-4 cursor-pointer transition-colors ${selectedProviderId === p.id ? "border-foreground bg-neutral-50" : "border-border"}`}
             >
               <div className="flex items-center gap-3">
                 <input
                   type="radio"
                   name="provider"
                   value={p.id}
-                  checked={selectedProvider === p.id}
+                  checked={selectedProviderId === p.id}
                   onChange={() => handleProviderPick(p.id)}
                 />
                 <span className="text-sm font-medium">
@@ -142,17 +147,18 @@ export function CheckoutPaymentStep({
           )}
         </div>
 
-        {selectedProvider && (
+        {selectedProviderId && (
           <div className="border-t pt-6">
-            {initiatingProvider === selectedProvider ? (
+            {initiatingProvider === selectedProviderId ? (
               <p className="text-sm text-muted-foreground">
                 {tCheckout("preparingProvider", {
-                  provider: providerLabel(selectedProvider, tCheckout),
+                  provider: providerLabel(selectedProviderId, tCheckout),
                 })}
               </p>
             ) : (
               <PaymentProviderInput
-                providerId={selectedProvider}
+                cartId={cart?.id ?? ""}
+                providerId={selectedProviderId}
                 session={activeSession}
                 totalLabel={formatPrice(cart?.total ?? 0, cart?.currency)}
                 onSubmit={async () =>

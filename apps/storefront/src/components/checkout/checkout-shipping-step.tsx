@@ -8,11 +8,12 @@ import { toast } from "sonner";
 import { formatPrice } from "@/lib/utils/utils";
 import {
   addShippingMethod,
-  listPaymentProviders,
+  // listPaymentProviders,
   type ShippingOption,
   type PaymentProviderInfo,
 } from "@/lib/medusa/cart-client";
 import type { Cart } from "@/types";
+import { listPaymentProviders } from "@/lib/medusa/cart-actions";
 
 interface CheckoutShippingStepProps {
   shippingOptions: ShippingOption[];
@@ -46,6 +47,7 @@ export function CheckoutShippingStep({
     try {
       await addShippingMethod(selectedShipping);
       const providers = await listPaymentProviders();
+      console.log(providers)
       onShippingSubmitted(providers);
     } catch (err) {
       console.error(err);

@@ -143,9 +143,9 @@ const fetchSeoConfig = async (storeId?: string) => {
 }
 
 const fetchShippingAndPaymentconfig = async (storeId?: string) => {
-  "use cache"
-  cacheTag(storeConfigTags.payment(storeId || "store"), storeConfigTags.shipping(storeId || "store"))
-  cacheLife(STORE_CONFIG_CACHE_PROFILE)
+  // "use cache"
+  // cacheTag(storeConfigTags.payment(storeId || "store"), storeConfigTags.shipping(storeId || "store"))
+  // cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
     "/store/store-config?fields=payment_configs,shipping_method_configs",

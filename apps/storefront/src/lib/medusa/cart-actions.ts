@@ -166,8 +166,9 @@ export async function listPaymentProviders(): Promise<PaymentProviderInfo[]> {
   if (!payment_providers || payment_providers.length === 0) return []
 
   return payment_providers.map((p) => ({
-    id: p.id!,
+    id: p.provider_id,
     isEnabled: (p as { is_enabled?: boolean }).is_enabled ?? true,
+    config: p.config ?? {}
   }))
 }
 
