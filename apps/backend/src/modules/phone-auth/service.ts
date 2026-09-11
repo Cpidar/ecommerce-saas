@@ -1,7 +1,8 @@
 import {
   AbstractAuthModuleProvider,
   AbstractEventBusModuleService,
-  MedusaError} from "@medusajs/framework/utils"
+  MedusaError
+} from "@medusajs/framework/utils"
 import {
   AuthenticationInput,
   AuthIdentityProviderService,
@@ -10,7 +11,6 @@ import {
   ICustomerModuleService,
 } from "@medusajs/framework/types"
 import jwt from "jsonwebtoken"
-import { createAuthMetaDataWorkflow } from "../../workflows/register-phone"
 
 type InjectedDependencies = {
   logger: Logger
@@ -104,13 +104,13 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
 
       // this is add {customer_id: cus_xxxx} into app_metadata of auth entity that links auth module with customer
       // here we ensure the identity points to the same customer
-      await createAuthMetaDataWorkflow().run({
-        input: {
-          authIdentityId: authIdentity.id,
-          actorType: "customer",
-          value: customer_id
-        }
-      })
+      // await createAuthMetaDataWorkflow().run({
+      //   input: {
+      //     authIdentityId: authIdentity.id,
+      //     actorType: "customer",
+      //     value: customer_id
+      //   }
+      // })
 
       return {
         success: true,
@@ -135,9 +135,53 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
     }
 
     try {
-      await authIdentityProviderService.retrieve({
+      const { provider_identities } = await authIdentityProviderService.retrieve({
         entity_id: email,
       })
+
+
+      const userProvider = provider_identities?.find(pi => pi.provider === this.identifier)
+      const existingMetadata = userProvider?.provider_metadata
+
+      if (!userProvider || existingMetadata?.tratransactionId) {
+        return {
+          success: false,
+          error: "User with phone number does not exist",
+          location: "register"
+        }
+      }
+
+      // 🛡️ RATE LIMITING: Prevent SMS spam (e.g., max 1 resend per 60 seconds)
+      const lastSent = existingMetadata?.last_otp_sent_at ? new Date(existingMetadata?.last_otp_sent_at as string).getTime() : 0
+      const now = Date.now()
+      if (now - lastSent < 60000) {
+        return {
+          success: false,
+          error: "Please wait 60 seconds before requesting a new OTP"
+        }
+      }
+
+
+      const { hashedOTP, otp } = await this.generateOTP(phone)
+
+      await authIdentityProviderService.update(email, {
+        provider_metadata: {
+          ...existingMetadata,
+          otp: hashedOTP,
+          last_otp_sent_at: new Date().toISOString(),
+        }
+      })
+
+      await this.event_bus.emit({
+        name: "phone-auth.otp.generated",
+        data: {
+          otp,
+          phone,
+        }
+      }, {})
+
+
+
     } catch (error) {
       return {
         success: false,
@@ -146,21 +190,6 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
       }
     }
 
-    const { hashedOTP, otp } = await this.generateOTP(phone)
-
-    await authIdentityProviderService.update(email, {
-      provider_metadata: {
-        otp: hashedOTP,
-      }
-    })
-
-    await this.event_bus.emit({
-      name: "phone-auth.otp.generated",
-      data: {
-        otp,
-        phone,
-      }
-    }, {})
 
     return {
       success: true,
@@ -170,6 +199,7 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
 
   async generateOTP(phone: string): Promise<{ hashedOTP: string, otp: string }> {
     let otp: string
+    const otpExpirationTime = "300s"
 
     if (process.env.OTP_PROVIDER === "melipayamak") {
       // MelliPayamak OTP
@@ -192,7 +222,7 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
     this.logger.info(`Generated OTP: ${otp}`)
 
     const hashedOTP = jwt.sign({ otp }, this.options.jwtSecret, {
-      expiresIn: "300s"
+      expiresIn: otpExpirationTime
     })
     return { hashedOTP, otp }
 
@@ -253,6 +283,23 @@ class PhoneAuthService extends AbstractAuthModuleProvider {
         otp: null,
       }
     })
+
+    // 🚀 NEW: If a workflow is waiting for this verification, resume it!
+    if (userProvider.provider_metadata?.transactionId) {
+      await this.event_bus.emit({
+        name: "phone-auth.otp.verified",
+        data: {
+          transactionId: userProvider.provider_metadata.transactionId,
+          email,
+          phone,
+        }
+      }, {})
+
+      // Clean up transactionId so it can't be reused
+      await authIdentityProviderService.update(email, {
+        provider_metadata: { transactionId: null },
+      })
+    }
 
     return {
       success: true,

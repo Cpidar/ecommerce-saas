@@ -22,7 +22,6 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
 
   const router = useRouter();
   const phone = useAuthStore((s) => s.phone);
-  const phoneVerfied = useAuthStore(s => s.phoneVerfied)
   const email = useAuthStore((s) => s.email);
   const [form, setForm] = useState({
     firstName: "",
@@ -32,7 +31,6 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
     confirmPassword: "",
     // Saas
     storeName: "",
-    storeHandle: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -61,28 +59,28 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
         password: form.password,
       });
 
-      if (appMode === "saas") {
-        await transferCart();
-        const result = await completeSubscriptionCheckout();
-        if (result?.type === "order") {
-          useCartStore.setState({ cart: null, hasHydrated: false });
-          await initializeStore({
-            email,
-            password: form.password,
-            storeName: form.storeName,
-            handle: form.storeHandle,
-            subscription: result.subscription,
-          });
-          toast.success("");
-          router.push(`/customer-auth/initialize-store`)
-          return result;
-        } else {
-          toast.error("");
-          return null;
-        }
-      }
+      // if (appMode === "saas") {
+      //   await transferCart();
+      //   const result = await completeSubscriptionCheckout();
+      //   if (result?.type === "order") {
+      //     useCartStore.setState({ cart: null, hasHydrated: false });
+      //     await initializeStore({
+      //       email,
+      //       password: form.password,
+      //       storeName: form.storeName,
+      //       handle: form.storeHandle,
+      //       subscription: result.subscription,
+      //     });
+      //     toast.success(t("storeCreated"));
+      //     router.push(`/customer-auth/initialize-store`);
+      //     return result;
+      //   } else {
+      //     toast.error(t("storeCreationFailed"));
+      //     return null;
+      //   }
+      // }
 
-      if (res.location === "otp") {
+      if (typeof res.transactionId === "string") {
         // toast.success(t("accountCreated"));
         router.push(`/customer-auth/otp`);
       }
@@ -164,17 +162,6 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
                 name="storeName"
                 type="text"
                 value={form.storeName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="storeHandle">{t("storeHandle")}</Label>
-              <Input
-                id="storeHandle"
-                name="storeHandle"
-                type="text"
-                value={form.storeHandle}
                 onChange={handleChange}
                 required
               />
