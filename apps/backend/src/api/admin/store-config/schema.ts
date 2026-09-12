@@ -21,7 +21,7 @@ export const storeSeoConfigSchema = z
         torob: looseObject({
             shop_id: optionalString,
             token: optionalString
-        }),
+        }).optional(),
         robots: z
             .object({
                 index: z.boolean().optional(),
@@ -172,9 +172,9 @@ export const updateStoreConfigWorkflowInputSchema = z
         description: optionalString,
         tagline: optionalString,
 
-        logo_url: nullableUrl,
+        logo_url: nullableString,
         logo_alt: nullableString,
-        favicon_url: nullableUrl,
+        favicon_url: nullableString,
         theme: nullableString,
         theme_overrides: jsonRecordSchema.optional(),
 
