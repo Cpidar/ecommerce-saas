@@ -90,9 +90,10 @@ const PageLogin = () => {
       await loginWithOTP(phone, otp, email);
       toast.success(t("welcomeBackUser"));
       if (onBoarding) {
-        router.replace(`/saas/checkout/success`);
+        // router.replace(`/saas/checkout/success`);
+        router.replace(`/customer-auth/initialize-store`);
       } else {
-      refPath ? router.replace(refPath) : router.replace(`/account`);
+        refPath ? router.replace(refPath) : router.replace(`/account`);
       }
     } catch (err) {
       const message =

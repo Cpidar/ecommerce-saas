@@ -238,7 +238,6 @@ services:
         max-file: "5"
 
   # ========== STOREFRONT (Next.js) ==========
-  # Uncomment and update the image name when your storefront image is ready.
   storefront:
     build:
       context: .
@@ -257,6 +256,7 @@ services:
         NEXT_PUBLIC_SEARCH_API_KEY: ${NEXT_PUBLIC_SEARCH_API_KEY}
         NEXT_PUBLIC_EMAIL_DOMAIN: ${NEXT_PUBLIC_EMAIL_DOMAIN}
         NEXT_PUBLIC_IMAGE_HOST_ADDRESS: ${NEXT_PUBLIC_IMAGE_HOST_ADDRESS}
+        NEXTJS_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXTJS_SERVER_ACTIONS_ENCRYPTION_KEY}
     image: ${STOREFRONT_TAG:-registry.tabeshelecshop.ir/storefront:v9}
     container_name: medusa_storefront
     restart: unless-stopped
@@ -270,6 +270,7 @@ services:
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://medusa:9000
+      - ENAMAD_CODE=${ENAMAD_CODE}
     env_file:
       - apps/storefront/.env.production
     networks:

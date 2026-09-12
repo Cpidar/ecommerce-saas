@@ -1,3 +1,9 @@
+// import Redis from "ioredis"
+
+// const redis = new Redis(process.env.REDIS_URL!)
+
+// const KEY = "store:seed:progress"
+
 type SeedStatus = "idle" | "running" | "completed" | "failed";
 
 type SeedProgressState = {
@@ -19,6 +25,9 @@ let state: SeedProgressState = {
 };
 
 export const seedProgress = {
+  get() {
+    return { ...state };
+  },
   start() {
     state = {
       status: "running",

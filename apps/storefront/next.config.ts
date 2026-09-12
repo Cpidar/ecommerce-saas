@@ -81,7 +81,11 @@ const nextConfig: NextConfig = {
     }
   },
 
-
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["localhsot:9000", "medusa:9000"]
+    },
+  },
   // Pin Turbopack's workspace root to this project so Next doesn't get
   // confused by a parent directory's lockfile.
   turbopack: {

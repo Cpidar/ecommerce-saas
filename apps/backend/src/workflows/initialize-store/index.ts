@@ -1,41 +1,16 @@
-import { createWorkflow, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
+import { createWorkflow, transform, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
 import { createConfigStep } from "../create-store-config/steps/create-config";
 import { linkStoreConfigToStoreStep } from "../create-store-config/steps/link-store-config-to-store";
-import { SeedDemoDataStep } from "./steps/seed-demo-data-step";
 import { InitializeStoreWorkflowInput, JsonRecord } from "./types";
+import { acquireLockStep, releaseLockStep } from "@medusajs/medusa/core-flows";
 
-/**
- * Default Puck editor JSON template.
- *
- * Used as a fallback when no `template` is provided in the workflow input,
- * ensuring `puck_data` is always seeded with a valid, renderable starting
- * layout.
- */
-const DEFAULT_PUCK_TEMPLATE: JsonRecord = {
-  root: {
-    layoutSize: 12,
-    props: {
-      backgroundColor: "#ffffff",
-      fontFamily: "Inter, sans-serif",
-    },
-  },
-  pages: {
-    main: {
-      title: "Home",
-      layout: {},
-      blocks: [
-        {
-          type: "Section",
-          props: {
-            blockWidth: 12,
-            padding: 24,
-            background: "#ffffff",
-          },
-        },
-      ],
-    },
-  },
-};
+import { seedSalesChannelStep } from "./steps/seed-sales-channel"
+import { seedRegionStep } from "./steps/seed-region"
+import { seedStockLocationStep } from "./steps/seed-stock-location"
+import { seedLinkSalesChannelStep } from "./steps/seed-link-sales-channel"
+import { seedCategoriesAndProductsStep } from "./steps/seed-categories-and-products"
+import { seedInventoryStep } from "./steps/seed-inventory"
+import { seedShippingProfileStep } from "./steps/seed-shipping-profile";
 
 /**
  * Workflow responsible for initializing a brand-new store.
@@ -57,12 +32,23 @@ export const initializeStoreWorkflow = createWorkflow(
   (input: InitializeStoreWorkflowInput) => {
     const puckData = input.template;
 
+    const lockKey = transform({ input }, (data) => `store-seed:${data.input.storeId}`)
+
+    // 1. Acquire lock (waits up to `timeout` seconds, holds for `ttl` seconds)
+    acquireLockStep({
+      key: lockKey,
+      timeout: 10,        // how long to wait to acquire the lock
+      ttl: 60 * 30,       // hold the lock for max 30 minutes
+    })
+
+    // 2. Create store config and link to store
     const storeConfig = createConfigStep({
       medusa_store_id: input.storeId,
       title: input.title,
       handle: input.handle,
       subscription_product_id: input.subscription_id,
       subscription_status: input.subscription_status,
+      // TODO
       puck_data: puckData as any,
     });
 
@@ -71,7 +57,32 @@ export const initializeStoreWorkflow = createWorkflow(
       storeId: input.storeId,
     });
 
-    SeedDemoDataStep({ storeId: input.storeId });
+    // 3. Run the actual seed logic
+    // SeedDemoDataStep({ storeId: input.storeId });
+    const salesChannel = seedSalesChannelStep()
+    seedRegionStep()
+    const stockLocation = seedStockLocationStep()
+
+    seedLinkSalesChannelStep({
+      stockLocationId: stockLocation.stockLocationId,
+      salesChannelId: salesChannel.salesChannelId,
+    })
+
+    const { shippingProfile } = seedShippingProfileStep()
+
+    seedCategoriesAndProductsStep({
+      salesChannelId: salesChannel.salesChannelId,
+      shippingProfileId: shippingProfile.id
+    })
+
+    seedInventoryStep({
+      stockLocationId: stockLocation.stockLocationId,
+    })
+
+    // 4. Release lock
+    releaseLockStep({
+      key: lockKey,
+    })
 
     return new WorkflowResponse({
       storeConfig,

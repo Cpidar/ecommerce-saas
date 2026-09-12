@@ -57,11 +57,15 @@ export function SeedProgressTracker() {
     const start = async () => {
       try {
         await transferCart();
+        // Aquire a unique store handle
         const uniqueStoreId = await siteConfigRepository.getUniqueId();
 
         const result = await completeSubscriptionCheckout();
 
-        if (result?.type === "order") {
+        if (
+          result?.type === "order" &&
+          result.subscription.status === "active"
+        ) {
           useCartStore.setState({ cart: null, hasHydrated: false });
 
           setState((s) => ({ ...s, status: "running" }));
@@ -85,6 +89,8 @@ export function SeedProgressTracker() {
           }
 
           return result;
+        } else if (result?.subscription.status !== "active") {
+          // TODO: must redirect to checkout page
         } else {
           toast.error("");
           return null;

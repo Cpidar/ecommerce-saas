@@ -4,6 +4,7 @@ import { Modules } from "@medusajs/framework/utils";
 import { createStoreWorkflow } from "@sepidar/medusa-multistore-plugin/workflows/create-store/index";
 import { initializeStoreWorkflow } from "../initialize-store";
 import type { InitializeStoreWorkflowInput } from "../initialize-store/types";
+import { seedProgress } from "../../utils/initialize-store-progress";
 
 createStoreWorkflow.hooks.storeCreated(async ({ store: { storeId }, additional_data }, { container }) => {
   console.log("HOOK storeCreated", storeId);
@@ -23,9 +24,20 @@ createStoreWorkflow.hooks.storeCreated(async ({ store: { storeId }, additional_d
     template: (additional_data?.template as InitializeStoreWorkflowInput["template"]) ?? undefined,
   };
 
-  const { result: { storeConfig } } = await initializeStoreWorkflow(container).run({ input });
+  initializeStoreWorkflow(container)
+    .run({
+      input,
+    })
+    .then(async () => {
+      await seedProgress.complete()
+    })
+    .catch(async (err) => {
+      await seedProgress.fail(
+        err instanceof Error ? err.message : "خطای ناشناخته"
+      )
+    });
 
-  console.log("Store config initialized: ", storeConfig);
+  // console.log("Store config initialized: ", storeConfig);
 
   event.emit({
     name: "store.created",

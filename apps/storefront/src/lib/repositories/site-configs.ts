@@ -243,6 +243,7 @@ export const siteConfigRevalidation = {
 
 export const siteConfigRepository = {
   async getUniqueId(): Promise<string> {
+    // TODO: must shift to backend (backend assign a handle in store created hook)
     const usedIds = await fetchAllStoreHandles().then(handles => new Set(handles))
     const available = ID_POOL.filter(id => !usedIds.has(id))
 
