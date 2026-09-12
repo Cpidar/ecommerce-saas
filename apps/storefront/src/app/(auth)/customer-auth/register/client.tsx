@@ -64,11 +64,11 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
           passwaord: form.password,
         },
       });
-
-      if (res.location === "otp") {
+console.log(res)
+      // if (res.location === "otp") {
         // toast.success(t("accountCreated"));
         router.push(`/customer-auth/otp`);
-      }
+      // }
     } catch (err) {
       console.error(err);
       toast.error(t("createAccountFailed"));

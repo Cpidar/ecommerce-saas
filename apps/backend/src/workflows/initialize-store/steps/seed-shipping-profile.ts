@@ -8,7 +8,7 @@ type Input = {
 }
 
 export const seedShippingProfileStep = createStep(
-    "seed-link-sales-channel",
+    "seed-shipping-profile-step",
     async (input: Input, { container }) => {
         await seedProgress.update(65, "اتصال کانال فروش به انبار")
 
