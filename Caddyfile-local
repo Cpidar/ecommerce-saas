@@ -3,9 +3,6 @@
 # DNS resolution: Caddy uses Docker container names
 # ============================================
 {
-	# Disable automatic HTTPS completely
-	auto_https off
-
 	servers {
 		trusted_proxies static private_ranges
 	}
@@ -43,6 +40,7 @@ s3.tabeshelecshop.ir:80 {
 		rewrite /medusabucket{path}
 
 		reverse_proxy rustfs:3900 {
+			header_up X-Store-Id "store_01KX1MP5CVCT65E2J2C934N6V9"
 			header_up Host {host}
 		}
 	}

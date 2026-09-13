@@ -15,20 +15,10 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { siteConfigRepository } from "@/lib/repositories/site-configs";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ puckPath: string[] }>;
-}): Promise<Metadata> {
-  // const { puckPath = [] } = await params;
-  // const path = `/${puckPath.join("/")}`;
-  const path = "/about"
-  const data = await siteConfigRepository.getPage(path);
-  
-  return {
-    title: data?.root.props?.title ?? "درباره ما",
-  };
-}
+export const metadata: Metadata = {
+  title: "درباره ما",
+  description: "اطلاعاتی درباره فروشگاه، ماموریت و ارزش‌های ما.",
+};
 
 export default async function Page({
   params,

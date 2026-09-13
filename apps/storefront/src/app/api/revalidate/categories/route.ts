@@ -12,6 +12,8 @@ import { getCurrentStoreId } from "@/lib/medusa/cookies"
  * Security: Set `REVALIDATION_WEBHOOK_SECRET` in env and send in `Authorization: Bearer <secret>`.
  */
 export async function POST(request: NextRequest) {
+  console.log("Categories Revalidation Started")
+
   try {
     const authHeader = request.headers.get("authorization")
     const token = authHeader?.replace(/^Bearer\s+/i, "")
@@ -45,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Deleted / created events always invalidate the full category list
-    if (affectsGrid ||eventType?.includes("product-category.deleted") || eventType?.includes("product-category.created")) {
+    if (affectsGrid || eventType?.includes("product-category.deleted") || eventType?.includes("product-category.created")) {
       tasks.push(categoryRevalidation.all(storeId))
     }
 

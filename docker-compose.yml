@@ -115,6 +115,8 @@ services:
     mem_limit: 128M
     cpus: "0.3"
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -238,6 +240,7 @@ services:
         max-file: "5"
 
   # ========== STOREFRONT (Next.js) ==========
+  # Uncomment and update the image name when your storefront image is ready.
   storefront:
     build:
       context: .
@@ -256,7 +259,6 @@ services:
         NEXT_PUBLIC_SEARCH_API_KEY: ${NEXT_PUBLIC_SEARCH_API_KEY}
         NEXT_PUBLIC_EMAIL_DOMAIN: ${NEXT_PUBLIC_EMAIL_DOMAIN}
         NEXT_PUBLIC_IMAGE_HOST_ADDRESS: ${NEXT_PUBLIC_IMAGE_HOST_ADDRESS}
-        NEXTJS_SERVER_ACTIONS_ENCRYPTION_KEY: ${NEXTJS_SERVER_ACTIONS_ENCRYPTION_KEY}
     image: ${STOREFRONT_TAG:-registry.tabeshelecshop.ir/storefront:v9}
     container_name: medusa_storefront
     restart: unless-stopped

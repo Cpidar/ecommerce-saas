@@ -3,10 +3,15 @@
 import { Button } from "@/components/ui/button";
 import type { ActivePaymentSession } from "@/lib/medusa/cart-client";
 import BehpardakhtIcon from "./BehpardakhtIcon";
+import { requestProvider } from "@/lib/checkout/payment-providers";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 export interface ProviderInputProps {
+  cartId: string;
   /** The provider id chosen by the customer (e.g. "pp_stripe_stripe"). */
   providerId: string;
+
+  config?: Record<string, string>;
   /** Payment session returned by initiatePaymentSession — provider-specific data. */
   session: ActivePaymentSession | null;
   /** Pretty total to render on the submit button. */
@@ -23,7 +28,6 @@ export interface ProviderInputProps {
  * touching the checkout flow.
  */
 export function PaymentProviderInput(props: ProviderInputProps) {
-
   if (isBehpardakhtProviderId(props.providerId)) {
     return <BehpardakhtPayment {...props} />;
   }
@@ -57,7 +61,7 @@ function SystemDefaultPayment({
   const { referenceId, resCode, errorMessage } =
     (session?.data as Record<string, string> | undefined) || {};
 
-    // if (!referenceId) {
+  // if (!referenceId) {
   //   return (
   //     <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">
   //       {/* Couldn&apos;t get a PayPal order id from the payment session. Check that
@@ -134,41 +138,121 @@ function GenericPayment({
 // Behpradakht — Smart Buttons + onApprove
 // ---------------------------------------------------------------------------
 
+const GENERIC_ERROR = "خطا در ارتباط با درگاه پرداخت";
+
+type GatewayMethod = "POST" | "GET";
+
 function BehpardakhtPayment({
+  cartId,
+  providerId = "pp-behpardakht-behpardakht",
   session,
   onSubmit,
   submitting,
+  config,
 }: ProviderInputProps) {
-  const { referenceId, resCode, errorMessage } =
-    (session?.data as Record<string, string> | undefined) || {};
+  const [gateway, setGateway] = useState<{
+    url: string;
+    method: GatewayMethod;
+    referenceId: string;
+  }>();
+  const [error, setError] = useState<string>();
+  const [isPending, startTransition] = useTransition();
+  const formRef = useRef<HTMLFormElement>(null);
+  const submittedRef = useRef(false); // guards against double form-submit
 
-  if (!referenceId) {
+  // Auto-submit the hidden form once gateway data arrives
+  useEffect(() => {
+    if (gateway && formRef.current && !submittedRef.current) {
+      submittedRef.current = true;
+      formRef.current.submit();
+    }
+  }, [gateway]);
+
+  if (!session?.amount || !config) {
     return (
       <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">
-        {/* Couldn&apos;t get a PayPal order id from the payment session. Check that
-        PayPal is configured on the Medusa backend. */}
-        {errorMessage ?? "somethng wrong!"}
+        {GENERIC_ERROR}
       </div>
     );
   }
 
+  const handlePayment = useCallback(() => {
+    if (!providerId || !config || isPending || submittedRef.current) return;
+
+    setError(undefined);
+    const controller = new AbortController();
+
+    startTransition(async () => {
+      try {
+        const res = await requestProvider({
+          cartId,
+          providerId,
+          config,
+          amount: `${session.amount}`,
+          callbackUrl: `http://localhost:8000/api/payment/sandbox/callback`,
+          // successUrl: "checkout/success",
+          failUrl: "checkout/failed",
+          // signal: controller.signal, // if requestProvider supports it
+        });
+
+        // if (controller.signal.aborted) return;
+
+        if (!res?.url || !res?.referenceId) {
+          setError(GENERIC_ERROR);
+          return;
+        }
+
+        setGateway({
+          url: res.url,
+          method: (res.method as GatewayMethod) || "POST",
+          referenceId: res.referenceId,
+        });
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          console.error(err);
+          setError(GENERIC_ERROR);
+        }
+      }
+    });
+
+    return () => controller.abort();
+  }, [providerId, config, session.amount, isPending]);
+
+  const busy = isPending || submitting;
+
   return (
     <div className="space-y-3">
-      <form
-        action={`http://localhost:3000/payment/${referenceId}`}
-        method="GET"
-      >
-        {/* <form action="https://bpm.shaparak.ir/pgwchannel/startpay.mellat"> */}
-        <input type="hidden" value={referenceId} id="RefId" name="RefId" />
-        <Button
-          type="submit"
-          disabled={!referenceId}
-          data-testid="submit-order-button"
+      {error && (
+        <div
+          role="alert"
+          className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900"
         >
-          <BehpardakhtIcon />
-          {submitting ? "در حال اتصال به بانک..." : "پرداخت"}
-        </Button>
+          {error}
+        </div>
+      )}
+
+      {/* Hidden form submitted natively so the browser performs a real
+          cross-origin POST/GET redirect to the bank gateway */}
+      <form
+        ref={formRef}
+        action={gateway?.url}
+        method={gateway?.method ?? "POST"}
+        className="hidden"
+        aria-hidden="true"
+      >
+        <input type="hidden" name="RefId" value={gateway?.referenceId ?? ""} />
       </form>
+
+      <Button
+        type="button"
+        onClick={handlePayment}
+        disabled={busy || submittedRef.current}
+        aria-busy={busy}
+        data-testid="submit-order-button"
+      >
+        <BehpardakhtIcon />
+        {busy ? "در حال اتصال به بانک..." : "پرداخت"}
+      </Button>
     </div>
   );
 }

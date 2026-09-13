@@ -103,11 +103,11 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
   },
 
   // [MY-FORK-AUTH] Phone auth method
-  authenticate: async ({ phone, email, refPath, byOtp }) => {
+  authenticate: async ({ phone, email, refPath }) => {
     set({ isLoading: true })
     set({ refPath })
     try {
-      const response = await authenticateWithPhone({ phone, email, byOtp })
+      const response = await authenticateWithPhone({ phone, email })
       set({ phone, email, location: response.location as Location })
       if (
         window !== undefined &&
@@ -166,12 +166,6 @@ export const useAuthStore = create<AuthState>()((set, get, store) => ({
     set({ isLoading: true })
     try {
       const res = await authRegister(data)
-      set({
-        location: res.location as Location,
-        hasHydrated: true,
-        email: data.email,
-        phone: data.phone,        
-      })
       return res
     } finally {
       set({ isLoading: false })
