@@ -8,10 +8,12 @@ import { Product } from "@/types";
 function CollectionProductsSlider({
   heading = "تخفیفات شگفت انگیز",
   data,
+  handle,
   className,
 }: {
   heading: string;
   data: Product[];
+  handle: string;
   className?: string;
 }) {
   return (
@@ -24,10 +26,10 @@ function CollectionProductsSlider({
             size="lg"
             className="h-full flex-1 max-md:hidden md:h-auto"
           >
-            <Link href={"/shop"}>مشاهده همه</Link>
+            <Link href={`/collections/${handle}`}>مشاهده همه</Link>
           </Button>
           <Button asChild size="sm" className="md:hidden">
-            <Link href={"/shop"}>مشاهده همه</Link>
+            <Link href={`/collections/${handle}`}>مشاهده همه</Link>
           </Button>
         </>
       }

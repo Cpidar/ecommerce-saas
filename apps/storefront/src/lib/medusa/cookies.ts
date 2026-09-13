@@ -1,12 +1,18 @@
 import "server-only"
-import { cookies as nextCookies } from "next/headers"
+import { headers as nextHeaders, cookies as nextCookies } from "next/headers"
 import type { ReorderCustomerSubscriptionListItem } from "@/types/subscription"
 
 export async function getCurrentStoreId() {
   try {
-    const cookies = await nextCookies()
-    const storeId = cookies.get("current_store_id")?.value || process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!
-    return storeId
+    const hdrs = await nextHeaders()
+    const headerStoreId = hdrs.get("x-store-id")
+    if (headerStoreId) return headerStoreId
+
+    const cookieStore = await nextCookies()
+    return (
+      cookieStore.get("current_store_id")?.value ||
+      process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!
+    )
   } catch {
     return ""
   }

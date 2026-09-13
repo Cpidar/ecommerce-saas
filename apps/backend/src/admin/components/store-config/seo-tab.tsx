@@ -12,7 +12,10 @@ import {
   Textarea,
   toast,
 } from "@medusajs/ui";
-import { useSaveStoreConfig, useStoreConfig } from "../../routes/store-config/hooks";
+import {
+  useSaveStoreConfig,
+  useStoreConfig,
+} from "../../routes/store-config/hooks";
 import { getErrorMessage } from "../../routes/store-config/errors";
 
 export const SeoTab = () => {
@@ -26,6 +29,7 @@ export const SeoTab = () => {
     default_description: "",
     default_image_url: null,
     canonical_url: "",
+    enamad: "",
     robots: { index: true, follow: true },
     open_graph: {},
     twitter: {},
@@ -43,13 +47,11 @@ export const SeoTab = () => {
 
   const handleSubmit = () => {
     // Only send seo_config — server validates all
-    saveMutation.mutate(
-      { id: storeConfig?.id, seo_config: form } as any,
-      {
-        onSuccess: () => toast.success("تنظیمات SEO ذخیره شد"),
-        onError: (error) => toast.error(`خطا در ذخیره SEO: ${getErrorMessage(error)}`),
-      }
-    );
+    saveMutation.mutate({ id: storeConfig?.id, seo_config: form } as any, {
+      onSuccess: () => toast.success("تنظیمات SEO ذخیره شد"),
+      onError: (error) =>
+        toast.error(`خطا در ذخیره SEO: ${getErrorMessage(error)}`),
+    });
   };
 
   if (isLoading) return <LoadingSkeleton />;
@@ -71,7 +73,9 @@ export const SeoTab = () => {
 
       <div className="space-y-8">
         <section className="space-y-6">
-          <Heading level="h3" className="mb-4">اطلاعات پایه</Heading>
+          <Heading level="h3" className="mb-4">
+            اطلاعات پایه
+          </Heading>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FormField label="عنوان پیش‌فرض">
               <Input
@@ -92,7 +96,9 @@ export const SeoTab = () => {
             <FormField label="توضیحات پیش‌فرض" className="md:col-span-2">
               <Textarea
                 value={(seo.default_description as string) ?? ""}
-                onChange={(e) => setField("default_description", e.target.value)}
+                onChange={(e) =>
+                  setField("default_description", e.target.value)
+                }
                 placeholder="توضیح کوتاه برای موتورهای جستجو (حداکثر ۱۶۰ کاراکتر)"
                 rows={3}
               />
@@ -117,39 +123,137 @@ export const SeoTab = () => {
         </section>
 
         <section className="space-y-4">
-          <Heading level="h3" className="mb-4">ربات‌های موتور جستجو</Heading>
+          <Heading level="h3" className="mb-4">
+            ربات‌های موتور جستجو
+          </Heading>
           <div className="flex gap-8">
             <Label className="flex items-center gap-2 cursor-pointer">
               <Checkbox
                 checked={!!robots.index}
-                onCheckedChange={(checked) => setField("robots", { ...robots, index: !!checked })}
+                onCheckedChange={(checked) =>
+                  setField("robots", { ...robots, index: !!checked })
+                }
               />
               Index (نمایه‌سازی)
             </Label>
             <Label className="flex items-center gap-2 cursor-pointer">
               <Checkbox
                 checked={!!robots.follow}
-                onCheckedChange={(checked) => setField("robots", { ...robots, follow: !!checked })}
+                onCheckedChange={(checked) =>
+                  setField("robots", { ...robots, follow: !!checked })
+                }
               />
               Follow (دنبال کردن لینک‌ها)
             </Label>
           </div>
+
+          {/* ==================== Enamad & Torob ==================== */}
+          <div className="space-y-6 pt-6 border-t border-ui-border-base">
+            <div>
+              <Heading level="h3" className="mb-1">
+                Enamad (اینماد)
+              </Heading>
+              <Text size="small" className="text-ui-fg-subtle">
+                کد اینماد را وارد کنید. این کد در attribute <code>content</code>{" "}
+                قرار می‌گیرد.
+              </Text>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="enamad_code">کد اینماد (content)</Label>
+              <Input
+                id="enamad_code"
+                value={(form.enamad as string) ?? ""}
+                onChange={(e) => setField("enamad", e.target.value)}
+                placeholder="مثال: ABC123XYZ..."
+              />
+            </div>
+
+            <div className="pt-4">
+              <Heading level="h3" className="mb-1">
+                Torob (ترب)
+              </Heading>
+              <Text size="small" className="text-ui-fg-subtle mb-4">
+                تنظیمات متا تگ‌های ترب
+              </Text>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="torob_shop_id">Torob Shop ID</Label>
+                  <Input
+                    id="torob_shop_id"
+                    value={
+                      ((form.torob as any)?.shop_id as string) ?? ""
+                    }
+                    onChange={(e) =>
+                      setField("torob", {
+                        ...((form.torob as any) ?? {}),
+                        shop_id: e.target.value,
+                      })
+                    }
+                    placeholder="shop_id"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="torob_token">Torob Token</Label>
+                  <Input
+                    id="torob_token"
+                    value={
+                      ((form.torob as any)?.token as string) ?? ""
+                    }
+                    onChange={(e) =>
+                      setField("torob", {
+                        ...((form.torob as any) ?? {}),
+                        token: e.target.value,
+                      })
+                    }
+                    placeholder="token"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-2">
+                <Label htmlFor="torob_enabled">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="torob_enabled"
+                      checked={!!(form.seo_config?.torob as any)?.enabled}
+                      onCheckedChange={(checked) =>
+                        setField("torob", {
+                          ...((form.seo_config?.torob as any) ?? {}),
+                          enabled: !!checked,
+                        })
+                      }
+                    />
+                    فعال‌سازی متا تگ‌های ترب
+                  </div>
+                </Label>
+              </div>
+            </div>
+          </div>
         </section>
 
         <section className="space-y-6">
-          <Heading level="h3" className="mb-4">Open Graph (اشتراک‌گذاری)</Heading>
+          <Heading level="h3" className="mb-4">
+            Open Graph (اشتراک‌گذاری)
+          </Heading>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <FormField label="نام سایت">
               <Input
                 value={(og.site_name as string) ?? ""}
-                onChange={(e) => setField("open_graph", { ...og, site_name: e.target.value })}
+                onChange={(e) =>
+                  setField("open_graph", { ...og, site_name: e.target.value })
+                }
               />
             </FormField>
 
             <FormField label="نوع">
               <Input
                 value={(og.type as string) ?? "website"}
-                onChange={(e) => setField("open_graph", { ...og, type: e.target.value })}
+                onChange={(e) =>
+                  setField("open_graph", { ...og, type: e.target.value })
+                }
                 placeholder="website"
               />
             </FormField>
@@ -157,7 +261,9 @@ export const SeoTab = () => {
             <FormField label="تصویر OG">
               <Input
                 value={(og.image_url as string) ?? ""}
-                onChange={(e) => setField("open_graph", { ...og, image_url: e.target.value })}
+                onChange={(e) =>
+                  setField("open_graph", { ...og, image_url: e.target.value })
+                }
                 placeholder="https://example.com/og.jpg"
               />
             </FormField>
@@ -165,12 +271,16 @@ export const SeoTab = () => {
         </section>
 
         <section className="space-y-6">
-          <Heading level="h3" className="mb-4">Twitter Card</Heading>
+          <Heading level="h3" className="mb-4">
+            Twitter Card
+          </Heading>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FormField label="نوع کارت">
               <Input
                 value={(twitter.card as string) ?? "summary_large_image"}
-                onChange={(e) => setField("twitter", { ...twitter, card: e.target.value })}
+                onChange={(e) =>
+                  setField("twitter", { ...twitter, card: e.target.value })
+                }
                 placeholder="summary_large_image"
               />
             </FormField>
@@ -178,7 +288,9 @@ export const SeoTab = () => {
             <FormField label="سایت توییتر">
               <Input
                 value={(twitter.site as string) ?? ""}
-                onChange={(e) => setField("twitter", { ...twitter, site: e.target.value })}
+                onChange={(e) =>
+                  setField("twitter", { ...twitter, site: e.target.value })
+                }
                 placeholder="@username"
               />
             </FormField>
@@ -187,7 +299,11 @@ export const SeoTab = () => {
       </div>
 
       <div className="flex justify-end mt-8">
-        <Button isLoading={saveMutation.isPending} onClick={handleSubmit} size="large">
+        <Button
+          isLoading={saveMutation.isPending}
+          onClick={handleSubmit}
+          size="large"
+        >
           ذخیره تنظیمات SEO
         </Button>
       </div>
@@ -226,8 +342,14 @@ const LoadingSkeleton = () => (
 const ErrorState = () => (
   <Container className="flex flex-col items-center justify-center py-12">
     <Heading level="h2">خطا در دریافت تنظیمات</Heading>
-    <Text className="mt-2 text-ui-fg-subtle">لطفا صفحه را مجدداً بارگذاری کنید</Text>
-    <Button className="mt-4" variant="secondary" onClick={() => window.location.reload()}>
+    <Text className="mt-2 text-ui-fg-subtle">
+      لطفا صفحه را مجدداً بارگذاری کنید
+    </Text>
+    <Button
+      className="mt-4"
+      variant="secondary"
+      onClick={() => window.location.reload()}
+    >
       بارگذاری مجدد
     </Button>
   </Container>

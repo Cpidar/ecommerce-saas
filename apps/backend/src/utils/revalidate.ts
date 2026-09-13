@@ -12,7 +12,6 @@ export const revalidate = async (
   // if(container){
   //     const console = container.resolve(ContainerRegistrationKeys.LOGGER)
   // }
-
   if (!REVALIDATION_ENDPOINT) {
     throw new Error(
       "STOREFRONT_REVALIDATION_URL is not set; skipping webhook trigger.",
@@ -29,17 +28,17 @@ export const revalidate = async (
   const targetUrl = `${REVALIDATION_ENDPOINT.replace(/\/+$/, "")}${normalizedPath}`;
 
   try {
-    const healthCheck = await fetch(targetUrl, {
-      method: "GET",
-      signal: AbortSignal.timeout(5000),
-    }).catch(() => null);
+    // const healthCheck = await fetch(targetUrl, {
+    //   method: "GET",
+    //   signal: AbortSignal.timeout(5000),
+    // }).catch(() => null);
 
-    if (!healthCheck || !healthCheck.ok) {
-      throw new Error(
-        `[subscriber] Skipping revalidation webhook for item ${data.id}; endpoint is not reachable: ${targetUrl}`,
-      );
-      return;
-    }
+    // if (!healthCheck?.ok) {
+    //   throw new Error(
+    //     `[subscriber] Skipping revalidation webhook for item ${data.id}; endpoint is not reachable: ${targetUrl}`,
+    //   );
+    //   return;
+    // }
 
     await fetch(targetUrl, {
       method: "POST",
