@@ -6,7 +6,7 @@ import type { HttpTypes } from "@medusajs/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle } from "lucide-react";
+import { AlertCircleIcon, CheckCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { formatPrice, formatDate } from "@/lib/utils/utils";
 import { completeCart } from "@/lib/medusa/cart-client";
@@ -24,14 +24,31 @@ import {
 } from "@/lib/utils/subscriptions";
 import { Cart } from "@/types";
 import { ReorderStoreSubscriptionCheckoutResponse } from "@/types/subscription";
+import { useSearchParams } from "next/navigation";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function CheckoutSuccessPage() {
   const hydrate = useCartStore((s) => s.hydrate);
   const cart = useCartStore((s) => s.cart);
   const tCheckout = useTranslations("checkout");
+  const searchParams = useSearchParams();
+  const cartId = searchParams?.get("cartId");
+
+  if (!cartId) {
+    return ErrorAlert();
+  }
 
   const placeOrder = async () => {
-    const result = await completeCart();
+    const result = await completeCart(cartId);
     if (result.type === "order") {
       useCartStore.setState({ cart: null, hasHydrated: false });
       return result.order;
@@ -60,7 +77,10 @@ export default function CheckoutSuccessPage() {
     <Suspense fallback={<CheckoutSuccessLoading />}>
       {isSubscripitionMode ? (
         // TODO: implement subscription order summary
-        <SubscriptionSummary cart={cart!} orderPromise={placeSubscriptionOrder()} />
+        <SubscriptionSummary
+          cart={cart!}
+          orderPromise={placeSubscriptionOrder()}
+        />
       ) : (
         <CheckoutSuccessContent orderPromise={placeOrder()} />
       )}
@@ -80,18 +100,7 @@ function CheckoutSuccessContent({
   const order = use(orderPromise);
 
   if (!order) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">
-            {tCheckout("orderFailed")}
-          </h1>
-          <p className="mt-4 text-muted-foreground">
-            {tCheckout("orderFailed.message")}
-          </p>
-        </div>
-      </div>
-    );
+    return ErrorAlert();
   }
 
   const currency = (order?.currency_code ?? "usd").toLowerCase();
@@ -262,10 +271,44 @@ function CheckoutSuccessLoading() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">
-          در حال بازگشت به سایت ..
-        </h1>
+        <Empty className="w-full">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Spinner />
+            </EmptyMedia>
+            <EmptyTitle>در حال پردازش سفارش شما</EmptyTitle>
+            <EmptyDescription>
+              لطفا منتظر بمانید تا درخواست شما پردازش شود. صفحه را رفرش نکنید.
+            </EmptyDescription>
+          </EmptyHeader>
+          {/* <EmptyContent>
+            <Button variant="outline" size="sm">
+              Cancel
+            </Button>
+          </EmptyContent> */}
+        </Empty>
       </div>
     </div>
+  );
+}
+
+export function ErrorAlert() {
+  return (
+    <Alert variant="destructive" className="max-w-md">
+      <AlertCircleIcon />
+
+      <AlertTitle>پردازش سفارش با مشکل مواجه شد</AlertTitle>
+
+      <AlertDescription className="space-y-2">
+        <p>
+          نگران نباشید؛ سفارش شما با مشکل موقت مواجه شده و تیم پشتیبانی در کنار
+          شماست تا موضوع را بررسی و برطرف کند.
+        </p>
+
+        <Button variant="link" className="h-auto p-0" asChild>
+          <a href="/contact">تماس با پشتیبانی</a>
+        </Button>
+      </AlertDescription>
+    </Alert>
   );
 }

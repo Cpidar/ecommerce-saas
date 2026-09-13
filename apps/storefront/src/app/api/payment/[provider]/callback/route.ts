@@ -16,6 +16,13 @@ export async function POST(
 
     switch (provider) {
         case "sandbox":
+            const { searchParams } = new URL(request.url);
+            const cartId = searchParams.get("cartId");
+
+            if (!cartId) {
+                throw new Error("cartId is missing in callback URL");
+            }
+
             const resText = await request.text()
             // sample response: "RefId=923C8C729C825473&ResCode=0&SaleOrderId=1726894760637&SaleReferenceId=285303460370&CardHolderInfo=4C4098D60630906B77453B7F681F58F107A675EC339A5DE5E465D1AE2C4FB46A&CardHolderPan=610433******5978&FinalAmount=68000"
 
@@ -64,19 +71,13 @@ export async function POST(
                     // ✅ FIXED: Properly encode Persian text
                     const encodedError = encodeURIComponent(errorMessage);
 
-                    if (failUrl) {
-                        redirect(`${baseUrl}/${failUrl}?errorMessage=${encodedError}`);
-                    }
-
-                    redirect(`${baseUrl}/checkout/failed?errorMessage=${encodedError}`);
-                    return;
+                    redirect(`${baseUrl}/${failUrl}?errorMessage=${encodedError}`);
                 }
 
-                // Success
-                if (successUrl) {
-                    redirect(`${baseUrl}/${successUrl}?saleReferenceId=${encodeURIComponent(SaleReferenceId)}`);
-                }
-                redirect(`${baseUrl}/checkout/success?saleReferenceId=${encodeURIComponent(SaleReferenceId)}`);
+                redirect(
+                    `${baseUrl}/${successUrl}?saleReferenceId=${encodeURIComponent(SaleReferenceId)}&cartId=${encodeURIComponent(cartId)}`
+                );
+
             } catch (e) {
                 // Only catch real errors, ignore NEXT_REDIRECT
                 // `e` is unknown here; narrow its type before accessing properties
@@ -93,7 +94,7 @@ export async function POST(
                 console.error("Payment callback error:", e);
 
                 const encodedError = encodeURIComponent("مشکلی در پرداخت شما بوجود آمده است");
-                redirect(`${baseUrl}/checkout/failed?errorMessage=${encodedError}`);
+                redirect(`$/checkout/failed?errorMessage=${encodedError}`);
             }
         case "behpardakht":
             // statement 2

@@ -46,11 +46,11 @@ export function Pagination({
           className="inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent"
           aria-label="Previous page"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" />
         </Link>
       ) : (
         <span className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground/60">
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4" />
         </span>
       )}
 
@@ -76,11 +76,11 @@ export function Pagination({
           className="inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent"
           aria-label="Next page"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" />
         </Link>
       ) : (
         <span className="inline-flex h-10 w-10 items-center justify-center rounded-md text-muted-foreground/60">
-          <ChevronRight className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4" />
         </span>
       )}
     </nav>

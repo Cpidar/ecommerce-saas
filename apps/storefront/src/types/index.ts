@@ -375,7 +375,7 @@ export interface ProductRepository {
     query: string,
     pagination?: PaginationParams,
   ): Promise<PaginatedResult<Product>>;
-  getVariantInventory(productId: string, variantId: string): Promise<number>;
+  getVariantInventory?(productId: string, variantId: string): Promise<number>;
 }
 
 export interface CategoryRepository {

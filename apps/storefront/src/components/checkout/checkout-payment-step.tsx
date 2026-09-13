@@ -33,8 +33,15 @@ export function CheckoutPaymentStep({
   const tCommon = useTranslations("common");
   const [isPending, startTransition] = useTransition();
 
-  const [selectedProvider, setSelectedProvider] = useState<string>(
-    paymentProviders[0]?.id ?? "",
+  if (!cart) {
+    return null;
+  }
+
+  const [selectedProvider, setSelectedProvider] = useState<PaymentProviderInfo>(
+    paymentProviders[0] ?? {},
+  );
+  const [selectedProviderid, setSelectedProviderid] = useState<string>(
+    paymentProviders[0].id ?? "",
   );
   const [activeSession, setActiveSession] =
     useState<ActivePaymentSession | null>(null);
@@ -65,43 +72,51 @@ export function CheckoutPaymentStep({
     }
   };
 
-  const handleProviderPick = async (providerId: string) => {
-    setSelectedProvider(providerId);
-    await ensurePaymentSession(providerId);
+  const handleProviderPick = async (provider: PaymentProviderInfo) => {
+    console.log(provider);
+    setSelectedProvider(provider);
+    setSelectedProviderid(provider.id);
+    await ensurePaymentSession(provider.id);
   };
 
-  const handlePayment = async () => {
-    if (!selectedProvider) {
-      toast.error(tCheckout("selectPaymentMethod"));
-      return;
-    }
+  // const handlePayment = async () => {
+  //   if (!selectedProviderid) {
+  //     toast.error(tCheckout("selectPaymentMethod"));
+  //     return;
+  //   }
 
-    // setSubmitting(true);
-    try {
-      const res = await requestProvider({
-        providerId: selectedProvider,
-        amount: `${cart?.total}`,
-        successUrl: "checkout/success",
-        failUrl: "checkout/failed"
-      });
-      if (!res) return;
-      const { referenceId, url, method } = res;
-      console.log(referenceId)
+  //   console.log(selectedProviderid);
 
-      const session = await ensurePaymentSession(selectedProvider, {
-        referenceId,
-      });
-      if (!session) return;
-      window.location.href = `http://localhost:3000/payment/${referenceId}`
+  //   // setSubmitting(true);
+  //   try {
+  //     if (!selectedProvider?.config) {
+  //       console.error(tCheckout("paymentFailed"));
+  //       return;
+  //     }
+  //     const res = await requestProvider({
+  //       providerId: selectedProviderid,
+  //       config: selectedProvider.config,
+  //       amount: `${cart?.total}`,
+  //       successUrl: "checkout/success",
+  //       failUrl: "checkout/failed",
+  //     });
+  //     if (!res) return;
+  //     const { referenceId, url, method } = res;
+  //     console.log(referenceId);
 
-    } catch (err) {
-      console.error(err);
-      toast.error(tCheckout("paymentFailed"));
-    } 
-    // finally {
-    //   setSubmitting(false);
-    // }
-  };
+  //     const session = await ensurePaymentSession(selectedProviderid, {
+  //       referenceId,
+  //     });
+  //     if (!session) return;
+  //     window.location.href = `http://localhost:3000/payment/${referenceId}`;
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error(tCheckout("paymentFailed"));
+  //   }
+  //   // finally {
+  //   //   setSubmitting(false);
+  //   // }
+  // };
 
   return (
     <Card>
@@ -119,15 +134,15 @@ export function CheckoutPaymentStep({
           {paymentProviders.map((p) => (
             <label
               key={p.id}
-              className={`flex items-center justify-between rounded-md border p-4 cursor-pointer transition-colors ${selectedProvider === p.id ? "border-foreground bg-neutral-50" : "border-border"}`}
+              className={`flex items-center justify-between rounded-md border p-4 cursor-pointer transition-colors ${selectedProviderid === p.id ? "border-foreground bg-neutral-50" : "border-border"}`}
             >
               <div className="flex items-center gap-3">
                 <input
                   type="radio"
                   name="provider"
                   value={p.id}
-                  checked={selectedProvider === p.id}
-                  onChange={() => handleProviderPick(p.id)}
+                  checked={selectedProviderid === p.id}
+                  onChange={() => handleProviderPick(p)}
                 />
                 <span className="text-sm font-medium">
                   {providerLabel(p.id, tCheckout)}
@@ -143,22 +158,24 @@ export function CheckoutPaymentStep({
           )}
         </div>
 
-        {selectedProvider && (
+        {selectedProviderid && (
           <div className="border-t pt-6">
-            {initiatingProvider === selectedProvider ? (
+            {initiatingProvider === selectedProviderid ? (
               <p className="text-sm text-muted-foreground">
                 {tCheckout("preparingProvider", {
-                  provider: providerLabel(selectedProvider, tCheckout),
+                  provider: providerLabel(selectedProviderid, tCheckout),
                 })}
               </p>
             ) : (
               <PaymentProviderInput
-                providerId={selectedProvider}
+                cartId={cart.id}
+                providerId={selectedProviderid}
+                config={selectedProvider.config}
                 session={activeSession}
                 totalLabel={formatPrice(cart?.total ?? 0, cart?.currency)}
                 onSubmit={async () =>
                   startTransition(async () => {
-                    await handlePayment();
+                    // await handlePayment();
                   })
                 }
                 submitting={isPending}
