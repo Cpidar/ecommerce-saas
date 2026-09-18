@@ -2,51 +2,94 @@
 import type { ReorderStoreSubscriptionCheckoutResponse, ReorderSubscriptionRecord } from "@/types/subscription"
 import { sdk } from "../medusa"
 import { medusaError } from "../medusa-error"
-import { getAuthHeaders } from "./cookies-client"
-import { AdminFileListResponse } from "@medusajs/types"
+import { AdditionalData, AdminFileListResponse, HttpTypes } from "@medusajs/types"
 import { getToken } from "./admin-auth"
 import { redirect } from "next/navigation"
-import { getCurrentStoreId } from "./cookies"
+import { getAuthHeaders, getCurrentStoreId } from "./cookies"
 import { siteConfigRepository, siteConfigRevalidation } from "../repositories/site-configs"
 import { Data as PuckData } from "@puckeditor/core"
 
-export async function initializeStore({
-    email,
-    password,
-    storeName,
-    handle,
-    subscription
-}: {
-    email: string
-    password: string
-    storeName: string
-    handle: string
-    subscription: ReorderSubscriptionRecord
-}) {
+export type CreateStoreInput = {
+    store_name: string;
+    email?: string;
+    password?: string;
+    user_id?: string;
+    is_super_admin?: boolean;
+    metadata?: Record<string, any>;
+    user_metadata?: Record<string, any>;
+};
+
+export type CreateStoreWorkflowInput = { store: CreateStoreInput } & AdditionalData
+
+export type InitializeStoreProgressResponse = {
+    status: "idle" | "running" | "completed" | "failed";
+    progress: number;
+    step: string;
+    error: string | null;
+};
+
+
+export async function initializeStore(input: CreateStoreWorkflowInput) {
     const headers = {
-        ...(getAuthHeaders()),
+        "Authorization": process.env.MEDUSA_SUPER_ADMIN_API_KEY!,
+        "Content-Type": "application/json"
+    }
+    console.log(input)
+
+    const response = await fetch(
+        `${process.env.MEDUSA_BACKEND_URL}/stores/regular`,
+        {
+            method: "POST",
+            headers,
+            body: JSON.stringify(input)
+        }
+    ).then(res => res.json())
+        .catch(medusaError)
+
+    if (response.message === "Ok")
+        await updateCustomer({ metadata: { onboarding: "completed" } })
+
+    return response
+}
+
+// TODO: transfer to lib/medusa/customer
+export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
+    const headers = {
+        ...(await getAuthHeaders()),
+    }
+
+    const updateRes = await sdk.store.customer
+        .update(body, {}, headers)
+        .then(({ customer }) => customer)
+        .catch(medusaError)
+
+    //   const cacheTag = await getCacheTag("customers")
+    //   revalidateTag(cacheTag)
+
+    return updateRes
+}
+
+
+export async function StoreCreationProgress(key: string) {
+    const headers = {
+        // "Authorization": process.env.MEDUSA_SUPER_ADMIN_API_KEY!,
+        // ...(getAuthHeaders()),
     }
 
     const response = await sdk.client
-        .fetch(
-            `/stores/regular`,
+        .fetch<InitializeStoreProgressResponse>(
+            `/store/initialize-store/progress?key=${key}`,
             {
-                method: "POST",
-                headers,
-                cache: "no-store",
-                body: {
-                    email,
-                    password,
-                    storeName,
-                    handle,
-                    subscription
-                }
+                method: "GET",
+                cache: "no-store"
+                // headers,
             }
         )
         .catch(medusaError)
 
     return response
 }
+
 
 export const savePuckData = async (payload: { data: PuckData; path: string }) => {
     const token = await getToken()

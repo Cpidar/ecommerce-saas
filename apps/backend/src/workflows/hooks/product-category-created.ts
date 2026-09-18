@@ -5,7 +5,7 @@ import { createProductCategoriesWorkflow } from "@medusajs/medusa/core-flows";
 import { normalizePersianText } from "../../utils/normalize-persian-text";
 
 createProductCategoriesWorkflow.hooks.categoriesCreated(async ({ categories }, { container }) => {
-  console.log("HOOK categoriesCreated", categories);
+  console.log("HOOK categoriesCreated", categories.map(pc => pc.id));
   const productModuleService = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
   const currentStore = container.resolve("currentStore") as Pick<StoreDTO, 'id'>;

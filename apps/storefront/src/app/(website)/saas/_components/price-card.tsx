@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { initiatePaymentSession } from "@/lib/medusa/cart-client";
 
 type ProductActionsProps = {
   product: Product;
@@ -38,13 +39,10 @@ export default function PriceCard({
   initialSubscriptionOffer = null,
 }: ProductActionsProps) {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const addToCart = useCartStore((s) => s.addItem);
   const clearCart = useCartStore((s) => s.clear);
 
   const [selectedVariantId, setSelectedVariantId] = useState(
-    // [MY-FORK-PRODUCT] Default to first available variant with inventory, not just first variant
     product.variants?.[0].id,
   );
 
@@ -154,8 +152,21 @@ export default function PriceCard({
       "",
       subscriptionMetadata,
     );
-    // TODO: it must redirect to the account/subscription page, but for now we redirect to the authentication page
-    router.push("/customer-auth/authenticate");
+
+    if (subscriptionOffer?.trialDays && subscriptionOffer.trialDays > 0) {
+      // Subscription checkout requires an initialized payment session
+      const { session } = await initiatePaymentSession(
+        "pp_behpardakht_behpardakht",
+        // subscription must have a referenceId to validiate payment,
+        // so if subscription has trial mode i get it a abitrary reference id
+        { referenceId: "a-aribitrary-value-just-for-payment-validation" },
+      );
+
+      // TODO: it must redirect to the account/subscription page, but for now we redirect to the authentication page
+      router.push("/onboarding/trial");
+    } else {
+      // TODO: must redirect to checkout page
+    }
   };
 
   return (
@@ -163,19 +174,18 @@ export default function PriceCard({
       {subscriptionOffer &&
         purchaseMode === "subscribe" &&
         subscriptionOffer.frequency_options.map((fo) => {
-          const subscriptionPrice = selectedFrequencyOption?.discount
+          const subscriptionPrice = fo?.discount
             ? getSubscriptionPriceSummary({
                 amount: selectedVariant.price,
                 currencyCode: selectedVariant.currency,
                 pricingSnapshot: {
-                  discount_type: selectedFrequencyOption.discount.discount_type,
-                  discount_value:
-                    selectedFrequencyOption.discount.discount_value,
-                  label: selectedFrequencyOption.discount.label,
+                  discount_type: fo.discount.discount_type,
+                  discount_value: fo.discount.discount_value,
+                  label: fo.discount.label,
                 },
               })
             : null;
-
+          console.log(subscriptionPrice);
           return (
             <Card className="flex flex-col" key={fo.id}>
               <CardHeader>
@@ -187,6 +197,25 @@ export default function PriceCard({
                       ? subscriptionPrice.subscriptionAmount
                       : selectedVariant.price}
                   </span>
+                  {subscriptionPrice && (
+                    <>
+                      <p>
+                        <span className="text-ui-fg-subtle">Original: </span>
+                        <span
+                          className="line-through"
+                          data-testid="original-product-price"
+                          data-value={subscriptionPrice.originalAmount}
+                        >
+                          {subscriptionPrice.originalAmount}
+                        </span>
+                      </p>
+                      {subscriptionPrice.percentageDiff && (
+                        <span className="text-ui-fg-interactive">
+                          -{subscriptionPrice.percentageDiff}%
+                        </span>
+                      )}
+                    </>
+                  )}
                   <span className="text-lg text-muted-foreground">/month</span>
                 </div>
                 <Separator className="mt-3" />

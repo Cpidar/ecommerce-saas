@@ -1,6 +1,15 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { seedProgress } from "../../../../utils/initialize-store-progress";
+import { createSeedProgress, DEFAULT } from "../../../../utils/initialize-store-progress";
 
 export async function GET(req: MedusaRequest, res: MedusaResponse) {
-  res.json(seedProgress.getState());
+
+  const key = req.query.key as string
+
+  if(!key) {
+    res.sendStatus(409)
+  }
+
+  const seedProgress = createSeedProgress(req.scope, key)
+
+  res.json(await seedProgress.get());
 }

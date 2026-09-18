@@ -88,10 +88,9 @@ export function CheckoutPaymentStep({
         successUrl: "saas/checkout/success",
         failUrl: "saas/checkout/failed",
       });
-      console.log("res 🍕🍕🍕🍕🍕🍕", res);
+
       if (!res) return;
       const { referenceId, url, method } = res;
-      console.log(referenceId);
 
       const session = await ensurePaymentSession(selectedProviderId, {
         referenceId,

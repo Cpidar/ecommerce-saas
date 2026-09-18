@@ -1,17 +1,26 @@
 // src/workflows/steps/seed-sales-channel.ts
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { Modules } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
+import { Logger } from "@medusajs/framework/types"
 import {
   createSalesChannelsWorkflow,
   createApiKeysWorkflow,
   linkSalesChannelsToApiKeyWorkflow,
 } from "@medusajs/medusa/core-flows"
-import { seedProgress } from "../../../utils/initialize-store-progress"
+import { createSeedProgress } from "../../../utils/initialize-store-progress"
 import { IApiKeyModuleService, ISalesChannelModuleService } from "@medusajs/framework/types"
+
+type Input = {
+  progressKey: string
+}
 
 export const seedSalesChannelStep = createStep(
   "seed-sales-channel",
-  async (_, { container }) => {
+  async (input: Input, { container }) => {
+    const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER)
+    logger.info("Starting store sales channel and publishable API key seeding")
+    const seedProgress = createSeedProgress(container, input.progressKey)
+
     await seedProgress.update(5, "ایجاد کانال فروش و کلید API")
 
     const salesChannelModule: ISalesChannelModuleService = container.resolve(Modules.SALES_CHANNEL)
@@ -34,6 +43,8 @@ export const seedSalesChannelStep = createStep(
         },
       })
       defaultSalesChannel = result[0]
+    } else {
+      logger.warn("Using the existing default sales channel during store initialization")
     }
 
     let publishableApiKey = (
@@ -53,6 +64,8 @@ export const seedSalesChannelStep = createStep(
         },
       })
       publishableApiKey = result[0]
+    } else {
+      logger.warn("Using the existing publishable API key during store initialization")
     }
 
     await linkSalesChannelsToApiKeyWorkflow(container).run({
@@ -61,6 +74,8 @@ export const seedSalesChannelStep = createStep(
         add: [defaultSalesChannel.id],
       },
     })
+
+    logger.info(`Finished store sales channel seeding: ${defaultSalesChannel.id}`)
 
     return new StepResponse({
       salesChannelId: defaultSalesChannel.id,

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
 import { DEFAULT_REGION } from "@/lib/medusa"
 
@@ -16,16 +16,17 @@ export function useAuthGuard() {
   const hydrate = useAuthStore((s) => s.hydrate)
   const router = useRouter()
   const countryCode = DEFAULT_REGION
-    const pathname = usePathname()
-
-// console.log(hasHydrated)
+  const pathname = usePathname()
+  const searchParams = useSearchParams();
+  const refUrl = searchParams?.toString() ? `${pathname}?${searchParams?.toString()}` : pathname
+  // console.log(hasHydrated)
   // useEffect(() => {
   //   if (!hasHydrated) void hydrate()
   // }, [hasHydrated, hydrate])
 
   useEffect(() => {
     if (hasHydrated && !isAuthenticated) {
-      router.replace(`/customer-auth/authenticate?ref=${pathname}`)
+      router.replace(`/customer-auth/authenticate?ref=${refUrl}`)
     }
   }, [hasHydrated, isAuthenticated, router, countryCode])
 

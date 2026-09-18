@@ -26,6 +26,7 @@ import type {
 } from "../../types/subscription"
 import { medusaError } from "../medusa-error"
 import { CARTS_CACHE_PROFILE, ORDERS_CACHE_PROFILE, SUBSCRIPTIONS_CACHE_PROFILE } from "../constants"
+import { initiatePaymentSession, retrieveCart } from "../medusa/cart-server"
 
 
 export async function revalidateIfPresent(tag: string) {
@@ -233,7 +234,10 @@ export async function retrySubscriptionPayment(_id: string) {
       {
         method: "POST",
         headers,
-        body: {},
+        body: {
+          // don't change this. i modify reorderjs to authorize payment with this reason
+          reason: "manual_payment"
+        },
         cache: "no-store",
       }
     )

@@ -3,7 +3,7 @@ import { createProductOptionsWorkflow } from "@medusajs/medusa/core-flows";
 import { linkProductOptionToStoreWorkflow } from "../link-product-option-to-store";
 
 createProductOptionsWorkflow.hooks.productOptionsCreated(async ({ product_options }, { container }) => {
-  console.log("HOOK productOptionsCreated", product_options);
+  console.log("HOOK productOptionsCreated", product_options.map(po => po.id));
 
   const currentStore = container.resolve("currentStore") as Pick<StoreDTO, 'id'>;
   await Promise.all(

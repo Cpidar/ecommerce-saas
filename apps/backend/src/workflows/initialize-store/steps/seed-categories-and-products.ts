@@ -1,14 +1,16 @@
 // src/workflows/steps/seed-categories-and-products.ts
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { ProductStatus, Modules } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
+import { Logger } from "@medusajs/framework/types"
 import {
   createProductCategoriesWorkflow,
   createProductOptionsWorkflow,
   createProductsWorkflow,
 } from "@medusajs/medusa/core-flows"
-import { seedProgress } from "../../../utils/initialize-store-progress"
+import { createSeedProgress } from "../../../utils/initialize-store-progress"
 
 type Input = {
+  progressKey: string
   salesChannelId: string
   shippingProfileId: string
 }
@@ -16,6 +18,10 @@ type Input = {
 export const seedCategoriesAndProductsStep = createStep(
   "seed-categories-and-products",
   async (input: Input, { container }) => {
+    const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER)
+    logger.info(`Starting category and product seeding for sales channel ${input.salesChannelId}`)
+    
+    const seedProgress = createSeedProgress(container, input.progressKey)
     await seedProgress.update(75, "ایجاد دسته‌بندی محصولات")
 
     const unique = Math.floor(1000 + Math.random() * 9000).toString()
@@ -180,7 +186,7 @@ export const seedCategoriesAndProductsStep = createStep(
           {
             title: "سویشرت مدوسا",
             category_ids: [
-              categories.find((cat) => cat.handle === `sweet-shirt-789456-${unique}`)!.id,
+              categories.find((cat) => cat.handle === `sweatshirt-${unique}`)!.id,
             ],
             description:
               "حس یک سویشرت کلاسیک را دوباره تجربه کنید. با سویشرت نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
@@ -260,7 +266,7 @@ export const seedCategoriesAndProductsStep = createStep(
           {
             title: "شلوار اسلش مدوسا",
             category_ids: [
-              categories.find((cat) => cat.handle === `pants-789456-${unique}`)!.id,
+              categories.find((cat) => cat.handle === `pants-${unique}`)!.id,
             ],
             description:
               "حس یک شلوار اسلش کلاسیک را دوباره تجربه کنید. با شلوار اسلش نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
@@ -340,7 +346,7 @@ export const seedCategoriesAndProductsStep = createStep(
           {
             title: "شلوارک مدوسا",
             category_ids: [
-              categories.find((cat) => cat.handle === `accessories-789456-${unique}`)!.id,
+              categories.find((cat) => cat.handle === `accessories-${unique}`)!.id,
             ],
             description:
               "حس یک شلوارک کلاسیک را دوباره تجربه کنید. با شلوارک نخی ما، لباس‌های روزمره دیگر معمولی نخواهند بود.",
@@ -421,6 +427,7 @@ export const seedCategoriesAndProductsStep = createStep(
       },
     })
 
+    logger.info(`Finished category and product seeding for sales channel ${input.salesChannelId}`)
     return new StepResponse({ success: true })
   }
 )

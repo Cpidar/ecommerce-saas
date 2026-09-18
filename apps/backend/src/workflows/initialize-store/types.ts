@@ -16,4 +16,5 @@ export type InitializeStoreWorkflowInput = {
   subscription_id?: string | null;
   subscription_status?: string;
   template?: JsonRecord;
+  progressKey: string;
 };

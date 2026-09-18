@@ -1,13 +1,22 @@
 // src/workflows/steps/seed-region.ts
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { Modules } from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { createRegionsWorkflow } from "@medusajs/medusa/core-flows"
-import { seedProgress } from "../../../utils/initialize-store-progress"
-import { IRegionModuleService } from "@medusajs/framework/types"
+import { createSeedProgress } from "../../../utils/initialize-store-progress"
+import { IRegionModuleService, Logger } from "@medusajs/framework/types"
+
+type Input = {
+  progressKey: string
+}
 
 export const seedRegionStep = createStep(
   "seed-region",
-  async (_, { container }) => {
+  async (input: Input, { container }) => {
+    const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER)
+    logger.info("Starting store region seeding")
+    
+    const seedProgress = createSeedProgress(container, input.progressKey)
+
     await seedProgress.update(30, "ایجاد منطقه")
 
     const regionModule: IRegionModuleService = container.resolve(Modules.REGION)
@@ -16,6 +25,8 @@ export const seedRegionStep = createStep(
     )[0]
 
     if (existing) {
+      logger.warn(`Using existing region ${existing.id} during store initialization`)
+      logger.info(`Finished store region seeding: ${existing.id}`)
       return new StepResponse({ regionId: existing.id })
     }
 
@@ -35,6 +46,7 @@ export const seedRegionStep = createStep(
       },
     })
 
+    logger.info(`Finished store region seeding: ${result[0].id}`)
     return new StepResponse({ regionId: result[0].id })
   }
 )

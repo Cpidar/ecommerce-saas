@@ -11,8 +11,6 @@ import { AuthError } from "@/lib/utils/auth-error";
 import { registerSchema } from "@/lib/validators";
 import { useTranslations } from "next-intl";
 import { registerWithPhone, transferCart } from "@/lib/medusa/auth-server";
-import { initializeStore } from "@/lib/medusa/stores-actions";
-import { completeSubscriptionCheckout } from "@/lib/repositories/subscriptions";
 import { useCartStore } from "@/store/cart";
 import { AppMode } from "@/lib/utils/app-mode";
 
@@ -58,31 +56,19 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
         phone,
         password: form.password,
       });
-
-      // if (appMode === "saas") {
-      //   await transferCart();
-      //   const result = await completeSubscriptionCheckout();
-      //   if (result?.type === "order") {
-      //     useCartStore.setState({ cart: null, hasHydrated: false });
-      //     await initializeStore({
-      //       email,
-      //       password: form.password,
-      //       storeName: form.storeName,
-      //       handle: form.storeHandle,
-      //       subscription: result.subscription,
-      //     });
-      //     toast.success(t("storeCreated"));
-      //     router.push(`/customer-auth/initialize-store`);
-      //     return result;
-      //   } else {
-      //     toast.error(t("storeCreationFailed"));
-      //     return null;
-      //   }
-      // }
-
       if (typeof res.transactionId === "string") {
+        useAuthStore.setState({
+          tempStoreData: {
+            name: form.storeName,
+            password: form.password,
+            handle: form.storeName,
+          },
+          onBoarding: appMode === 'saas' ? true : false
+        });
         // toast.success(t("accountCreated"));
-        router.push(`/customer-auth/otp`);
+        router.push(
+          `/customer-auth/otp?from=${appMode === "saas" ? "sregister" : "register"}`,
+        );
       }
     } catch (err) {
       console.error(err);
@@ -107,6 +93,7 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
             <Input
               id="firstName"
               name="firstName"
+              type="text"
               value={form.firstName}
               onChange={handleChange}
               required
@@ -117,6 +104,7 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
             <Input
               id="lastName"
               name="lastName"
+              type="text"
               value={form.lastName}
               onChange={handleChange}
               required

@@ -59,10 +59,10 @@ export const sdk = new Medusa({
   baseUrl: backendUrl,
   publishableKey,
   debug: process.env.NODE_ENV === "development",
-  // auth: {
-  //   type: "jwt",
-  //   jwtTokenStorageMethod: isBrowser ? "local" : "memory",
-  // },
+  auth: {
+    type: "jwt",
+    jwtTokenStorageMethod: isBrowser ? "local" : "memory",
+  },
   // [MY-FORK-CONFIG] add store id headers for multi-tenancy
   // globalHeaders: {
   //   "x-store-id": process.env.NEXT_PUBLIC_DEFAULT_STORE_ID!,

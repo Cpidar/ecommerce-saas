@@ -38,15 +38,14 @@ export default function CheckoutPage() {
 
   // Fetch payment providers once
   useEffect(() => {
-    
     let cancelled = false;
-    
+
     async function loadProviders() {
       try {
         setProvidersLoading(true);
         setProvidersError(null);
         const providers = await listPaymentProviders();
-        console.log(providers)
+        console.log(providers);
         if (!cancelled) {
           setPaymentProviders(providers);
         }

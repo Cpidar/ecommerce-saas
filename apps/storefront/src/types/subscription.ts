@@ -110,6 +110,7 @@ export type ProductSubscriptionOffer = {
   info_text: string | null
   frequency_options: SubscriptionOfferFrequencyOption[]
   discount: SubscriptionOfferDiscount | null
+  trialDays?: number
 }
 
 export type ReorderStoreSubscriptionOfferFrequency = {

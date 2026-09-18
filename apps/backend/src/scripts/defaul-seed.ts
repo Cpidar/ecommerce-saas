@@ -21,7 +21,7 @@ import {
   linkSalesChannelsToApiKeyWorkflow,
   linkSalesChannelsToStockLocationWorkflow,
 } from "@medusajs/medusa/core-flows";
-import { seedProgress } from "../utils/initialize-store-progress";
+import { createSeedProgress } from "../utils/initialize-store-progress";
 
 const IMAGE_HOST = "https://your-image-host.com"; // Replace with your actual image host
 const PREFIX = "products"; // Replace with your actual prefix
@@ -52,6 +52,8 @@ export async function default_data_seed({
   const link = container.resolve(ContainerRegistrationKeys.LINK);
   const query = container.resolve(ContainerRegistrationKeys.QUERY);
   const uniquPostfix = Math.floor(1000 + Math.random() * 9000).toString()
+
+  const seedProgress = createSeedProgress(container, storeId)
 
   const salesChannelModuleService = container.resolve(Modules.SALES_CHANNEL)
   const fulfillmentModuleService = container.resolve(

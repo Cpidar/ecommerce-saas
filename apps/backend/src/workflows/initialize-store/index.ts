@@ -59,25 +59,28 @@ export const initializeStoreWorkflow = createWorkflow(
 
     // 3. Run the actual seed logic
     // SeedDemoDataStep({ storeId: input.storeId });
-    const salesChannel = seedSalesChannelStep()
-    seedRegionStep()
-    const stockLocation = seedStockLocationStep()
+    const salesChannel = seedSalesChannelStep({ progressKey: input.progressKey })
+    seedRegionStep({ progressKey: input.progressKey })
+    const stockLocation = seedStockLocationStep({ progressKey: input.progressKey })
 
     seedLinkSalesChannelStep({
+      progressKey: input.progressKey,
       stockLocationId: stockLocation.stockLocationId,
       salesChannelId: salesChannel.salesChannelId,
     })
 
-    const { shippingProfile } = seedShippingProfileStep()
+    const { shippingProfile } = seedShippingProfileStep({ progressKey: input.progressKey })
 
     seedCategoriesAndProductsStep({
+      progressKey: input.progressKey,
       salesChannelId: salesChannel.salesChannelId,
       shippingProfileId: shippingProfile.id
     })
 
-    seedInventoryStep({
-      stockLocationId: stockLocation.stockLocationId,
-    })
+    // seedInventoryStep({
+    //   progressKey: input.progressKey,
+    //   stockLocationId: stockLocation.stockLocationId,
+    // })
 
     // 4. Release lock
     releaseLockStep({

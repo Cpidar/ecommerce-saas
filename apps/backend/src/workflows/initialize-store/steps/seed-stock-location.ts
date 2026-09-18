@@ -2,13 +2,21 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { Modules, ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createStockLocationsWorkflow } from "@medusajs/medusa/core-flows"
-import { seedProgress } from "../../../utils/initialize-store-progress"
-import { IStockLocationService } from "@medusajs/framework/types"
+import { createSeedProgress } from "../../../utils/initialize-store-progress"
+import { IStockLocationService, Logger } from "@medusajs/framework/types"
 import { Link } from "@medusajs/framework/modules-sdk"
+
+type Input = {
+  progressKey: string
+}
 
 export const seedStockLocationStep = createStep(
   "seed-stock-location",
-  async (_, { container }) => {
+  async (input: Input, { container }) => {
+    const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER)
+    logger.info("Starting store stock location seeding")
+
+    const seedProgress = createSeedProgress(container, input.progressKey)
     await seedProgress.update(45, "ایجاد انبار")
 
     const stockLocationModule: IStockLocationService = container.resolve(Modules.STOCK_LOCATION)
@@ -45,8 +53,11 @@ export const seedStockLocationStep = createStep(
           fulfillment_provider_id: "manual_manual",
         },
       })
+    } else {
+      logger.warn(`Using existing stock location ${stockLocation.id} during store initialization`)
     }
 
+    logger.info(`Finished store stock location seeding: ${stockLocation.id}`)
     return new StepResponse({ stockLocationId: stockLocation.id })
   }
 )

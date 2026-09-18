@@ -112,3 +112,8 @@ export async function updateMyAddress(
 export async function deleteMyAddress(id: string): Promise<void> {
   await sdk.store.customer.deleteAddress(id)
 }
+
+export async function updateCustomerMetadata(metadata: Record<string, unknown>): Promise<Customer> {
+  const { customer } = await sdk.store.customer.update({ metadata })
+  return customer
+}

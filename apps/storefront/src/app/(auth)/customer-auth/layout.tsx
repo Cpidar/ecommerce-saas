@@ -7,7 +7,6 @@ import { Smartphone } from "lucide-react";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "صفحه ورود",

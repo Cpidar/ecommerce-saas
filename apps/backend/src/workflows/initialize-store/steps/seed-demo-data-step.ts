@@ -1,5 +1,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk";
 import { default_data_seed } from "../../../scripts/defaul-seed";
+import { Logger } from "@medusajs/framework/types";
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
 
 type SeedDemoDataStepInput = {
   storeId: string;
@@ -18,11 +20,13 @@ export const SeedDemoDataStep = createStep(
   "seed-demo-data",
   async (input: SeedDemoDataStepInput, { container }) => {
     const { storeId } = input;
+    const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER);
 
-    
+    logger.info(`Starting legacy demo data seeding for store ${storeId}`);
 
     await default_data_seed({ container, storeId });
 
+    logger.info(`Finished legacy demo data seeding for store ${storeId}`);
     return new StepResponse({ storeId });
   }
 );

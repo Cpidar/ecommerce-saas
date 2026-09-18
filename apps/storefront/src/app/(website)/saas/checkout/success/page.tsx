@@ -4,6 +4,7 @@ import { Suspense, use, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
+  completeSubscriptionCheckout,
   retrySubscriptionPayment,
 } from "@/lib/repositories/subscriptions";
 import {
@@ -18,6 +19,7 @@ import {
 import { Cart } from "@/types";
 import { useCartStore } from "@/store/cart";
 import { transferCart } from "@/lib/medusa/auth-server";
+import { ReorderStoreCustomerSubscriptionDetailResponse } from "@/types/subscription";
 
 export default function CheckoutSuccessPage() {
   const hydrate = useCartStore((s) => s.hydrate);
@@ -68,18 +70,26 @@ async function placeSubscriptionOrder(
   cartId: string,
   hydrate: () => Promise<void>,
   tCheckout: ReturnType<typeof useTranslations>,
+  subscriptionId?: string,
 ) {
   await transferCart();
   // TODO: retrive Subscription id from url search params or cookie
-  const result = await retrySubscriptionPayment("Subscription_id");
-  if (result?.status === "active") {
-    useCartStore.setState({ cart: null, hasHydrated: false });
-    toast.success(tCheckout("success"));
-    return result;
+  // if subscription id exist it means renew subsuction if not it means create subscription
+  // let result: Pick<ReorderStoreCustomerSubscriptionDetailResponse, "subscription">
+  if (subscriptionId) {
+    const result = await retrySubscriptionPayment("Subscription_id");
+    if (result?.status === "active") {
+      useCartStore.setState({ cart: null, hasHydrated: false });
+      toast.success(tCheckout("success"));
+      return result;
+    } else {
+      toast.error(tCheckout("couldntComplete"));
+      await hydrate();
+      return null;
+    }
   } else {
-    toast.error(tCheckout("couldntComplete"));
-    await hydrate();
-    return null;
+    // TODO: initiate payment session with referenceId
+    // result = await completeSubscriptionCheckout()
   }
 }
 

@@ -32,13 +32,13 @@ export function mapStoreSubscriptionOffer(
     is_backend_compatible: true,
     discount: frequency.discount
       ? {
-          discount_type: frequency.discount.type,
-          discount_value: frequency.discount.value,
-          label:
-            frequency.discount.type === "percentage"
-              ? `${frequency.discount.value}% off subscription`
-              : `${frequency.discount.value} off subscription`,
-        }
+        discount_type: frequency.discount.type,
+        discount_value: frequency.discount.value,
+        label:
+          frequency.discount.type === "percentage"
+            ? `${frequency.discount.value}% off subscription`
+            : `${frequency.discount.value} off subscription`,
+      }
       : null,
   }))
 
@@ -52,6 +52,7 @@ export function mapStoreSubscriptionOffer(
     info_text: buildOfferInfoText(offer.minimum_cycles, offer.trial?.days ?? null),
     frequency_options: frequencyOptions,
     discount: primaryDiscount,
+    trialDays: offer.trial?.is_enabled ? (offer.trial.days ?? 0) : 0
   }
 }
 
@@ -161,10 +162,10 @@ function parseSubscriptionOfferMetadata(
   const value = raw as Record<string, unknown>
   const frequencyOptions = Array.isArray(value.frequency_options)
     ? value.frequency_options
-        .map(parseFrequencyOption)
-        .filter(
-          (option): option is SubscriptionOfferFrequencyOption => option !== null
-        )
+      .map(parseFrequencyOption)
+      .filter(
+        (option): option is SubscriptionOfferFrequencyOption => option !== null
+      )
     : []
 
   return {
