@@ -1,6 +1,6 @@
 import "server-only";
 import { cookies } from "next/headers";
-import { sdk } from "../medusa";
+import { adminSdk, sdk } from "../medusa";
 import { AuthLoginResponse } from "@medusajs/js-sdk";
 
 export const ADMIN_COOKIE = "admin_session";
@@ -49,30 +49,26 @@ export async function clearToken() {
   jar.delete(ADMIN_COOKIE);
 }
 
-export async function loginAdmin(email: string, password: string) {
-  console.log("🦒🦒🦒🦒🦒🦒", email, password)
+export async function loginAdmin(
+  email: string,
+  password: string
+) {
   try {
-    const { token } = await sdk.client.fetch<{ token: string }>(
-      `/auth/user/emailpass`,
+    await adminSdk.auth.login(
+      "user",
+      "emailpass",
       {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: { email, password },
-        credentials: "include", // important for cookies if you prefer session
-        cache: "no-store",
+        email,
+        password,
       }
     )
-    if (typeof token !== "string") {
-      throw new Error("Authentication requires additional steps")
-      // replace with the redirect logic of your application
-      return
+
+    return {
+      success: true,
     }
+  } catch (e) {
+    console.error("Admin login failed:", e)
 
-    await setToken(token)
-  }
-
-  catch (e) {
-    console.log("🦒🦒🦒🦒🦒🦒", e)
     throw new Error("Invalid admin credentials")
   }
 }

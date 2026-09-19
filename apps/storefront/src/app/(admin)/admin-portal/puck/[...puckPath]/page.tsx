@@ -17,12 +17,9 @@ import "@puckeditor/core/puck.css";
 import { Client } from "./client";
 import { Metadata } from "next";
 import { siteConfigRepository } from "@/lib/repositories/site-configs";
-import { DEFAULT_REGION, sdk } from "@/lib/medusa";
+import { DEFAULT_REGION } from "@/lib/medusa";
 import { shouldHandleEditPath } from "@/puck/utils/slug-matcher";
-import { notFound, redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
-import { AdminUserResponse } from "@medusajs/types";
+import { notFound } from "next/navigation";
 
 export async function generateMetadata({
   params,
@@ -54,24 +51,6 @@ export default async function Page({
       ? "/home"
       : `/${puckPath.join("/")}`;
 
-  const cookieStore = await cookies();
-  const token = cookieStore.get(ADMIN_COOKIE)?.value;
-
-  if (!token) {
-    redirect(`/admin-portal/login?from=${path}/edit`);
-  }
-  try {
-    const { user } = await sdk.client.fetch<AdminUserResponse>(
-      `/admin/users/me`,
-      { headers: { Authorization: `Bearer ${token}` }, cache: "no-store" },
-    );
-
-    if (!user) {
-      redirect(`/admin-portal/login?from=${path}/edit`);
-    }
-  } catch (e) {
-    redirect(`/admin-portal/login?from=${path}/edit`);
-  }
 
   const data = await siteConfigRepository.getPage(path);
 

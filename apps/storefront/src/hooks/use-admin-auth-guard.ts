@@ -11,9 +11,7 @@ import { DEFAULT_REGION } from "@/lib/medusa"
  */
 export function useAuthGuard() {
   const customer = useAuthStore((s) => s.customer)
-  const user = useAuthStore(s => s.user)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  const isAdminAuthenticated = useAuthStore((s) => s.isAdminAuthenticated)
   const hasHydrated = useAuthStore((s) => s.hasHydrated)
   const hydrate = useAuthStore((s) => s.hydrate)
   const router = useRouter()
@@ -34,8 +32,6 @@ export function useAuthGuard() {
 
   return {
     customer,
-    user,
-    isAdminAuthenticated,
     isAuthenticated,
     isLoading: !hasHydrated,
     isReady: hasHydrated && isAuthenticated,

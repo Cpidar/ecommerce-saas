@@ -1,14 +1,24 @@
-"use server"
+"use client"
 import type { ReorderStoreSubscriptionCheckoutResponse, ReorderSubscriptionRecord } from "@/types/subscription"
 import { sdk } from "../medusa"
 import { medusaError } from "../medusa-error"
 import { AdditionalData, AdminFileListResponse, HttpTypes } from "@medusajs/types"
-import { getToken } from "./admin-auth"
-import { redirect } from "next/navigation"
-import { getAuthHeaders, getCurrentStoreId } from "./cookies"
-import { siteConfigRepository, siteConfigRevalidation } from "../repositories/site-configs"
+// import { getToken } from "./admin-auth"
+// import { redirect } from "next/navigation"
+// import {  getCurrentStoreId } from "./cookies"
+// import { siteConfigRepository, siteConfigRevalidation, StoreConfigResponse, storeConfigTags } from "../repositories/site-configs"
 import { Data as PuckData } from "@puckeditor/core"
+// import { cacheTag, cacheLife } from "next/cache"
+import { STORE_CONFIG_CACHE_PROFILE } from "../constants"
 
+const getCurrentStoreId = () => {
+    const value = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("current_store_id="))
+        ?.split("=")[1];
+
+    return value
+}
 export type CreateStoreInput = {
     store_name: string;
     email?: string;
@@ -46,29 +56,8 @@ export async function initializeStore(input: CreateStoreWorkflowInput) {
     ).then(res => res.json())
         .catch(medusaError)
 
-    if (response.message === "Ok")
-        await updateCustomer({ metadata: { onboarding: "completed" } })
-
     return response
 }
-
-// TODO: transfer to lib/medusa/customer
-export const updateCustomer = async (body: HttpTypes.StoreUpdateCustomer) => {
-    const headers = {
-        ...(await getAuthHeaders()),
-    }
-
-    const updateRes = await sdk.store.customer
-        .update(body, {}, headers)
-        .then(({ customer }) => customer)
-        .catch(medusaError)
-
-    //   const cacheTag = await getCacheTag("customers")
-    //   revalidateTag(cacheTag)
-
-    return updateRes
-}
-
 
 export async function StoreCreationProgress(key: string) {
     const headers = {
@@ -92,13 +81,6 @@ export async function StoreCreationProgress(key: string) {
 
 
 export const savePuckData = async (payload: { data: PuckData; path: string }) => {
-    const token = await getToken()
-
-    if (!token) {
-        redirect("/admin-portal/login?from=/admin-portal/puck/home/edit")
-
-    }
-
     const storeId = await getCurrentStoreId()
     if (!storeId) {
         throw new Error("You have not access to any store. Please contact your administrator.");
@@ -121,7 +103,7 @@ export const savePuckData = async (payload: { data: PuckData; path: string }) =>
     //     : "{}"
     // );
 
-    const existingStoreConfig = await siteConfigRepository.getPageFromAdmin()
+    const existingStoreConfig = await fetchAdminPuckPage()
     const existingPuckDataForPath = existingStoreConfig?.puck_data?.[payload.path] ?? {}
 
     // 🟢 Write to the correct path
@@ -133,7 +115,8 @@ export const savePuckData = async (payload: { data: PuckData; path: string }) =>
             "/admin/store-config",
             {
                 method: "PUT",
-                headers: { 'Authorization': `Bearer ${token}` },
+                credentials: "include",
+                // headers: { 'Authorization': `Bearer ${token}` },
                 body: {
                     id: existingStoreConfig?.id,
                     puck_data: {
@@ -146,7 +129,7 @@ export const savePuckData = async (payload: { data: PuckData; path: string }) =>
                 },
             }
         )
-            .then(() => siteConfigRevalidation.puck(storeId))
+            // .then(() => siteConfigRevalidation.puck(storeId))
             .finally(() => console.log("🔥🔥🔥🔥 Puck Page Updated"))
     } catch (e) {
         console.error(e)
@@ -159,11 +142,11 @@ export const savePuckData = async (payload: { data: PuckData; path: string }) =>
 // Use native fetch for file uploads because sdk.client.fetch modifies FormData
 // requests and prevents them from being sent correctly as multipart/form-data.
 export const uploadAdminFile = async (file: File): Promise<string> => {
-    const token = await getToken()
-    if (!token) {
-        redirect("/admin-portal/login?from=/admin-portal/puck/home/edit")
-        // throw new Error("No admin token found. Please log in first.");
-    }
+    // const token = await getToken()
+    // if (!token) {
+    //     redirect("/admin-portal/login?from=/admin-portal/puck/home/edit")
+    //     // throw new Error("No admin token found. Please log in first.");
+    // }
 
     const storeId = await getCurrentStoreId()
     if (!storeId) {
@@ -178,8 +161,9 @@ export const uploadAdminFile = async (file: File): Promise<string> => {
             `${process.env.MEDUSA_BACKEND_URL}/admin/uploads`,
             {
                 method: "POST",
+                credentials: "include",
                 headers: {
-                    Authorization: `Bearer ${token}`,
+                    // Authorization: `Bearer ${token}`,
                     "x-store-id": storeId
                 },
                 body: formData,
@@ -196,3 +180,19 @@ export const uploadAdminFile = async (file: File): Promise<string> => {
         throw new Error("Unable to upload file");
     }
 };
+
+const fetchAdminPuckPage = async () => {
+    const response = await sdk.client.fetch<any>(
+        "/store/store-config?fields=puck_data,id",
+        {
+            method: "GET",
+            credentials: "include",
+            //   headers: { 'Authorization': `Bearer ${token}` },
+        }
+    )
+
+
+    return response.store_config
+
+}
+

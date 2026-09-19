@@ -5,7 +5,7 @@ import { sdk } from "../medusa";
 import { cacheLife, cacheTag, revalidateTag } from "next/cache";
 import { getCurrentStoreId } from "../medusa/cookies";
 import { cookies } from 'next/headers';
-import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
+// import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
 import { STORE_CONFIG_CACHE_PROFILE } from "../constants";
 
 export type JsonRecord = Record<string, unknown>
@@ -152,22 +152,6 @@ const fetchPuckPage = async (storeId?: string) => {
 
 }
 
-const fetchAdminPuckPage = async () => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(ADMIN_COOKIE)?.value;
-
-  const response = await sdk.client.fetch<StoreConfigResponse>(
-    "/store/store-config?fields=puck_data,id",
-    {
-      method: "GET",
-      headers: { 'Authorization': `Bearer ${token}` },
-    }
-  )
-
-
-  return response.store_config
-
-}
 
 const fetchSeoConfig = async (storeId?: string) => {
   "use cache"
@@ -294,22 +278,6 @@ export const siteConfigRepository = {
 
     const page = path ? puckData[path] : puckData
     return page
-  },
-
-  async getPageFromAdmin(path?: string): Promise<any> {
-    const storeConfig = await fetchAdminPuckPage()
-    // if (storeConfig?.puck_data && Object.keys(storeConfig.puck_data).length > 0) {
-    //   puckData = storeConfig.puck_data;
-    // } else {
-    //   // Fallback to template.json when there is no store config or it's empty
-    //   if (fs.existsSync(templatePath)) {
-    //     puckData = JSON.parse(fs.readFileSync(templatePath, "utf-8"));
-    //   }
-    // }
-
-
-    // const page = path ? puckData[path] : puckData
-    return storeConfig
   },
 
   async getSeoConfig() {

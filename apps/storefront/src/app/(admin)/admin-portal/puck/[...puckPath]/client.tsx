@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { savePuckData } from "@/lib/medusa/stores-actions";
 import config from "@/puck/config";
 import type { Config, Data } from "@puckeditor/core";
@@ -10,9 +11,10 @@ import {
   FieldLabel,
   Puck,
 } from "@puckeditor/core";
-import { Globe, Type } from "lucide-react";
+import { Type } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Navigate, useLocation } from "react-router-dom";
 
 const usePuck = createUsePuck<Config>();
 
@@ -30,6 +32,20 @@ export function Client({
   };
 
   const params = useSearchParams();
+  const { user, isAdminAuthenticated } = useAuthGuard();
+
+  if (!user || !isAdminAuthenticated) {
+    return process.env.NODE_ENV === "development" ? (
+      // TODO: if doesnt work must use search params and medusa login page widget
+      <Navigate to="/app/login" state={{ from: `${path}/edit` }} replace />
+    ) : (
+      <Navigate
+        to={`/admin-portal/login?from=${path}/edit`}
+        state={{ from: `${path}/edit` }}
+        replace
+      />
+    );
+  }
 
   return (
     <Puck

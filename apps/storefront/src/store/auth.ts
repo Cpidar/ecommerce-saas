@@ -1,7 +1,7 @@
 "use client"
 
 import { create } from "zustand"
-import type { HttpTypes } from "@medusajs/types"
+import type { AdminUser, HttpTypes } from "@medusajs/types"
 import {
   login as authLogin,
   logout as authLogout,
@@ -17,6 +17,7 @@ import { verifyOtp } from "../lib/medusa/auth-server"
 import { AuthError } from "@/lib/utils/auth-error"
 import { ReorderSubscriptionRecord } from "@/types/subscription"
 import { persist, createJSONStorage } from "zustand/middleware"
+import { adminSdk } from "@/lib/medusa"
 
 type Customer = HttpTypes.StoreCustomer
 type Location = "auth" | "verify" | "otp" | "password" | "reset-password" | "register"
@@ -36,6 +37,9 @@ interface AuthState {
   tempStoreData: StoreRegisterationData
   refPath?: string | null
   subscription: ReorderSubscriptionRecord | null
+  // Admin/User
+  user: AdminUser | null
+  isAdminAuthenticated: boolean
 
   hydrate?: () => Promise<void>
   initialize(customer: Customer | null): void
@@ -69,6 +73,8 @@ interface AuthState {
     byOtp?: boolean
   }) => Promise<AuthRedirectResponse>
   loginWithOTP: (phone: string, otp: string, email: string) => Promise<void>
+  // ADMIN
+
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -87,6 +93,8 @@ export const useAuthStore = create<AuthState>()(
       tempStoreData: { name: "", handle: "", password: "" },
       refPath: "",
       subscription: null,
+      user: null,
+      isAdminAuthenticated: false,
 
       initialize(customer) {
         set({
@@ -97,6 +105,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       reset: () => {
+        store.persist.clearStorage()
         set(store.getInitialState())
       },
 
@@ -179,20 +188,7 @@ export const useAuthStore = create<AuthState>()(
           // Clear persisted data from localStorage
           useAuthStore.persist.clearStorage()
 
-          set({
-            customer: null,
-            phone: "",
-            email: "",
-            refPath: "",
-            isAuthenticated: false,
-            isLoading: false,
-            location: "auth",
-            onBoarding: false,
-            phoneVerfied: false,
-            tempStoreData: { name: "", handle: "", password: "" },
-            subscription: null,
-            hasHydrated: true,
-          })
+          set(store.getInitialState())
         }
       },
 
@@ -214,6 +210,17 @@ export const useAuthStore = create<AuthState>()(
           set({ isLoading: false })
         }
       },
+
+      // ADMIN
+      adminMe: async () => {
+        set({ isLoading: true })
+        try {
+          const { user } = await adminSdk.admin.user.me()
+          set({ user })
+        } finally {
+          set({ isLoading: false })
+        }
+      }
     }),
     {
       name: "auth-storage", // unique key in localStorage

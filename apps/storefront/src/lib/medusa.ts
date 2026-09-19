@@ -69,6 +69,14 @@ export const sdk = new Medusa({
   // },
 })
 
+export const adminSdk = new Medusa({
+  baseUrl: backendUrl,
+  debug: process.env.NODE_ENV === "development",
+  auth: {
+    type: "session",
+  },
+})
+
 // export async function sdk() {
 //   const storeId = await getCurrentStoreId();
 //   return new Medusa({
