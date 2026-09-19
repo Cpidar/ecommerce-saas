@@ -1,14 +1,16 @@
-import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
-import { CheckoutClient } from "./client"
+import { redirect } from "next/navigation";
+import { CheckoutClient } from "./client";
+import { listCustomerSubscriptions } from "@/lib/repositories/subscriptions";
 
 export default async function CheckoutPage() {
-  const cookieStore = await cookies()
-  const subscriptionId = cookieStore.get("_medusa_subscription_id")?.value
+  const subscription = await listCustomerSubscriptions();
+  const activeSubscription = subscription.filter(
+    (sub) => sub.status === "active",
+  );
 
-  if (subscriptionId) {
-    redirect("/onboarding/initialize-store")
+  if (!activeSubscription) {
+    redirect("/onboarding/trial");
   }
 
-  return <CheckoutClient />
+  return <CheckoutClient />;
 }

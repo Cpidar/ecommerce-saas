@@ -1,7 +1,7 @@
 // src/workflows/steps/seed-categories-and-products.ts
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
-import { ContainerRegistrationKeys, ProductStatus } from "@medusajs/framework/utils"
-import { Logger } from "@medusajs/framework/types"
+import { ContainerRegistrationKeys, Modules, ProductStatus } from "@medusajs/framework/utils"
+import { IProductModuleService, Logger } from "@medusajs/framework/types"
 import {
   createProductCategoriesWorkflow,
   createProductOptionsWorkflow,
@@ -77,7 +77,7 @@ export const seedCategoriesAndProductsStep = createStep(
     const sizeOption = options.find((o) => o.title.startsWith("Size"))!
     const colorOption = options.find((o) => o.title.startsWith("Color"))!
 
-    await createProductsWorkflow(container).run({
+    const { result: products } = await createProductsWorkflow(container).run({
       input: {
         products: [
           // --- T-Shirt ---
@@ -428,6 +428,36 @@ export const seedCategoriesAndProductsStep = createStep(
     })
 
     logger.info(`Finished category and product seeding for sales channel ${input.salesChannelId}`)
-    return new StepResponse({ success: true })
+    return new StepResponse(
+      { success: true },
+      {
+        categoryIds: categories.map((category) => category.id),
+        optionIds: options.map((option) => option.id),
+        productIds: products.map((product) => product.id),
+        progressKey: input.progressKey,
+      }
+    )
+  },
+  async (compensationData, { container }) => {
+    if (!compensationData) {
+      return
+    }
+
+    const seedProgress = createSeedProgress(container, compensationData.progressKey)
+    await seedProgress.fail("خطا در ایجاد دسته‌بندی‌ها و محصولات")
+
+    const productModule = container.resolve<IProductModuleService>(Modules.PRODUCT)
+
+    if (compensationData.productIds?.length) {
+      await productModule.deleteProducts(compensationData.productIds)
+    }
+
+    if (compensationData.optionIds?.length) {
+      await productModule.deleteProductOptions(compensationData.optionIds)
+    }
+
+    if (compensationData.categoryIds?.length) {
+      await productModule.deleteProductCategories(compensationData.categoryIds)
+    }
   }
 )

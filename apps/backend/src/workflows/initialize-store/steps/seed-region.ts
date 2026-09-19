@@ -14,7 +14,7 @@ export const seedRegionStep = createStep(
   async (input: Input, { container }) => {
     const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER)
     logger.info("Starting store region seeding")
-    
+
     const seedProgress = createSeedProgress(container, input.progressKey)
 
     await seedProgress.update(30, "ایجاد منطقه")
@@ -27,7 +27,10 @@ export const seedRegionStep = createStep(
     if (existing) {
       logger.warn(`Using existing region ${existing.id} during store initialization`)
       logger.info(`Finished store region seeding: ${existing.id}`)
-      return new StepResponse({ regionId: existing.id })
+      return new StepResponse(
+        { regionId: existing.id },
+        { regionId: existing.id, createdRegion: false, progressKey: input.progressKey }
+      )
     }
 
     const { result } = await createRegionsWorkflow(container).run({
@@ -47,6 +50,25 @@ export const seedRegionStep = createStep(
     })
 
     logger.info(`Finished store region seeding: ${result[0].id}`)
-    return new StepResponse({ regionId: result[0].id })
+    return new StepResponse(
+      { regionId: result[0].id },
+      { regionId: result[0].id, createdRegion: true, progressKey: input.progressKey }
+    )
+  },
+
+  async (compensationData, { container }) => {
+    if (!compensationData) {
+      return
+    }
+
+    const seedProgress = createSeedProgress(container, compensationData.progressKey)
+    await seedProgress.fail("خطا در ایجاد منطقه")
+
+    if (!compensationData.createdRegion) {
+      return
+    }
+
+    const regionModule: IRegionModuleService = container.resolve(Modules.REGION)
+    await regionModule.deleteRegions([compensationData.regionId])
   }
 )

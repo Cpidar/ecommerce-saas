@@ -1,16 +1,22 @@
-import { createWorkflow, transform, WorkflowResponse } from "@medusajs/framework/workflows-sdk";
+import {
+  createWorkflow,
+  transform,
+  WorkflowResponse,
+} from "@medusajs/framework/workflows-sdk";
 import { createConfigStep } from "../create-store-config/steps/create-config";
 import { linkStoreConfigToStoreStep } from "../create-store-config/steps/link-store-config-to-store";
 import { InitializeStoreWorkflowInput, JsonRecord } from "./types";
 import { acquireLockStep, releaseLockStep } from "@medusajs/medusa/core-flows";
 
-import { seedSalesChannelStep } from "./steps/seed-sales-channel"
-import { seedRegionStep } from "./steps/seed-region"
-import { seedStockLocationStep } from "./steps/seed-stock-location"
-import { seedLinkSalesChannelStep } from "./steps/seed-link-sales-channel"
-import { seedCategoriesAndProductsStep } from "./steps/seed-categories-and-products"
-import { seedInventoryStep } from "./steps/seed-inventory"
+import { seedSalesChannelStep } from "./steps/seed-sales-channel";
+import { seedRegionStep } from "./steps/seed-region";
+import { seedStockLocationStep } from "./steps/seed-stock-location";
+import { seedLinkSalesChannelStep } from "./steps/seed-link-sales-channel";
+import { seedCategoriesAndProductsStep } from "./steps/seed-categories-and-products";
+import { seedInventoryStep } from "./steps/seed-inventory";
 import { seedShippingProfileStep } from "./steps/seed-shipping-profile";
+import { createConfigWorkflow } from "../create-store-config";
+import { seedStorConfig } from "./steps/seed-store-config";
 
 /**
  * Workflow responsible for initializing a brand-new store.
@@ -32,50 +38,55 @@ export const initializeStoreWorkflow = createWorkflow(
   (input: InitializeStoreWorkflowInput) => {
     const puckData = input.template;
 
-    const lockKey = transform({ input }, (data) => `store-seed:${data.input.storeId}`)
+    const lockKey = transform(
+      { input },
+      (data) => `store-seed:${data.input.storeId}`,
+    );
 
     // 1. Acquire lock (waits up to `timeout` seconds, holds for `ttl` seconds)
     acquireLockStep({
       key: lockKey,
-      timeout: 10,        // how long to wait to acquire the lock
-      ttl: 60 * 30,       // hold the lock for max 30 minutes
-    })
+      timeout: 10, // how long to wait to acquire the lock
+      ttl: 60 * 30, // hold the lock for max 30 minutes
+    });
 
     // 2. Create store config and link to store
-    const storeConfig = createConfigStep({
+    const { storeConfigId } = seedStorConfig({
       medusa_store_id: input.storeId,
       title: input.title,
       handle: input.handle,
       subscription_product_id: input.subscription_id,
       subscription_status: input.subscription_status,
       // TODO
-      puck_data: puckData as any,
-    });
-
-    linkStoreConfigToStoreStep({
-      storeConfigId: storeConfig.id,
-      storeId: input.storeId,
+      puck_data: puckData as JsonRecord,
+      progressKey: input.progressKey,
     });
 
     // 3. Run the actual seed logic
     // SeedDemoDataStep({ storeId: input.storeId });
-    const salesChannel = seedSalesChannelStep({ progressKey: input.progressKey })
-    seedRegionStep({ progressKey: input.progressKey })
-    const stockLocation = seedStockLocationStep({ progressKey: input.progressKey })
+    const salesChannel = seedSalesChannelStep({
+      progressKey: input.progressKey,
+    });
+    seedRegionStep({ progressKey: input.progressKey });
+    const stockLocation = seedStockLocationStep({
+      progressKey: input.progressKey,
+    });
 
     seedLinkSalesChannelStep({
       progressKey: input.progressKey,
       stockLocationId: stockLocation.stockLocationId,
       salesChannelId: salesChannel.salesChannelId,
-    })
+    });
 
-    const { shippingProfile } = seedShippingProfileStep({ progressKey: input.progressKey })
+    const { shippingProfile } = seedShippingProfileStep({
+      progressKey: input.progressKey,
+    });
 
     seedCategoriesAndProductsStep({
       progressKey: input.progressKey,
       salesChannelId: salesChannel.salesChannelId,
-      shippingProfileId: shippingProfile.id
-    })
+      shippingProfileId: shippingProfile.id,
+    });
 
     // seedInventoryStep({
     //   progressKey: input.progressKey,
@@ -85,11 +96,11 @@ export const initializeStoreWorkflow = createWorkflow(
     // 4. Release lock
     releaseLockStep({
       key: lockKey,
-    })
+    });
 
     return new WorkflowResponse({
-      storeConfig,
+      storeConfig: { id: storeConfigId },
       store: { id: input.storeId },
     });
-  }
+  },
 );

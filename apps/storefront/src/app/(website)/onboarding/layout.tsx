@@ -23,7 +23,9 @@ export default async function OnboardingLayout({
   console.log(customer)
 
   if (customer.metadata && customer.metadata.onboarding === "completed") {
-    redirect("/account");
+    // TODO: must go to dashboatd
+    redirect("http://localhost:9000/app");
+    redirect("/app/login");
   }
 
   return children;

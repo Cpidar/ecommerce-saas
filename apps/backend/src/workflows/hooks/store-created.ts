@@ -63,18 +63,4 @@ createStoreWorkflow.hooks.storeCreated(async ({ store: { storeId, userId }, addi
     },
   });
 
-  // TODO: re-enable when a product-to-store linking workflow is required.
-  // const { result: [product] } = await createProductsWorkflow(container).run({
-  //   input: {
-  //     products: [{
-  //       title: store.name,
-  //       handle: store.id.toLowerCase().replace(/_/g, '-'),
-  //       status: 'published',
-  //       options: [{
-  //         title: "Default option",
-  //         values: ["Default option value"]
-  //       }],
-  //     }],
-  //   }
-  // })
 });

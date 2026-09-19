@@ -30,6 +30,7 @@ export const seedSalesChannelStep = createStep(
       name: "Default Sales Channel",
     })
     let defaultSalesChannel = salesChannels[0]
+      let createdSalesChannelId: string | undefined
 
     if (!defaultSalesChannel) {
       const { result } = await createSalesChannelsWorkflow(container).run({
@@ -43,10 +44,12 @@ export const seedSalesChannelStep = createStep(
         },
       })
       defaultSalesChannel = result[0]
+      createdSalesChannelId = defaultSalesChannel.id
     } else {
       logger.warn("Using the existing default sales channel during store initialization")
     }
 
+    let createdPublishableApiKeyId: string | undefined
     let publishableApiKey = (
       await apiKeyModule.listApiKeys({ type: "publishable" })
     )[0]
@@ -64,6 +67,7 @@ export const seedSalesChannelStep = createStep(
         },
       })
       publishableApiKey = result[0]
+      createdPublishableApiKeyId = publishableApiKey.id
     } else {
       logger.warn("Using the existing publishable API key during store initialization")
     }
@@ -77,9 +81,44 @@ export const seedSalesChannelStep = createStep(
 
     logger.info(`Finished store sales channel seeding: ${defaultSalesChannel.id}`)
 
-    return new StepResponse({
-      salesChannelId: defaultSalesChannel.id,
-      publishableApiKeyId: publishableApiKey.id,
+    return new StepResponse(
+      {
+        salesChannelId: defaultSalesChannel.id,
+        publishableApiKeyId: publishableApiKey.id,
+      },
+      {
+        createdSalesChannelId,
+        createdPublishableApiKeyId,
+        salesChannelId: defaultSalesChannel.id,
+        publishableApiKeyId: publishableApiKey.id,
+        progressKey: input.progressKey,
+      }
+    )
+  },
+  async (compensationData, { container }) => {
+    if (!compensationData) {
+      return
+    }
+
+    const seedProgress = createSeedProgress(container, compensationData.progressKey)
+    await seedProgress.fail("خطا در ایجاد کانال فروش و کلید API")
+
+    await linkSalesChannelsToApiKeyWorkflow(container).run({
+      input: {
+        id: compensationData.publishableApiKeyId,
+        remove: [compensationData.salesChannelId],
+      },
     })
+
+    const salesChannelModule: ISalesChannelModuleService = container.resolve(Modules.SALES_CHANNEL)
+    const apiKeyModule: IApiKeyModuleService = container.resolve(Modules.API_KEY)
+
+    if (compensationData.createdSalesChannelId) {
+      await salesChannelModule.deleteSalesChannels([compensationData.createdSalesChannelId])
+    }
+
+    if (compensationData.createdPublishableApiKeyId) {
+      await apiKeyModule.deleteApiKeys([compensationData.createdPublishableApiKeyId])
+    }
   }
 )

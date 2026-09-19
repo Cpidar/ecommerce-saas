@@ -58,6 +58,37 @@ export const seedStockLocationStep = createStep(
     }
 
     logger.info(`Finished store stock location seeding: ${stockLocation.id}`)
-    return new StepResponse({ stockLocationId: stockLocation.id })
+    return new StepResponse(
+      { stockLocationId: stockLocation.id },
+      {
+        createdStockLocationId: existing.length ? undefined : stockLocation.id,
+        linkedFulfillmentProvider: existing.length ? false : true,
+        progressKey: input.progressKey,
+      }
+    )
+  },
+  async (compensationData, { container }) => {
+    if (!compensationData?.createdStockLocationId) {
+      return
+    }
+
+    const seedProgress = createSeedProgress(container, compensationData.progressKey)
+    await seedProgress.fail("خطا در ایجاد انبار")
+
+    const stockLocationModule: IStockLocationService = container.resolve(Modules.STOCK_LOCATION)
+    const link: Link = container.resolve(ContainerRegistrationKeys.LINK)
+
+    if (compensationData.linkedFulfillmentProvider) {
+      await link.delete({
+        [Modules.STOCK_LOCATION]: {
+          stock_location_id: compensationData.createdStockLocationId,
+        },
+        [Modules.FULFILLMENT]: {
+          fulfillment_provider_id: "manual_manual",
+        },
+      })
+    }
+
+    await stockLocationModule.deleteStockLocations([compensationData.createdStockLocationId])
   }
 )

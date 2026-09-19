@@ -3,7 +3,8 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { createInventoryLevelsWorkflow } from "@medusajs/medusa/core-flows"
 import { createSeedProgress } from "../../../utils/initialize-store-progress"
-import { Logger, Query } from "@medusajs/framework/types"
+import { IInventoryService, Logger, Query } from "@medusajs/framework/types"
+import { Modules } from "@medusajs/framework/utils"
 
 type Input = {
   progressKey: string
@@ -26,8 +27,10 @@ export const seedInventoryStep = createStep(
       fields: ["id"],
     })
 
+    let inventoryLevelIds: string[] = []
+
     if (inventoryItems.length) {
-      await createInventoryLevelsWorkflow(container).run({
+      const { result: inventoryLevels } = await createInventoryLevelsWorkflow(container).run({
         input: {
           inventory_levels: inventoryItems.map((item) => ({
             location_id: input.stockLocationId,
@@ -36,11 +39,26 @@ export const seedInventoryStep = createStep(
           })),
         },
       })
+      inventoryLevelIds = inventoryLevels.map((level) => level.id)
     } else {
       logger.warn("No inventory items were found while initializing the store")
     }
 
     logger.info(`Finished inventory seeding for stock location ${input.stockLocationId}`)
-    return new StepResponse({ success: true })
+    return new StepResponse(
+      { success: true },
+      { inventoryLevelIds, progressKey: input.progressKey }
+    )
+  },
+  async (compensationData, { container }) => {
+    if (!compensationData?.inventoryLevelIds?.length) {
+      return
+    }
+
+    const seedProgress = createSeedProgress(container, compensationData.progressKey)
+    await seedProgress.fail("خطا در ایجاد موجودی انبار")
+
+    const inventoryModule: IInventoryService = container.resolve(Modules.INVENTORY)
+    await inventoryModule.deleteInventoryLevels(compensationData.inventoryLevelIds)
   }
 )

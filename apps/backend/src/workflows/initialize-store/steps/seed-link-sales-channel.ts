@@ -28,6 +28,28 @@ export const seedLinkSalesChannelStep = createStep(
     })
 
     logger.info(`Finished sales channel ${input.salesChannelId} link to stock location ${input.stockLocationId}`)
-    return new StepResponse({ success: true })
+    return new StepResponse(
+      { success: true },
+      {
+        stockLocationId: input.stockLocationId,
+        salesChannelId: input.salesChannelId,
+        progressKey: input.progressKey,
+      }
+    )
+  },
+  async (compensationData, { container }) => {
+    if (!compensationData) {
+      return
+    }
+
+    const seedProgress = createSeedProgress(container, compensationData.progressKey)
+    await seedProgress.fail("خطا در اتصال کانال فروش به انبار")
+
+    await linkSalesChannelsToStockLocationWorkflow(container).run({
+      input: {
+        id: compensationData.stockLocationId,
+        remove: [compensationData.salesChannelId],
+      },
+    })
   }
 )
