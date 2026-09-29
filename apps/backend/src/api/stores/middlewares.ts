@@ -11,21 +11,15 @@ export const storesRoutesMiddlewares: MiddlewareRoute[] = [
   },
   {
     method: ["GET"],
-    matcher: "/admin/stores",
+    matcher: "/stores*",
     middlewares: [
       addStoreIdToFilterableFields,
       moveIdsToQueryFromFilterableFields,
     ],
   },
   {
-    method: ["POST"],
-    matcher: "/stores/super",
-    middlewares: [checkApiKey],
-  },
-  // [MY-FORK]
-  {
-    method: ["POST"],
-    matcher: "/stores/regular",
+    method: ["POST", "PUT", "DELETE"],
+    matcher: "/stores*",
     middlewares: [checkApiKey],
   },
 ];

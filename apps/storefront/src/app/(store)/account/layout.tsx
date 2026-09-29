@@ -11,6 +11,11 @@ export default async function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const customer = await tryGetCurrentCustomer();
+
+  if (!customer) {
+    redirect(`/customer-auth/authenticate?ref=/account`);
+  }
 
   return children;
 }

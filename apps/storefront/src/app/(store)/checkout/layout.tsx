@@ -12,6 +12,10 @@ export default async function CheckoutLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const customer = await tryGetCurrentCustomer();
 
+  if (!customer) {
+    redirect(`/customer-auth/authenticate?ref=/onboarding/trial`);
+  }
   return children;
 }

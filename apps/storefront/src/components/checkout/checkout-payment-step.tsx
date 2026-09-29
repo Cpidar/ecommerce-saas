@@ -33,15 +33,11 @@ export function CheckoutPaymentStep({
   const tCommon = useTranslations("common");
   const [isPending, startTransition] = useTransition();
 
-  if (!cart) {
-    return null;
-  }
-
   const [selectedProvider, setSelectedProvider] = useState<PaymentProviderInfo>(
     paymentProviders[0] ?? {},
   );
   const [selectedProviderid, setSelectedProviderid] = useState<string>(
-    paymentProviders[0].id ?? "",
+    paymentProviders[0]?.id ?? "",
   );
   const [activeSession, setActiveSession] =
     useState<ActivePaymentSession | null>(null);
@@ -49,7 +45,9 @@ export function CheckoutPaymentStep({
     null,
   );
   // const [submitting, setSubmitting] = useState(false);
-
+  if (!cart) {
+    return null;
+  }
   const ensurePaymentSession = async (
     providerId: string,
     data?: Record<string, unknown>,
@@ -73,7 +71,6 @@ export function CheckoutPaymentStep({
   };
 
   const handleProviderPick = async (provider: PaymentProviderInfo) => {
-    console.log(provider);
     setSelectedProvider(provider);
     setSelectedProviderid(provider.id);
     await ensurePaymentSession(provider.id);

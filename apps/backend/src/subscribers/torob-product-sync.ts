@@ -11,7 +11,7 @@ export default async function torobProductSyncHandler({
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
     const productModuleService = container.resolve(Modules.PRODUCT)
     const storeConfigModuleService = container.resolve(STORE_CONFIG_MODULE)
-    const logger = container.resolve("logger")
+    const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
     try {
         // Get the full product

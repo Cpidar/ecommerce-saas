@@ -2,8 +2,7 @@
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk";
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils";
 import { createSeedProgress } from "../../../utils/initialize-store-progress";
-import { IRegionModuleService, Logger } from "@medusajs/framework/types";
-import { Query } from "@medusajs/framework";
+import { IRegionModuleService, Logger, Query } from "@medusajs/framework/types";
 import StoreConfigLink from "../../../links/multi-tenant/store_config-store";
 import { updateStoreConfigWorkflow } from "../../update-store-config";
 import { createConfigWorkflow } from "../../create-store-config";
@@ -11,12 +10,14 @@ import { JsonRecord } from "../types";
 import { CreateStoreConfigWorkflowInput } from "../../create-store-config/types";
 import { STORE_CONFIG_MODULE } from "../../../modules/store-config";
 import StoreConfigModuleService from "../../../modules/store-config/service";
+import StoreConfigService from "../../../modules/store-config/service";
+import { Link } from "@medusajs/framework/modules-sdk";
 type Input = CreateStoreConfigWorkflowInput & {
   progressKey: string;
 };
 
 export const seedStorConfig = createStep(
-  "seed-store-config",
+  "seed-stor-config",
   async (input: Input, { container }) => {
     const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER);
     logger.info("Starting store config seeding");
@@ -25,7 +26,7 @@ export const seedStorConfig = createStep(
 
     await seedProgress.update(10, "ایجاد تنظیمات اولیه");
 
-    const query: Query = container.resolve(ContainerRegistrationKeys.QUERY);
+    const query = container.resolve<Query>(ContainerRegistrationKeys.QUERY);
     try {
       const {
         data: [{ store_config_id: storeConfigId }],
@@ -40,25 +41,44 @@ export const seedStorConfig = createStep(
         `Using existing store config ${storeConfigId} during store initialization`,
       );
 
-      updateStoreConfigWorkflow.runAsStep({
-        input: {
-          id: storeConfigId,
-        },
-      });
+      const storeConfigService: StoreConfigService = container.resolve(STORE_CONFIG_MODULE)
+
+      await storeConfigService.replaceFields({ id: storeConfigId, ...input })
+
       logger.info(`Finished store config seeding: ${storeConfigId}`);
       return new StepResponse({ storeConfigId }, { storeConfigId: "", progressKey: input.progressKey });
     } catch {
-      const { storeConfig } = createConfigWorkflow.runAsStep({
-        input: {
-          medusa_store_id: input.medusa_store_id,
-          title: input.title,
-          handle: input.handle,
-          subscription_product_id: input.subscription_product_id,
-          subscription_status: input.subscription_status,
-          // TODO
-          puck_data: input.puck_data as JsonRecord,
+      // const { storeConfig } = await createConfigWorkflow.runAsStep({
+      //   input: {
+      //     medusa_store_id: input.medusa_store_id,
+      //     title: input.title,
+      //     handle: input.handle,
+      //     subscription_product_id: input.subscription_product_id,
+      //     subscription_status: input.subscription_status,
+      //     // TODO
+      //     puck_data: input.puck_data as JsonRecord,
+      //   },
+      // });
+      const storeConfigService: StoreConfigService = container.resolve(
+        STORE_CONFIG_MODULE,
+      );
+
+      const storeConfig = await storeConfigService.createStoreConfigs({
+        ...input,
+      });
+
+      const link: Link = container.resolve(ContainerRegistrationKeys.LINK);
+
+      const linkArray = link.create({
+        [STORE_CONFIG_MODULE]: {
+          store_config_id: storeConfig.id,
+        },
+        [Modules.STORE]: {
+          store_id: storeConfig.medusa_store_id,
         },
       });
+
+
 
       logger.info(`Finished store config seeding: ${storeConfig.id}`);
       return new StepResponse(

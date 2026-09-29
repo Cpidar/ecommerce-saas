@@ -20,17 +20,4 @@ export const storeStoreConfigRoutesMiddlewares: MiddlewareRoute[] = [
       moveIdsToQueryFromFilterableFields,
     ],
   },
-  {
-    method: ["DELETE"],
-    matcher: "/store/store-config",
-    middlewares: [
-      addStoreIdToFilterableFields,
-      maybeApplyLinkFilter({
-        entryPoint: StoreLinkStoreConfig.entryPoint,
-        resourceId: "store_config_id",
-        filterableField: "store_id",
-      }),
-      moveIdsToQueryFromFilterableFields,
-    ],
-  },
 ];

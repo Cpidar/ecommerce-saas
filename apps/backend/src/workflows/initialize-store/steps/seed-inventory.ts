@@ -20,7 +20,7 @@ export const seedInventoryStep = createStep(
     const seedProgress = createSeedProgress(container, input.progressKey)
     await seedProgress.update(97, "ایجاد موجودی انبار")
 
-    const query: Query = container.resolve(ContainerRegistrationKeys.QUERY)
+    const query = container.resolve<Query>(ContainerRegistrationKeys.QUERY)
     // TODO: bug: meust get item from current store
     const { data: inventoryItems } = await query.graph({
       entity: "inventory_item",

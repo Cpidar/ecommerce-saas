@@ -159,7 +159,7 @@ function BehpardakhtPayment({
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
   const submittedRef = useRef(false); // guards against double form-submit
-
+console.log(config)
   // Auto-submit the hidden form once gateway data arrives
   useEffect(() => {
     if (gateway && formRef.current && !submittedRef.current) {
@@ -168,16 +168,15 @@ function BehpardakhtPayment({
     }
   }, [gateway]);
 
-  if (!session?.amount || !config) {
-    return (
-      <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">
-        {GENERIC_ERROR}
-      </div>
-    );
-  }
-
   const handlePayment = useCallback(() => {
-    if (!providerId || !config || isPending || submittedRef.current) return;
+    if (
+      !providerId ||
+      !config ||
+      isPending ||
+      submittedRef.current ||
+      !session?.amount
+    )
+      return;
 
     setError(undefined);
     const controller = new AbortController();
@@ -197,8 +196,8 @@ function BehpardakhtPayment({
 
         // if (controller.signal.aborted) return;
 
-        if (!res?.url || !res?.referenceId) {
-          setError(GENERIC_ERROR);
+        if (!res.success) {
+          setError(res.error);
           return;
         }
 
@@ -216,7 +215,15 @@ function BehpardakhtPayment({
     });
 
     return () => controller.abort();
-  }, [providerId, config, session.amount, isPending]);
+  }, [providerId, config, isPending, cartId]);
+
+  if (!session?.amount || !config) {
+    return (
+      <div className="rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900">
+        {GENERIC_ERROR}
+      </div>
+    );
+  }
 
   const busy = isPending || submitting;
 
@@ -246,7 +253,7 @@ function BehpardakhtPayment({
       <Button
         type="button"
         onClick={handlePayment}
-        disabled={busy || submittedRef.current}
+        disabled={busy}
         aria-busy={busy}
         data-testid="submit-order-button"
       >

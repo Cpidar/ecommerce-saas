@@ -1,6 +1,6 @@
 {
   "name": "@sepidar/medusa-multistore-plugin",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "A multi-store Medusa plugin",
   "author": "Sepidar",
   "license": "Apache 2.0",
@@ -36,28 +36,21 @@
     "prepublishOnly": "medusa plugin:build"
   },
   "peerDependencies": {
-    "@medusajs/admin-sdk": "^2.15.2",
-    "@medusajs/cli": "^2.15.2",
-    "@medusajs/framework": "^2.15.2",
-    "@medusajs/medusa": "^2.15.2",
-    "@medusajs/test-utils": "^2.15.2"
+    "@medusajs/admin-sdk": "^2.21.1",
+    "@medusajs/cli": "^2.21.1",
+    "@medusajs/framework": "^2.21.1",
+    "@medusajs/icons": "^2.21.1",
+    "@medusajs/medusa": "^2.21.1",
+    "@medusajs/test-utils": "^2.21.1",
+    "@medusajs/ui": "^4.2.5"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
-    "@medusajs/icons": "2.13.6",
-    "@medusajs/js-sdk": "^2.15.2",
-    "@medusajs/types": "^2.15.2"
+    "@medusajs/icons": "^2.21.1",
+    "@medusajs/js-sdk": "^2.21.1",
+    "@medusajs/types": "^2.21.1"
   },
-  "overrides": {
-    "@medusajs/icons": "2.13.6"
-  },
-  "resolutions": {
-    "@medusajs/icons": "2.13.6"
-  },
-  "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "4.39.0"
-  },
-  "yalcSig": "125a1b00427483bd5bc386b93f069001"
+  "yalcSig": "3990b79354ff9fbd02e38d4fbb6675d7"
 }

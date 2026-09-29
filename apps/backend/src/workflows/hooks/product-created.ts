@@ -3,7 +3,7 @@ import { linkProductToStoreWorkflow } from "@sepidar/medusa-multistore-plugin/wo
 import { resolveCurrentStore } from "../../utils/resolve-current-store";
 import { createProductPriceListPricesWorkflow } from "@sepidar/medusa-multistore-plugin/workflows/create-product-price-list-prices/index";
 import { MedusaError, MedusaErrorTypes, Modules } from "@medusajs/framework/utils";
-import { IProductModuleService } from "@medusajs/types";
+import { IProductModuleService } from "@medusajs/framework/types";
 import { normalizePersianText } from "../../utils/normalize-persian-text";
 
 createProductsWorkflow.hooks.productsCreated(

@@ -20,8 +20,6 @@ export default async function OnboardingLayout({
     redirect(`/customer-auth/authenticate?ref=/onboarding/trial`);
   }
 
-  console.log(customer)
-
   if (customer.metadata && customer.metadata.onboarding === "completed") {
     // TODO: must go to dashboatd
     redirect("http://localhost:9000/app");

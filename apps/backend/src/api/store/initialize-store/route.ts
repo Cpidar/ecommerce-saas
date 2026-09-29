@@ -1,6 +1,6 @@
 import type { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
 import { default_data_seed } from "../../../scripts/defaul-seed";
-import { StoreDTO } from "@medusajs/types";
+import { StoreDTO } from "@medusajs/framework/types";
 import { Modules } from "@medusajs/framework/utils";
 import { createSeedProgress } from "../../../utils/initialize-store-progress";
 

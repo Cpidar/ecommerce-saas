@@ -1,4 +1,4 @@
-import { z } from '@medusajs/framework/zod'
+import { looseObject, z } from '@medusajs/framework/zod'
 
 // Helper to make strings accept empty values
 const optionalString = z.string().or(z.literal('')).optional()
@@ -17,6 +17,11 @@ export const storeSeoConfigSchema = z
         default_description: optionalString,
         default_image_url: nullableUrl,
         canonical_url: optionalUrl,
+        enamad: optionalString,
+        torob: looseObject({
+            shop_id: optionalString,
+            token: optionalString
+        }).optional(),
         robots: z
             .object({
                 index: z.boolean().optional(),
@@ -167,9 +172,9 @@ export const updateStoreConfigWorkflowInputSchema = z
         description: optionalString,
         tagline: optionalString,
 
-        logo_url: nullableUrl,
+        logo_url: nullableString,
         logo_alt: nullableString,
-        favicon_url: nullableUrl,
+        favicon_url: nullableString,
         theme: nullableString,
         theme_overrides: jsonRecordSchema.optional(),
 

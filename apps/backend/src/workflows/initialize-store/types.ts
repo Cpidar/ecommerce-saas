@@ -13,6 +13,7 @@ export type InitializeStoreWorkflowInput = {
   storeId: string;
   title?: string;
   handle: string;
+  customer_id: string;
   subscription_id?: string | null;
   subscription_status?: string;
   template?: JsonRecord;

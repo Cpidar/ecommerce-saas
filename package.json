@@ -19,7 +19,8 @@
   "pnpm": {
     "overrides": {
       "@types/react": "19.0.5",
-      "@types/react-dom": "19.0.5"
+      "@types/react-dom": "19.0.5",
+      "tsconfig-paths": "^4.2.0"
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
@@ -29,10 +30,12 @@
     ]
   },
   "devDependencies": {
-    "@medusajs/eslint-plugin": "^2.16.0",
+    "@medusajs/eslint-plugin": "^2.21.1",
     "eslint": "^9.39.4",
     "jiti": "^2.7.0",
     "prettier": "^3.2.5",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "turbo": "^2.10.8"
   }
 }

@@ -5,6 +5,8 @@ import { createStoreWorkflow } from "@sepidar/medusa-multistore-plugin/workflows
 import { initializeStoreWorkflow } from "../initialize-store";
 import type { InitializeStoreWorkflowInput } from "../initialize-store/types";
 import { createSeedProgress } from "../../utils/initialize-store-progress";
+import { assignId } from "../../scripts/pick-store-handle";
+import { randomUUID } from "crypto";
 
 createStoreWorkflow.hooks.storeCreated(async ({ store: { storeId, userId }, additional_data }, { container }) => {
   console.log("HOOK storeCreated", storeId);
@@ -26,7 +28,9 @@ createStoreWorkflow.hooks.storeCreated(async ({ store: { storeId, userId }, addi
     storeId,
     title: (additional_data?.name as string) ?? "",
     // TODO: handle must select from handle pool
-    handle: (additional_data?.handle as string) ?? null,
+    handle: process.env.NODE_ENV === "production" ? assignId() : randomUUID(),
+    // SAAS Store Customer id
+    customer_id: (additional_data.customer_id as string),
     subscription_id: (additional_data?.subscription_id as string) ?? null,
     subscription_status: (additional_data?.subscription_status as string) ?? "PENDING",
     // TODO: map to json template pool

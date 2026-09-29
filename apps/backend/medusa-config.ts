@@ -26,6 +26,7 @@ module.exports = defineConfig({
 
   },
   modules: [
+  // AUTH module
     {
       resolve: "@medusajs/medusa/auth",
       dependencies: [
@@ -50,12 +51,18 @@ module.exports = defineConfig({
         ],
       },
     },
+
+    // Product Media module
     {
       resolve: "./src/modules/product-media",
     },
+
+    // Store Config module
     {
       resolve: "./src/modules/store-config",
     },
+
+    // Payment module
     {
       resolve: "@medusajs/medusa/payment",
       options: {
@@ -72,6 +79,8 @@ module.exports = defineConfig({
         ],
       },
     },
+
+    // Notification module
     {
       resolve: "@medusajs/medusa/notification",
       options: {
@@ -88,7 +97,8 @@ module.exports = defineConfig({
       },
     },
 
-    // Production Modules
+    /////////////////// Production Modules //////////////
+    // File module
     {
       resolve: "@medusajs/medusa/file",
       options: {
@@ -112,6 +122,8 @@ module.exports = defineConfig({
         ],
       },
     },
+
+    // Caching module
     {
       resolve: "@medusajs/medusa/caching",
       options: {
@@ -127,12 +139,16 @@ module.exports = defineConfig({
         ],
       },
     },
+
+    // Event bus module
     {
       resolve: "@medusajs/medusa/event-bus-redis",
       options: {
         redisUrl: process.env.REDIS_URL,
       },
     },
+
+    // Workflow engine redis module
     {
       resolve: "@medusajs/medusa/workflow-engine-redis",
       options: {
@@ -143,6 +159,8 @@ module.exports = defineConfig({
         },
       },
     },
+
+    // Locking module
     {
       resolve: "@medusajs/medusa/locking",
       options: {
@@ -158,6 +176,8 @@ module.exports = defineConfig({
         ],
       },
     },
+
+    // Meilisearch module
     // {
     //   resolve: "./src/modules/meilisearch",
     //   options: {
@@ -238,9 +258,13 @@ module.exports = defineConfig({
 
   plugins: [
     {
-      resolve: "@sepidar/reorder",
+      resolve: `@medusajs/loyalty-plugin`,
       options: {},
     },
+    // {
+    //   resolve: "@sepidar/reorder",
+    //   options: {},
+    // },
     {
       resolve: "@sepidar/medusa-multistore-plugin",
       options: {},

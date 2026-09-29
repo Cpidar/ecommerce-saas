@@ -62,12 +62,13 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
             name: form.storeName,
             password: form.password,
             handle: form.storeName,
+            transactionId: res.transactionId,
           },
           onBoarding: appMode === 'saas' ? true : false
         });
         // toast.success(t("accountCreated"));
         router.push(
-          `/customer-auth/otp?from=${appMode === "saas" ? "sregister" : "register"}`,
+          `/customer-auth/otp`,
         );
       }
     } catch (err) {

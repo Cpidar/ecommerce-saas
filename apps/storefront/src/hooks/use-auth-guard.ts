@@ -1,41 +1,28 @@
 "use client"
 
 import { useEffect } from "react"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/store/auth"
-import { DEFAULT_REGION } from "@/lib/medusa"
 
 /**
  * Client-side gate for account pages. Triggers a hydrate on mount and
  * redirects to the login page if no customer is authenticated.
  */
-export function useAuthGuard() {
+export function useAuthGuard(redirectTo = '/customer-auth/authenticate' ) {
   const customer = useAuthStore((s) => s.customer)
-  const user = useAuthStore(s => s.user)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  const isAdminAuthenticated = useAuthStore((s) => s.isAdminAuthenticated)
   const hasHydrated = useAuthStore((s) => s.hasHydrated)
-  const hydrate = useAuthStore((s) => s.hydrate)
   const router = useRouter()
-  const countryCode = DEFAULT_REGION
-  const pathname = usePathname()
-  const searchParams = useSearchParams();
-  const refUrl = searchParams?.toString() ? `${pathname}?${searchParams?.toString()}` : pathname
-  // console.log(hasHydrated)
-  // useEffect(() => {
-  //   if (!hasHydrated) void hydrate()
-  // }, [hasHydrated, hydrate])
 
   useEffect(() => {
     if (hasHydrated && !isAuthenticated) {
-      router.replace(`/customer-auth/authenticate?ref=${refUrl}`)
+      const current = window.location.pathname + window.location.search
+      router.replace(`${redirectTo}?ref=${encodeURIComponent(current)}`)
     }
-  }, [hasHydrated, isAuthenticated, router, countryCode])
+  }, [redirectTo, hasHydrated, isAuthenticated, router])
 
   return {
     customer,
-    user,
-    isAdminAuthenticated,
     isAuthenticated,
     isLoading: !hasHydrated,
     isReady: hasHydrated && isAuthenticated,

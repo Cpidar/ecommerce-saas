@@ -25,6 +25,7 @@ type StoreRegisterationData = { name: string; handle: string; password: string }
 
 interface AuthState {
   customer: Customer | null
+  storeCreditAccount: Record<string, string> | null
   isAuthenticated: boolean
   hasHydrated: boolean
   isLoading: boolean
@@ -34,14 +35,13 @@ interface AuthState {
   phone: string
   phoneVerfied: boolean
   email: string
-  tempStoreData: StoreRegisterationData
+  tempStoreData: StoreRegisterationData & { transactionId: string }
   refPath?: string | null
   subscription: ReorderSubscriptionRecord | null
   // Admin/User
   user: AdminUser | null
   isAdminAuthenticated: boolean
 
-  hydrate?: () => Promise<void>
   initialize(customer: Customer | null): void
   reset(): void
   login: (email: string, password: string) => Promise<void>
@@ -52,7 +52,7 @@ interface AuthState {
     last_name?: string
     phone: string
     storeData?: StoreRegisterationData
-  }) => Promise<any>
+  }) => Promise<unknown>
   logout: () => Promise<void>
   refresh: () => Promise<void>
   updateProfile: (data: {
@@ -65,22 +65,23 @@ interface AuthState {
     phone,
     email,
     refPath,
-    byOtp,
+    avoid_otp,
   }: {
     phone: string
     email: string
     refPath?: string | null
-    byOtp?: boolean
+    avoid_otp?: boolean
   }) => Promise<AuthRedirectResponse>
-  loginWithOTP: (phone: string, otp: string, email: string) => Promise<void>
+  loginWithOTP: (phone: string, otp: string, email: string, transactionId: string) => Promise<void>
   // ADMIN
-
+  adminMe: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get, store) => ({
       customer: null,
+      storeCreditAccount: null,
       isAuthenticated: false,
       hasHydrated: false,
       isLoading: false,
@@ -90,7 +91,7 @@ export const useAuthStore = create<AuthState>()(
       phone: "",
       phoneVerfied: false,
       email: "",
-      tempStoreData: { name: "", handle: "", password: "" },
+      tempStoreData: { name: "", handle: "", password: "", transactionId: "" },
       refPath: "",
       subscription: null,
       user: null,
@@ -110,11 +111,11 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // [MY-FORK-AUTH] Phone auth method
-      authenticate: async ({ phone, email, refPath }) => {
+      authenticate: async ({ phone, email, refPath, avoid_otp }) => {
         set({ isLoading: true })
         set({ refPath })
         try {
-          const response = await authenticateWithPhone({ phone, email })
+          const response = await authenticateWithPhone({ phone, email, avoid_otp })
           set({ phone, email, location: response.location as Location })
           if (
             window !== undefined &&
@@ -136,10 +137,10 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // [MY-FORK-AUTH] Phone auth method
-      loginWithOTP: async (phone, otp, email) => {
+      loginWithOTP: async (phone, otp, email, transactionId) => {
         set({ isLoading: true })
         try {
-          const customer = await verifyOtp({ phone, otp, email })
+          const customer = await verifyOtp({ phone, otp, email, transactionId })
           set({
             customer,
             isAuthenticated: true,
@@ -216,7 +217,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true })
         try {
           const { user } = await adminSdk.admin.user.me()
-          set({ user })
+          set({ user, isAdminAuthenticated: true, hasHydrated: true })
         } finally {
           set({ isLoading: false })
         }
@@ -224,15 +225,14 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: "auth-storage", // unique key in localStorage
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => sessionStorage),
       // Only persist the data fields (skip functions + isLoading)
       partialize: (state) => ({
-        customer: state.customer,
-        isAuthenticated: state.isAuthenticated,
-        location: state.location,
-        onBoarding: state.onBoarding,
+        // customer: state.customer,
+        // isAuthenticated: state.isAuthenticated,
+        // location: state.location,
+        // onBoarding: state.onBoarding,
         phone: state.phone,
-        phoneVerfied: state.phoneVerfied,
         email: state.email,
         tempStoreData: state.tempStoreData,
         refPath: state.refPath,

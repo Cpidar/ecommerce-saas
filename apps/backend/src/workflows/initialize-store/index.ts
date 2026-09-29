@@ -17,6 +17,7 @@ import { seedInventoryStep } from "./steps/seed-inventory";
 import { seedShippingProfileStep } from "./steps/seed-shipping-profile";
 import { createConfigWorkflow } from "../create-store-config";
 import { seedStorConfig } from "./steps/seed-store-config";
+import { createStoreCreditAccountsWorkflow } from "@medusajs/loyalty-plugin/workflows"
 
 /**
  * Workflow responsible for initializing a brand-new store.

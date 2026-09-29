@@ -1,3 +1,6 @@
 packages:
   - "apps/**"
   - "!apps/backend/.medusa/**"
+peerDependencyRules:
+  allowedVersions:
+    fdir>picomatch: "4"

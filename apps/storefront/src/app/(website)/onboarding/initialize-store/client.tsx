@@ -20,7 +20,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
-import { updateCustomerMetadata } from "@/lib/medusa/customer-client";
 import { updateCustomer } from "@/lib/medusa/customer";
 
 // Mirrors the percentages set in seedProgress.update() on the backend,
@@ -40,12 +39,14 @@ const MILESTONES = [
 export function SeedProgressTracker({
   subscriptionId,
 }: {
-  subscriptionId: string;
+  subscriptionId?: string;
 }) {
   const {
     email,
+    customer,
     subscription,
     tempStoreData: { password, name },
+    storeCreditAccount,
   } = useAuthStore();
   const clearAuthStore = useAuthStore((s) => s.reset);
   const router = useRouter();
@@ -55,13 +56,12 @@ export function SeedProgressTracker({
     step: "در حال آماده‌سازی...",
     error: null,
   });
-
-  const progressKey = subscriptionId;
+  const progressKey = customer?.id ?? crypto.randomUUID();
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    if (!subscriptionId) return;
+    if (!customer?.id) return;
 
     let cancelled = false;
     const lockKey = `init-store:${progressKey}`;
@@ -96,16 +96,17 @@ export function SeedProgressTracker({
 
         sessionStorage.setItem(lockKey, "1");
 
-        if (!subscriptionId || !email || !password || !name) return;
+        if (!customer.id || !email || !password || !name) return;
         await initializeStore({
           store: { email, password, store_name: name },
           additional_data: {
             name,
             handle: name,
-            subscription_id: subscriptionId,
+            subscription_id: storeCreditAccount?.id ?? customer.id,
             subscription_status: "active",
             template: "",
             progressKey,
+            customer_id: customer?.id,
           },
         });
 
@@ -128,7 +129,7 @@ export function SeedProgressTracker({
     return () => {
       cancelled = true;
     };
-  }, [progressKey, subscriptionId, email, password, name]);
+  }, [progressKey, customer, email, password, name, subscriptionId]);
 
   // Poll while running
   useEffect(() => {
@@ -149,7 +150,7 @@ export function SeedProgressTracker({
     }, 1000);
 
     return () => clearInterval(id);
-  }, [state.status, progressKey]);
+  }, [state.status, progressKey, clearAuthStore]);
 
   const isDone = state.status === "completed";
   const isFailed = state.status === "failed";
@@ -275,9 +276,7 @@ export function SeedProgressTracker({
             <Button
               className="w-full"
               size="lg"
-              onClick={() =>
-                updateCustomerMetadata({ onboarding: "completed" })
-              }
+              onClick={() => router.replace("/app")}
             >
               ورود به داشبورد
             </Button>

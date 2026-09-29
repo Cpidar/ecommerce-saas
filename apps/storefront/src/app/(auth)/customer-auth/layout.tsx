@@ -22,9 +22,9 @@ export default async function PageLayout({
   // await connection(); // wait for an actual request
   const customer = await tryGetCurrentCustomer();
   
-  if (customer) {
-    redirect("/account");
-  }
+  // if (customer) {
+  //   redirect("/account");
+  // }
   return (
     <section className="h-screen flex items-center justify-center bg-no-repeat inset-0 bg-cover bg-[url('/images/bg.png')]">
       <div className="flex-1 sm:w-full sm:max-w-105 px-4">

@@ -1,6 +1,5 @@
 "use client";
 
-import { useAuthGuard } from "@/hooks/use-auth-guard";
 import { savePuckData } from "@/lib/medusa/stores-actions";
 import config from "@/puck/config";
 import type { Config, Data } from "@puckeditor/core";
@@ -14,7 +13,15 @@ import {
 import { Type } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { Navigate, useLocation } from "react-router-dom";
+import { useAdminAuthGuard } from "@/hooks/use-admin-auth-guard";
+import {
+  Empty,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+} from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner";
 
 const usePuck = createUsePuck<Config>();
 
@@ -32,21 +39,15 @@ export function Client({
   };
 
   const params = useSearchParams();
-  const { user, isAdminAuthenticated } = useAuthGuard();
+  const redirectTo =
+    process.env.NODE_ENV === "production"
+      ? "/app/login"
+      : "http://localhost:9000/app/login";
+  const { isReady } = useAdminAuthGuard(redirectTo);
 
-  if (!user || !isAdminAuthenticated) {
-    return process.env.NODE_ENV === "development" ? (
-      // TODO: if doesnt work must use search params and medusa login page widget
-      <Navigate to="/app/login" state={{ from: `${path}/edit` }} replace />
-    ) : (
-      <Navigate
-        to={`/admin-portal/login?from=${path}/edit`}
-        state={{ from: `${path}/edit` }}
-        replace
-      />
-    );
+  if (!isReady) {
+    return editPageLoading();
   }
-
   return (
     <Puck
       config={config}
@@ -122,5 +123,30 @@ export function Client({
       }}
       metadata={metadata}
     />
+  );
+}
+
+function editPageLoading() {
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <Empty className="w-full">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Spinner />
+            </EmptyMedia>
+            <EmptyTitle>در حال پردازش سفارش شما</EmptyTitle>
+            <EmptyDescription>
+              لطفا منتظر بمانید تا درخواست شما پردازش شود. صفحه را رفرش نکنید.
+            </EmptyDescription>
+          </EmptyHeader>
+          {/* <EmptyContent>
+            <Button variant="outline" size="sm">
+              Cancel
+            </Button>
+          </EmptyContent> */}
+        </Empty>
+      </div>
+    </div>
   );
 }

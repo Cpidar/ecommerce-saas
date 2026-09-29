@@ -1,9 +1,9 @@
-"use server"
+"use server";
 
-import type { HttpTypes } from "@medusajs/types"
-import { sdk } from "../medusa"
-import { AuthRedirectResponse } from "@medusajs/js-sdk"
-import { revalidateTag } from "next/cache"
+import type { HttpTypes } from "@medusajs/types";
+import { sdk } from "../medusa";
+import { AuthRedirectResponse } from "@medusajs/js-sdk";
+import { revalidateTag } from "next/cache";
 import {
   getAuthHeaders,
   getCacheTag,
@@ -11,11 +11,11 @@ import {
   removeAuthToken,
   removeCartId,
   setAuthToken,
-} from "./cookies"
-import { AuthError } from "../utils/auth-error"
-import { redirect } from "next/navigation"
+} from "./cookies";
+import { AuthError } from "../utils/auth-error";
+import { redirect } from "next/navigation";
 
-type Customer = HttpTypes.StoreCustomer
+type Customer = HttpTypes.StoreCustomer;
 
 /**
  * Register a new customer with email/password. Returns the created customer
@@ -25,21 +25,22 @@ type Customer = HttpTypes.StoreCustomer
  * subsequent requests in this request/response cycle are authenticated.
  */
 export async function register(args: {
-  email: string
-  password: string
-  first_name?: string
-  last_name?: string
-  phone?: string
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
 }): Promise<Customer> {
-  let registrationToken: string
+  let registrationToken: string;
   try {
     registrationToken = (await sdk.auth.register("customer", "emailpass", {
       email: args.email,
       password: args.password,
-    })) as string
+    })) as string;
   } catch (err) {
-    const message = (err as { message?: string })?.message ?? "Registration failed"
-    throw new AuthError(message)
+    const message =
+      (err as { message?: string })?.message ?? "Registration failed";
+    throw new AuthError(message);
   }
 
   try {
@@ -51,8 +52,8 @@ export async function register(args: {
         phone: args.phone,
       },
       undefined,
-      { Authorization: `Bearer ${registrationToken}` }
-    )
+      { Authorization: `Bearer ${registrationToken}` },
+    );
 
     // After creating the customer, the registration_token is no longer
     // bound to a customer record. Log in again with the same credentials
@@ -60,22 +61,26 @@ export async function register(args: {
     const loginResult = await sdk.auth.login("customer", "emailpass", {
       email: args.email,
       password: args.password,
-    })
+    });
 
     if (typeof loginResult !== "string") {
-      throw new AuthError("Authentication requires additional steps that aren't supported.")
+      throw new AuthError(
+        "Authentication requires additional steps that aren't supported.",
+      );
     }
 
-    await setAuthToken(loginResult)
+    await setAuthToken(loginResult);
 
-    const customerCacheTag = await getCacheTag("customers")
-    revalidateTag(customerCacheTag, "max")
+    const customerCacheTag = await getCacheTag("customers");
+    revalidateTag(customerCacheTag, "max");
 
-    return customer
+    return customer;
   } catch (err) {
-    if (err instanceof AuthError) throw err
-    const message = (err as { message?: string })?.message ?? "Could not create customer record"
-    throw new AuthError(message)
+    if (err instanceof AuthError) throw err;
+    const message =
+      (err as { message?: string })?.message ??
+      "Could not create customer record";
+    throw new AuthError(message);
   }
 }
 
@@ -85,52 +90,53 @@ export async function register(args: {
  * local-storage token handling.
  */
 export async function login(args: {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }): Promise<Customer> {
   try {
     const result = (await sdk.auth.login("customer", "emailpass", args)) as
       | string
-      | { location: string }
+      | { location: string };
 
     if (typeof result !== "string" && "location" in result) {
       // Third-party auth flow — not supported in this v1.
-      throw new AuthError("Third-party login is not configured.")
+      throw new AuthError("Third-party login is not configured.");
     }
 
-    await setAuthToken(result)
+    await setAuthToken(result);
 
-    const customerCacheTag = await getCacheTag("customers")
-    revalidateTag(customerCacheTag, "max")
+    const customerCacheTag = await getCacheTag("customers");
+    revalidateTag(customerCacheTag, "max");
 
-    await transferCart()
+    await transferCart();
 
-    return await getCurrentCustomer()
+    return await getCurrentCustomer();
   } catch (err) {
-    if (err instanceof AuthError) throw err
-    const message = (err as { message?: string })?.message ?? "Invalid email or password"
-    throw new AuthError(message)
+    if (err instanceof AuthError) throw err;
+    const message =
+      (err as { message?: string })?.message ?? "Invalid email or password";
+    throw new AuthError(message);
   }
 }
 
 export async function logout(): Promise<void> {
   try {
-    await sdk.auth.logout()
+    await sdk.auth.logout();
   } catch {
     // Even if the API call fails, we still clear the local cookie below.
   }
 
-  await removeAuthToken()
+  await removeAuthToken();
 
-  const customerCacheTag = await getCacheTag("customers")
-  revalidateTag(customerCacheTag, "max")
+  const customerCacheTag = await getCacheTag("customers");
+  revalidateTag(customerCacheTag, "max");
 
-  await removeCartId()
+  await removeCartId();
 
-  const cartCacheTag = await getCacheTag("carts")
-  revalidateTag(cartCacheTag, "max")
+  const cartCacheTag = await getCacheTag("carts");
+  revalidateTag(cartCacheTag, "max");
 
-  redirect('/')
+  redirect("/");
 }
 
 /**
@@ -139,14 +145,14 @@ export async function logout(): Promise<void> {
  */
 export async function getCurrentCustomer(): Promise<Customer> {
   try {
-    const headers = await getAuthHeaders()
+    const headers = await getAuthHeaders();
 
-    const { customer } = await sdk.store.customer.retrieve({}, headers)
-    if (!customer) throw new AuthError("Not authenticated")
-    return customer
+    const { customer } = await sdk.store.customer.retrieve({}, headers);
+    if (!customer) throw new AuthError("Not authenticated");
+    return customer;
   } catch (err) {
-    if (err instanceof AuthError) throw err
-    throw new AuthError("Not authenticated")
+    if (err instanceof AuthError) throw err;
+    throw new AuthError("Not authenticated");
   }
 }
 
@@ -156,19 +162,21 @@ export async function getCurrentCustomer(): Promise<Customer> {
  */
 export async function tryGetCurrentCustomer(): Promise<Customer | null> {
   try {
-    return await getCurrentCustomer()
+    return await getCurrentCustomer();
   } catch {
-    return null
+    return null;
   }
 }
 
 export async function requestPasswordReset(email: string): Promise<void> {
   try {
-    await sdk.auth.resetPassword("customer", "emailpass", { identifier: email })
+    await sdk.auth.resetPassword("customer", "emailpass", {
+      identifier: email,
+    });
   } catch (err) {
     // Most reset-password endpoints intentionally return 200 even on unknown
     // emails to avoid user enumeration. Treat all responses as success.
-    void err
+    void err;
   }
 }
 
@@ -177,21 +185,21 @@ export async function requestPasswordReset(email: string): Promise<void> {
  * reset token from the email link. Throws AuthError on invalid/expired tokens.
  */
 export async function completePasswordReset(args: {
-  email: string
-  password: string
-  token: string
+  email: string;
+  password: string;
+  token: string;
 }): Promise<void> {
   try {
     await sdk.auth.updateProvider(
       "customer",
       "emailpass",
       { email: args.email, password: args.password },
-      args.token
-    )
+      args.token,
+    );
   } catch (err) {
     const message =
-      (err as { message?: string })?.message ?? "Couldn't reset password"
-    throw new AuthError(message)
+      (err as { message?: string })?.message ?? "Couldn't reset password";
+    throw new AuthError(message);
   }
 }
 
@@ -199,43 +207,49 @@ export async function completePasswordReset(args: {
 // Uses the cart id persisted in the `_medusa_cart_id` cookie and the current
 // auth headers, matching the pattern used in customer.ts.
 export async function transferCart() {
-  const cartId = await getCartId()
+  const cartId = await getCartId();
 
   if (!cartId) {
-    return
+    return;
   }
 
-  const headers = await getAuthHeaders()
+  const headers = await getAuthHeaders();
 
-  await sdk.store.cart.transferCart(cartId, {}, headers)
+  await sdk.store.cart.transferCart(cartId, {}, headers);
 
-  const cartCacheTag = await getCacheTag("carts")
-  revalidateTag(cartCacheTag, "max")
+  const cartCacheTag = await getCacheTag("carts");
+  revalidateTag(cartCacheTag, "max");
 }
 
 // [MY-FORK-AUTH] Phone auth methods
-export async function authenticateWithPhone({ phone, email }: { phone: string; email: string }): Promise<{ location: string }> {
+export async function authenticateWithPhone({
+  phone,
+  email,
+  avoid_otp,
+}: {
+  phone: string;
+  email: string;
+  avoid_otp?: boolean;
+}): Promise<{ location: string }> {
   try {
-    const response = await sdk.client.fetch("/auth/customer/phone-auth", {
+    const response = (await sdk.client.fetch("/auth/customer/phone-auth", {
       method: "POST",
       body: {
         phone,
-        email
-      }
-    }) as AuthRedirectResponse
+        email,
+        avoid_otp,
+      },
+    })) as AuthRedirectResponse;
 
-    if (
-      typeof response === "string" ||
-      !response.location
-    ) {
-      throw new Error("Failed to login")
+    if (typeof response === "string" || !response.location) {
+      throw new Error("Failed to login");
     }
 
-    return response
+    return response;
   } catch (err) {
-    if (err instanceof AuthError) throw err
-    const message = (err as { message?: string })?.message ?? "Failed to login"
-    throw new AuthError(message)
+    if (err instanceof AuthError) throw err;
+    const message = (err as { message?: string })?.message ?? "Failed to login";
+    throw new AuthError(message);
   }
 }
 
@@ -243,31 +257,45 @@ export async function verifyOtp({
   otp,
   phone,
   email,
+  transactionId,
 }: {
-  otp: string
-  phone: string
-  email: string
-  registerData?: Record<string, string>
+  otp: string;
+  phone: string;
+  email: string;
+  transactionId: string;
+  registerData?: Record<string, string>;
 }) {
+  console.log(transactionId);
+  let token: string;
   try {
-    const token = (await sdk.auth.callback("customer", "phone-auth", {
-      phone,
-      otp,
-      email
-    })) as string
+    if (transactionId) {
+      const res = await sdk.client.fetch<{ token: string }>(
+        `/store/register-phone/${transactionId}/customer/callback?phone=${phone}&otp=${otp}&email=${email}`,
+        {
+          method: "POST",
+        },
+      );
+      token = res.token;
+    } else {
+      token = (await sdk.auth.callback("customer", "phone-auth", {
+        phone,
+        otp,
+        email,
+        transactionId,
+      })) as string;
+    }
+    await setAuthToken(token);
 
-    await setAuthToken(token)
+    const customerCacheTag = await getCacheTag("customers");
+    revalidateTag(customerCacheTag, "max");
 
-    const customerCacheTag = await getCacheTag("customers")
-    revalidateTag(customerCacheTag, "max")
+    await transferCart();
 
-    await transferCart()
-
-    return await getCurrentCustomer()
+    return await getCurrentCustomer();
   } catch (err) {
-    if (err instanceof AuthError) throw err
-    const message = (err as { message?: string })?.message ?? "Invalid OTP"
-    throw new AuthError(message)
+    if (err instanceof AuthError) throw err;
+    const message = (err as { message?: string })?.message ?? "Invalid OTP";
+    throw new AuthError(message);
   }
 }
 
@@ -276,17 +304,17 @@ export async function verifyOtp({
 // then register with phone-auth to generate OTP and link it with the same customer (by passing customer_id in body) and then authenticate with phone to login
 // Alternate solution:
 // 1- after authenticate navigate to /register-phone page in that page register using phone-auth (dont register customer) and return auth-id
-// 2- then navigate to /register page, in that page register using email and password, 
+// 2- then navigate to /register page, in that page register using email and password,
 // after successfull registeration, post customer id to /api/link-customer-to-auth that run createAuthMetaDataWorkflow
 export async function registerWithPhone(args: {
-  email: string
-  password: string
-  first_name?: string
-  last_name?: string
-  phone: string
+  email: string;
+  password: string;
+  first_name?: string;
+  last_name?: string;
+  phone: string;
 }) {
   try {
-    const { first_name, last_name, phone, email, password } = args
+    const { first_name, last_name, phone, email, password } = args;
 
     // This single call now handles: emailpass reg, customer creation, phone-auth reg, and OTP triggering
     const response = await sdk.client.fetch<{ transactionId: string }>(
@@ -294,18 +322,19 @@ export async function registerWithPhone(args: {
       {
         method: "POST",
         body: args,
-      }
-    )
-    return response
-// sample response
+      },
+    );
+    return response;
+    // sample response
     // {
     //   "success": true,
     //   "transactionId": "auto-01M1SKVHWM8ZTE6AQMGGQ6D3FK",
     //   "message": "OTP sent to your phone"
     // }
-
   } catch (err) {
-    const message = (err as { message?: string })?.message ?? "Could not create customer record"
-    throw new AuthError(message)
+    const message =
+      (err as { message?: string })?.message ??
+      "Could not create customer record";
+    throw new AuthError(message);
   }
 }

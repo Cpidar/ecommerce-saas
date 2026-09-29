@@ -18,6 +18,7 @@ import { CheckCircle2, Loader2, Sparkles, AlertCircle } from "lucide-react";
 import { completeSubscriptionCheckout } from "@/lib/repositories/subscriptions";
 import { useAuthStore } from "@/store/auth";
 import { useAuthGuard } from "@/hooks/use-auth-guard";
+import { grantCreditAccount } from "@/lib/medusa/stores-actions";
 
 const TRIAL_FEATURES = [
   "راه‌اندازی کامل فروشگاه",
@@ -26,28 +27,41 @@ const TRIAL_FEATURES = [
   "پنل مدیریت فروشگاه",
 ];
 
+const INITIAL_GIFT_CREDIT = Number(process.env.INITIAL_GIFT_CREDIT ?? 100_000); // 100,000 Tomans / Rials equivalent
+const CURRENCY = "irr"; // Or your configured base currency code (e.g., "irr" / "irt")
+const REFERENCE = "welcome-gift-credit";
+const REFERENCE_ID = "welcome-gift-credit";
+
 export function CheckoutClient() {
   const router = useRouter();
-  const { email, subscription } = useAuthStore();
-  const { customer, isReady } = useAuthGuard();
-  // if (!isReady || !customer) return null;
-
+  const { email, subscription, customer } = useAuthStore();
+console.log(customer)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (!customer?.id) return null;
 
   const handleStartTrial = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const res = await completeSubscriptionCheckout();
+      const storeCreditAccount = await grantCreditAccount({
+        amount: INITIAL_GIFT_CREDIT,
+        customer_id: customer.id,
+        reference: REFERENCE,
+        reference_id: REFERENCE_ID,
+      });
+      useAuthStore.setState({ storeCreditAccount });
+      console.log(storeCreditAccount)
+      // const res = await completeSubscriptionCheckout();
 
-      if (!res?.subscription) {
-        throw new Error("فعال‌سازی دوره آزمایشی با خطا مواجه شد.");
-      }
+      // if (!res?.subscription) {
+      //   throw new Error("فعال‌سازی دوره آزمایشی با خطا مواجه شد.");
+      // }
 
-      useAuthStore.setState({ subscription: res.subscription });
-      router.push("/onboarding/initialize-store");
+      // useAuthStore.setState({ subscription: res.subscription });
+      router.push(`/onboarding/initialize-store?storeCreditAccount=${storeCreditAccount.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "خطای ناشناخته");
       setLoading(false);

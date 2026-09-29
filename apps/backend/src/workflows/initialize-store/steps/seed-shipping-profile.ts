@@ -9,7 +9,7 @@ type Input = {
 }
 
 export const seedShippingProfileStep = createStep(
-    "seed-shipping-profile-step",
+    "seed-shipping-profile",
     async (input: Input, { container }) => {
         const logger = container.resolve<Logger>(ContainerRegistrationKeys.LOGGER)
         logger.info("Starting store shipping profile lookup")
@@ -17,7 +17,7 @@ export const seedShippingProfileStep = createStep(
 
         await seedProgress.update(65, "اتصال کانال فروش به انبار")
 
-        const query: Query = container.resolve(ContainerRegistrationKeys.QUERY)
+        const query = container.resolve<Query>(ContainerRegistrationKeys.QUERY)
 
         const { data: shippingProfileResult } = await query.graph({
             entity: "shipping_profile",

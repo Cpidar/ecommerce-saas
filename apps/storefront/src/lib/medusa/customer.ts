@@ -1,3 +1,4 @@
+"use server"
 import { HttpTypes } from "@medusajs/types"
 import { sdk } from "../medusa"
 import { medusaError } from "../medusa-error"

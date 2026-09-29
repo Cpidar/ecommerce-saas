@@ -35,7 +35,7 @@ const PageLogin = () => {
     }
     setLoading(true);
     try {
-      const response = await authenticate({ phone, email, refPath });
+      const response = await authenticate({ phone, email, refPath, avoid_otp: true });
 
       if (typeof response === "string") {
         throw new Error(response);

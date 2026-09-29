@@ -7,6 +7,7 @@ import { getCurrentStoreId } from "../medusa/cookies";
 import { cookies } from 'next/headers';
 // import { ADMIN_COOKIE } from "@/lib/medusa/admin-auth";
 import { STORE_CONFIG_CACHE_PROFILE } from "../constants";
+import { Data as PuckData } from "@puckeditor/core";
 
 export type JsonRecord = Record<string, unknown>
 
@@ -165,12 +166,12 @@ const fetchSeoConfig = async (storeId?: string) => {
 }
 
 const fetchShippingAndPaymentconfig = async (storeId?: string) => {
-  "use cache"
-  cacheTag(storeConfigTags.payment(storeId || "store"), storeConfigTags.shipping(storeId || "store"))
-  cacheLife(STORE_CONFIG_CACHE_PROFILE)
+  // "use cache"
+  // cacheTag(storeConfigTags.payment(storeId || "store"), storeConfigTags.shipping(storeId || "store"))
+  // cacheLife(STORE_CONFIG_CACHE_PROFILE)
 
   const response = await sdk.client.fetch<StoreConfigResponse>(
-    "/store/store-config?fields=payment_configs.*,shipping_method_configs.*",
+    "/store/store-config?fields=payment_configs,shipping_method_configs",
   )
   return response.store_config
 
@@ -241,7 +242,7 @@ export const siteConfigRepository = {
 
     return selectedId
   },
-  
+
   async getAllConfig() {
     const storeId = await getCurrentStoreId()
     const allConfig = await fetchAllConfig(storeId)
@@ -257,11 +258,11 @@ export const siteConfigRepository = {
 
   },
 
-  async getPage(path?: string): Promise<any> {
+  async getPage(path?: string): Promise<JsonRecord> {
     const templatePath = `puck-data/template.json` // Base template fallback
     const storeId = await getCurrentStoreId()
 
-    let puckData: any = null;
+    let puckData;
 
     const storeConfig = await fetchPuckPage(storeId)
 

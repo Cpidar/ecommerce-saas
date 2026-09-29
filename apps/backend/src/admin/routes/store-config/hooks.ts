@@ -36,7 +36,7 @@ export const useSaveStoreConfig = <
       // Trigger storefront revalidation on config save
       void triggerStorefrontRevalidation({
         event: "store_config.updated",
-        secret: process.env.REVALIDATION_WEBHOOK_SECRET,
+        secret: import.meta.env.REVALIDATION_WEBHOOK_SECRET,
       }).catch((err) => {
         console.error("[store-config-hook] Revalidation trigger failed:", err)
       })
@@ -73,7 +73,7 @@ export const triggerStorefrontRevalidation = async ({
     | "shipping_option.updated"
   secret?: string
 }) => {
-  const endpoint = process.env.STOREFRONT_REVALIDATION_URL
+  const endpoint = import.meta.env.STOREFRONT_REVALIDATION_URL
   if (!endpoint) {
     console.warn("[store-config-hook] STOREFRONT_REVALIDATION_URL is not set; skipping.")
     return { ok: false, reason: "endpoint_not_set" }
