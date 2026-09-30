@@ -3,9 +3,9 @@ import Link from "next/link";
 import { useEffect, useState, useRef } from "react";
 import { Search, X } from "lucide-react";
 import { storeConfig } from "../../../store.config";
-import { CartDrawer } from "./cart";
-import { WishlistSheet } from "./wishlist";
+// import { WishlistSheet } from "./wishlist";
 import { SearchForm } from "./search-suggest";
+import { CartDrawer } from "../cart/cart-drawer";
 
 export { SearchForm };
 
@@ -16,7 +16,7 @@ export function HeaderActions() {
       <Link className="icon-button mobile-only" href="/search" aria-label="Search fragrances">
         <Search size={18} />
       </Link>
-      {storeConfig.features.wishlist && <WishlistSheet />}
+      {/*{storeConfig.features.wishlist && <WishlistSheet />}*/}
       <CartDrawer />
     </div>
   );

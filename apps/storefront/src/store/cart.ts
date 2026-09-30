@@ -35,6 +35,7 @@ interface CartState {
   hasHydrated: boolean;
   pendingMutations: number;
   actionLocks: ActionLocks;
+  lastAdded: { id: number; variantId: string } | null;
 
   // UI Actions
   toggleCart: () => void;
@@ -205,6 +206,7 @@ export const useCartStore = create<CartState>()((set, get) => ({
   hasHydrated: false,
   pendingMutations: 0,
   actionLocks: {},
+  lastAdded: null,
 
   // -------- UI Actions --------
   toggleCart: () => set((s) => ({ isOpen: !s.isOpen })),
