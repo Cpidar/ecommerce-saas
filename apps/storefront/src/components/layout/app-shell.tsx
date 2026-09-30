@@ -5,8 +5,11 @@ import { addTransitionType, startTransition, useEffect, useLayoutEffect, useRef,
 import { CaretLeft, Heart, House, MagnifyingGlass, ShoppingBag, SquaresFour, WhatsappLogo } from "@phosphor-icons/react";
 import { CountBadge } from "./count-badge";
 import { Media } from "./media";
-import { useSavedIds } from "./saved-products";
+// import { useSavedIds } from "./saved-products";
 import { haptic, isPhone } from "./device";
+import { storeConfig } from "../../../store.config";
+import { formatPrice } from "@/lib/utils/utils";
+import { useCartStore } from "@/store/cart";
 
 /*
  * Phone app shell (≤760px, styles in src/app/app-shell.css): a floating tab
@@ -199,22 +202,22 @@ type Tab = {
  */
 export function TabBar() {
   const path = usePathname();
-  const cart = useCart();
+  const cart = useCartStore();
   const saved = useSavedIds("wishlist");
   const menu = useMenuOpen();
   const bar = useRef<HTMLElement>(null);
   const hidden = hidesTabBar(path);
   const shopping = path === "/products" || /^\/(c|brands)(\/|$)/.test(path);
   const tabs: Tab[] = [
-    { key: "home", label: "Home", icon: House, href: "/", active: path === "/" && !menu && !cart.open },
+    { key: "home", label: "Home", icon: House, href: "/", active: path === "/" && !menu && !cart.isOpen },
     {
       key: "shop",
       label: "Shop",
       icon: SquaresFour,
-      active: menu || (shopping && !cart.open),
+      active: menu || (shopping && !cart.isOpen),
       onPress: () => menuStore.set(true),
     },
-    { key: "search", label: "Search", icon: MagnifyingGlass, href: "/search", active: path === "/search" && !menu && !cart.open },
+    { key: "search", label: "Search", icon: MagnifyingGlass, href: "/search", active: path === "/search" && !menu && !cart.isOpen },
     ...(storeConfig.features.wishlist
       ? [
           {
@@ -222,7 +225,7 @@ export function TabBar() {
             label: "Saved",
             icon: Heart,
             href: "/wishlist",
-            active: path === "/wishlist" && !menu && !cart.open,
+            active: path === "/wishlist" && !menu && !cart.isOpen,
             badge: <CountBadge value={saved.length} hideZero />,
           },
         ]
@@ -231,7 +234,7 @@ export function TabBar() {
       key: "bag",
       label: "Bag",
       icon: ShoppingBag,
-      active: cart.open || (path === "/cart" && !menu),
+      active: cart.isOpen || (path === "/cart" && !menu),
       badge: <CountBadge value={cart.count} ready={cart.ready} hideZero />,
       onPress: () => (path === "/cart" ? window.scrollTo({ top: 0, behavior: "smooth" }) : cart.setOpen(true)),
     },
@@ -316,7 +319,7 @@ export function TabBar() {
             className="tab"
             data-active={tab.active || undefined}
             aria-haspopup="dialog"
-            aria-expanded={tab.key === "bag" ? cart.open : menu}
+            aria-expanded={tab.key === "bag" ? cart.isOpen : menu}
             aria-label={tab.key === "bag" ? `Bag, ${cart.count} ${cart.count === 1 ? "item" : "items"}` : undefined}
             onClick={() => {
               press();
@@ -336,10 +339,10 @@ export function TabBar() {
  * item (photo, name, new total) above the tab bar, and "View" opens the bag.
  */
 export function AddedToast() {
-  const cart = useCart();
+  const cartStore = useCartStore();
   const [shown, setShown] = useState<{ id: number; variantId: string } | null>(null);
   const [seen, setSeen] = useState(0);
-  const added = cart.lastAdded;
+  const added = cartStore.lastAdded;
   if (added && added.id !== seen) {
     setSeen(added.id);
     setShown(added);
@@ -350,8 +353,8 @@ export function AddedToast() {
     const timer = setTimeout(() => setShown(null), 3600);
     return () => clearTimeout(timer);
   }, [shown]);
-  const item = shown && cart.items.find((line) => line.variantId === shown.variantId);
-  const visible = !!item && !cart.open && !cart.error;
+  const item = shown && cartStore.cart?.items.find((line) => line.variantId === shown.variantId);
+  const visible = !!item && !cartStore.isOpen && !cartStore.error;
   return (
     <div className="added-toast" data-visible={visible || undefined} role="status" aria-live="polite">
       {item && (
@@ -363,7 +366,7 @@ export function AddedToast() {
             <small>Added to bag</small>
             <strong>{item.name}</strong>
             <span>
-              {item.label} · Bag total {formatMoney(cart.subtotal - cart.discount)}
+              {item.label} · Bag total {formatPrice(cartStore.subtotal - cartStore.discount)}
             </span>
           </span>
           <button
@@ -372,7 +375,7 @@ export function AddedToast() {
             tabIndex={visible ? 0 : -1}
             onClick={() => {
               setShown(null);
-              cart.setOpen(true);
+              cartStore.openCart();
             }}
           >
             View

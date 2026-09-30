@@ -54,7 +54,6 @@ export function Header({ categories = [], siteConfig }: HeaderProps) {
   const customer = useAuthStore((s) => s.customer)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   // const hasAuthHydrated = useAuthStore((s) => s.hasHydrated)
-  const hydrateAuth = useAuthStore((s) => s.hydrate)
   const logout = useAuthStore((s) => s.logout)
   const router = useRouter()
 
