@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import type { ActivePaymentSession } from "@/lib/medusa/cart-client";
 import BehpardakhtIcon from "./BehpardakhtIcon";
-import { requestProvider } from "@/lib/checkout/payment-providers";
+import { requestProvider } from "@/lib/checkout/request-payments";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 export interface ProviderInputProps {

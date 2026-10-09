@@ -1,5 +1,4 @@
 "use server";
-import { siteConfigRepository } from "../repositories/site-configs";
 import { bpPayRequest } from "./behpardakht";
 
 export type PaymentResult =
