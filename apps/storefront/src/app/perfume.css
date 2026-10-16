@@ -1,0 +1,577 @@
+/* ==========================================================================
+   STOREFRONT DESIGN SYSTEM
+   --------------------------------------------------------------------------
+   One stylesheet for every public page (home, catalog, product, cart shell).
+   It shares the admin panel's visual language: white canvas, soft grey
+   panels, white fields, pill buttons and icon tiles.
+
+   CUSTOMISE
+   - Brand colour, deal colour and corner style come from store.config.ts
+     (theme.primary / theme.deal / theme.radius). Don't hardcode them here.
+   - Everything else is a token in the :root block below. Change a token,
+     not individual rules.
+   - Sections are labelled; search for "=== NAME" to jump to one.
+   ========================================================================== */
+
+/* === TOKENS ============================================================== */
+:root {
+  --sf-ink: #141614; /* headings, prices */
+  --sf-ink-2: #3a3e36; /* body copy */
+  --sf-muted: #6c7068; /* secondary text */
+  --sf-faint: #9a9e96; /* hints, placeholders */
+  --sf-canvas: #ffffff; /* page background */
+  --sf-panel: #f4f5f2; /* cards, image wells, panels */
+  --sf-panel-2: #eceee9; /* hover / pressed panels */
+  --sf-line: #e6e8e3; /* hairlines */
+  --sf-line-strong: #d5d8d0; /* control borders */
+  --sf-accent: var(--primary); /* from store.config theme.primary */
+  --sf-accent-ink: var(--primary-foreground);
+  --sf-deal: var(--deal); /* from store.config theme.deal */
+  --sf-deal-ink: var(--deal-foreground);
+  --sf-good: #1d6634;
+  --sf-good-dot: #2f9e55;
+  --sf-warn: #82540a;
+  --sf-warn-dot: #dc9a0e;
+  --sf-bad: #992c1f;
+  --sf-bad-dot: #d6483a;
+  --sf-star: #b7791f; /* review stars */
+  /* Corner radii scale with theme.radius ("none" makes everything square). */
+  --sf-r-panel: min(calc(var(--radius) * 4), 28px);
+  --sf-r-card: min(calc(var(--radius) * 3.2), 22px);
+  --sf-r-control: min(calc(var(--radius) * 2.3), 14px);
+  --sf-r-pill: calc(var(--radius) * 9999);
+  /* Frame for product photos. Match your photography (e.g. 1 / 1 for square shots). */
+  --sf-product-ratio: 5 / 6;
+  --sf-width: 1360px;
+  --sf-gutter: clamp(16px, 4vw, 40px);
+  --sf-section-gap: clamp(56px, 7vw, 96px);
+  --sf-shadow-pop:
+    0 1px 2px rgb(20 22 20 / 6%), 0 16px 40px -12px rgb(20 22 20 / 22%);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+/* shadcn primitives (sheets, dialogs) read these; align them with the tokens. */
+body:has(.store-header) {
+  --background: var(--sf-canvas);
+  --foreground: var(--sf-ink);
+  --border: var(--sf-line);
+  --muted-foreground: var(--sf-muted);
+  --popover: #ffffff;
+}
+
+/* === BASE ================================================================ */
+body {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--sf-ink-2);
+  background: var(--sf-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+a,
+button,
+input,
+select,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+summary,
+select {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+:focus-visible {
+  outline: 2px solid var(--sf-ink);
+  outline-offset: 3px;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  color: var(--sf-ink);
+  font-weight: 500;
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+h2 {
+  font-size: clamp(22px, 2.2vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+h3 {
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+p {
+  text-wrap: pretty;
+}
+#main {
+  flex: 1;
+  min-width: 0;
+}
+.store-width {
+  width: min(100% - var(--sf-gutter), var(--sf-width));
+  margin-inline: auto;
+}
+.muted {
+  color: var(--sf-muted);
+}
+.text-link {
+  color: var(--sf-ink);
+  text-decoration: underline;
+  text-decoration-color: var(--sf-line-strong);
+  text-underline-offset: 4px;
+  transition: text-decoration-color 150ms ease;
+}
+@media (hover: hover) {
+  .text-link:hover {
+    text-decoration-color: currentColor;
+  }
+}
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: var(--sf-r-pill);
+  background: var(--sf-ink);
+  color: white;
+}
+.skip-link:focus {
+  top: 12px;
+}
+
+/* === BUTTONS, CHIPS, BADGES ============================================= */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1px solid var(--sf-line-strong);
+  border-radius: var(--sf-r-pill);
+  background: white;
+  color: var(--sf-ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms var(--ease-out);
+}
+@media (hover: hover) {
+  .button:hover {
+    border-color: var(--sf-ink);
+  }
+}
+.button.primary {
+  border-color: var(--sf-accent);
+  background: var(--sf-accent);
+  color: var(--sf-accent-ink);
+}
+@media (hover: hover) {
+  .button.primary:hover {
+    background: color-mix(in srgb, var(--sf-accent), white 12%);
+  }
+}
+.button.light {
+  border-color: white;
+  background: white;
+  color: var(--sf-ink);
+}
+.button.ghost {
+  border-color: transparent;
+  background: transparent;
+}
+@media (hover: hover) {
+  .button.ghost:hover {
+    background: var(--sf-panel);
+  }
+}
+.button.sm {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  gap: 6px;
+}
+.button.lg {
+  min-height: 52px;
+  padding: 0 26px;
+  font-size: 15px;
+}
+.button.icon {
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+  font-variant-numeric: tabular-nums;
+}
+.button:disabled,
+.button[aria-disabled] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+.button.primary:disabled {
+  opacity: 1;
+  border-color: var(--sf-panel-2);
+  background: var(--sf-panel-2);
+  color: var(--sf-muted);
+}
+.icon-button {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-r-pill);
+  background: white;
+  color: var(--sf-ink);
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms var(--ease-out);
+}
+@media (hover: hover) {
+  .icon-button:hover {
+    border-color: var(--sf-line-strong);
+    background: var(--sf-panel);
+  }
+}
+.icon-button .count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: grid;
+  place-items: center;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border: 2px solid white;
+  border-radius: 999px;
+  background: var(--sf-accent);
+  color: var(--sf-accent-ink);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+html:not([data-input="keyboard"])
+  :is(
+    .button,
+    .icon-button,
+    a.chip,
+    .chip.removable,
+    .size-options button,
+    .quantity-control button,
+    .gallery-thumbnails button,
+    .carousel-controls button
+  ):not(:disabled):not([data-static]):active {
+  transform: scale(0.97);
+}
+/* Count badges pop when their number goes up (CountBadge sets data-bump). */
+.icon-button .count[hidden] {
+  display: none;
+}
+.icon-button .count[data-bump] {
+  animation: sf-bump 280ms var(--ease-out);
+}
+@keyframes sf-bump {
+  from {
+    transform: scale(0.6);
+  }
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-r-pill);
+  background: white;
+  color: var(--sf-ink-2);
+  font-size: 13px;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    transform 150ms var(--ease-out);
+}
+@media (hover: hover) {
+  a.chip:hover,
+  .chip.link:hover {
+    border-color: var(--sf-ink);
+    color: var(--sf-ink);
+  }
+}
+.chip.removable {
+  background: var(--sf-panel);
+  border-color: transparent;
+  color: var(--sf-ink);
+}
+@media (hover: hover) {
+  .chip.removable:hover {
+    background: var(--sf-panel-2);
+  }
+}
+.chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: var(--sf-r-pill);
+  background: white;
+  color: var(--sf-ink);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 0 0 1px var(--sf-line);
+}
+.badge.deal {
+  background: var(--sf-deal);
+  color: var(--sf-deal-ink);
+  box-shadow: none;
+}
+.count-pill {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--sf-ink);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.icon-tile {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-r-control);
+  background: white;
+  color: var(--sf-ink);
+}
+.icon-tile.sm {
+  width: 34px;
+  height: 34px;
+  border-radius: min(calc(var(--radius) * 1.8), 11px);
+}
+.icon-tile.lg {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--sf-panel);
+  color: var(--sf-muted);
+}
+.panel {
+  padding: clamp(20px, 2.4vw, 28px);
+  border-radius: var(--sf-r-panel);
+  background: var(--sf-panel);
+}
+.panel > h2 {
+  margin-bottom: 18px;
+  font-size: 20px;
+}
+.callout {
+  padding: 12px 16px;
+  border-radius: var(--sf-r-control);
+  background: var(--sf-panel);
+}
+
+/* Star rating (read-only). --stars is the filled width, set inline. */
+.stars {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  vertical-align: middle;
+  line-height: 0;
+}
+.stars svg {
+  display: block;
+  flex-shrink: 0; /* the fill row clips, it must not squeeze the icons */
+  fill: currentColor;
+}
+.stars-base {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--sf-line-strong);
+}
+.stars-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: inline-flex;
+  gap: 1px;
+  width: var(--stars, 0%);
+  overflow: hidden;
+  color: var(--sf-star);
+}
+.spin {
+  animation: sf-spin 800ms linear infinite;
+}
+@keyframes sf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* === MEDIA =============================================================== */
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--sf-panel);
+}
+.media img {
+  object-fit: contain;
+}
+.media-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--sf-faint);
+  font-size: 12px;
+}
+
+/* ============================================================================
+   Home Page
+   ============================================================================ */
+.home-page {
+  display: grid;
+  gap: var(--sf-section-gap);
+  padding-top: 20px;
+}
+.section {
+  min-width: 0;
+}
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.section-head p {
+  margin-top: 6px;
+  color: var(--sf-muted);
+}
+.section-head .button {
+  margin-right: -10px;
+}
+/* Hero */
+.hero {
+  position: relative;
+}
+.hero-slide {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 12px;
+  min-height: clamp(440px, 44vw, 580px);
+  padding: 12px;
+  border-radius: var(--sf-r-panel);
+  background: var(--sf-panel);
+}
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: clamp(24px, 4vw, 56px);
+}
+.hero-copy :is(h1, h2) {
+  max-width: 11ch;
+  font-size: clamp(28px, 3vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+.hero-copy p {
+  max-width: 38ch;
+  color: var(--sf-muted);
+  font-size: clamp(15px, 1.3vw, 17px);
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+.hero-media {
+  min-height: 280px;
+  border-radius: calc(var(--sf-r-panel) - 6px);
+}
+.hero-media img {
+  object-fit: cover;
+}
+.hero-carousel .carousel-controls {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  z-index: 2;
+}
+/* Carousel arrows (all carousels) */
+.carousel-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+.carousel-controls
+  :is([data-slot="carousel-previous"], [data-slot="carousel-next"]) {
+  position: static;
+  inset: auto;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-r-pill);
+  background: white;
+  color: var(--sf-ink);
+  transform: none;
+  transition:
+    border-color 150ms ease,
+    opacity 150ms ease,
+    transform 150ms var(--ease-out);
+}
+.carousel-controls
+  :is([data-slot="carousel-previous"], [data-slot="carousel-next"]):hover:not(
+    :disabled
+  ) {
+  border-color: var(--sf-ink);
+}
+.carousel-controls
+  :is([data-slot="carousel-previous"], [data-slot="carousel-next"]):disabled {
+  opacity: 0.35;
+}
