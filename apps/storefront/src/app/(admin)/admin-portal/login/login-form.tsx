@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthCardLayout } from "@/components/auth/emailpass-auth-card-layout";
-import { handleLogin } from "./actions";
+import { toast } from "sonner";
+import { loginSchema } from "@/lib/validators";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { adminSdk } from "@/lib/medusa";
+import { AuthError } from "@/lib/utils/auth-error";
 
 interface LoginFormProps {
   from: string;
@@ -16,6 +21,33 @@ interface LoginFormProps {
 export function LoginForm({ from, error }: LoginFormProps) {
   const tAuth = useTranslations("auth");
   const tCommon = useTranslations("common");
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const result = loginSchema.safeParse({ email, password });
+    if (!result.success) {
+      toast.error(result.error.issues[0].message);
+      return;
+    }
+    setLoading(true);
+    try {
+      // await login(email, password)
+      const result = await adminSdk.auth.login("user", "emailpass", { email, password });
+      console.log(result)
+      toast.success("Welcome back!");
+      router.push(from);
+    } catch (err) {
+      const message =
+        err instanceof AuthError ? err.message : "Invalid email or password";
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <AuthCardLayout
@@ -31,7 +63,7 @@ export function LoginForm({ from, error }: LoginFormProps) {
         </div>
       )}
 
-      <form action={handleLogin.bind(null, from)} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">{tAuth("email")}</Label>
           <Input
@@ -39,6 +71,8 @@ export function LoginForm({ from, error }: LoginFormProps) {
             name="email"
             type="email"
             placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
         </div>
@@ -52,10 +86,17 @@ export function LoginForm({ from, error }: LoginFormProps) {
               {tAuth("forgotPassword")}
             </Link>
           </div>
-          <Input id="password" name="password" type="password" required />
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
-        <Button type="submit" className="w-full">
-          {tCommon("signIn")}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? `${tCommon("signIn")}...` : tCommon("signIn")}
         </Button>
       </form>
     </AuthCardLayout>

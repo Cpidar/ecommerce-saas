@@ -54,10 +54,6 @@ export default async function Page({
 
   const data = await siteConfigRepository.getPage(path);
 
-  if (!shouldHandleEditPath(puckPath)) {
-    notFound();
-  }
-
   return <Client path={path} data={data || {}} countryCode={countryCode} />;
 }
 

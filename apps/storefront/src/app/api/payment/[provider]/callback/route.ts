@@ -1,5 +1,6 @@
 import { bpVerifyRequest } from "@/lib/checkout/behpardakht";
 import { BehpardakhtErrors } from "@/lib/constants";
+import { siteConfigRepository } from "@/lib/repositories/site-configs";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
 
@@ -59,7 +60,7 @@ export async function POST(
   const cartId = searchParams.get("cartId") || "";
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
-
+console.log("Behpardakht callback")
   try {
     switch (provider as Provider) {
       case "sandbox":
@@ -174,11 +175,29 @@ async function processBehpardakhtCallback(
       }),
     }).then((res) => res.json());
   } else {
+    const config = await siteConfigRepository.getShippingAndPaymentConfig();
+    console.log(config)
+    const behpardakhtConfig =
+      config?.payment_configs?.["pp_behpardakht_behpardakht"]?.config;
+    console.log(behpardakhtConfig)
+    if (
+      !behpardakhtConfig ||
+      !behpardakhtConfig.terminalId ||
+      !behpardakhtConfig.username ||
+      !behpardakhtConfig.password
+    ) {
+      return {
+        success: false,
+        error:
+          "تنظیمات درگاه پرداخت به درستی تنظیم نشده است. با مدیر فروشگاه تماس بگیرید",
+      };
+    }
+
     // Call real bpVerifyRequest (not mock)
     verify = await bpVerifyRequest({
-      terminalId: process.env.BEHPARDAKHT_TERMINAL_ID!,
-      userName: process.env.BEHPARDAKHT_USERNAME!,
-      userPassword: process.env.BEHPARDAKHT_PASSWORD!,
+      terminalId: +behpardakhtConfig?.terminalId,
+      userName: behpardakhtConfig.username as string,
+      userPassword: behpardakhtConfig.password as string,
       orderId: SaleOrderId, // can be same as saleOrderId
       saleOrderId: SaleOrderId,
       saleReferenceId: SaleReferenceId,

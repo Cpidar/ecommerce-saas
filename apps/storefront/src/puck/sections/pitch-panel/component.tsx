@@ -14,7 +14,7 @@ function IncredibleOffers({
   className?: string;
 }) {
   return (
-    <section className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8">
+    <section className="store-width mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8">
       <div className="grid gap-6 md:grid-cols-3">
         <div className="rounded-lg border bg-white p-6">
           <Globe2 className="h-6 w-6 text-foreground" />

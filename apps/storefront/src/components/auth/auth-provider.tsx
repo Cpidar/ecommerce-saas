@@ -14,10 +14,12 @@ export function AuthProvider({
   children: React.ReactNode;
 }) {
   const initialize = useAuthStore((s) => s.initialize);
+  const adminMe = useAuthStore(s => s.adminMe)
 
   useEffect(() => {
     initialize(customer);
-  }, [customer, initialize]);
+    adminMe()
+  }, [customer, initialize, adminMe]);
 
   return children;
 }

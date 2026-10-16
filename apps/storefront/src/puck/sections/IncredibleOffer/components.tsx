@@ -3,7 +3,7 @@ import { ProductCard } from "@/components/products/product-card";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/components/ui/Link";
 import { Product } from "@/types";
-import { Skeleton } from '@/components/ui/skeleton';
+import { Skeleton } from "@/components/ui/skeleton";
 import { IncredibleProductCard } from "@/components/products/product-card-incredible";
 
 function IncredibleOffers({
@@ -20,45 +20,46 @@ function IncredibleOffers({
   className?: string;
 }) {
   return (
-    <Carousel
-      heading={
-        <h3 className="text-md md:text-2xl text-primary-foreground">
-          {heading}
-        </h3>
-      }
-      button={
-        <>
-          <Button
-            asChild
-            size="lg"
-            className="h-full flex-1 max-md:hidden md:h-auto text-primary-foreground"
-          >
-            <Link href={`/collections/${handle}`}>مشاهده همه</Link>
-          </Button>
-          <Button
-            asChild
-            size="sm"
-            className="md:hidden text-primary-foreground"
-          >
-            <Link href={`/collections/${handle}`}>مشاهده همه</Link>
-          </Button>
-        </>
-      }
-      className={"bg-primary py-10"}
-    >
-      {data &&
-        data.slice(0, 4).map((item, index) => (
-          <div
-            className="w-[50%] sm:w-[40%] lg:w-full max-w-124 shrink-0"
-            key={index}
-          >
-            <IncredibleProductCard product={item} />
-          </div>
-        ))}
-    </Carousel>
+    <section className="store-width section">
+      <Carousel
+        heading={
+          <h3 className="text-md md:text-2xl text-primary-foreground">
+            {heading}
+          </h3>
+        }
+        button={
+          <>
+            <Button
+              asChild
+              size="lg"
+              className="h-full flex-1 max-md:hidden md:h-auto text-primary-foreground"
+            >
+              <Link href={`/collections/${handle}`}>مشاهده همه</Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
+              className="md:hidden text-primary-foreground"
+            >
+              <Link href={`/collections/${handle}`}>مشاهده همه</Link>
+            </Button>
+          </>
+        }
+        className={"bg-primary py-5 rounded-2xl"}
+      >
+        {data &&
+          data.slice(0, 4).map((item, index) => (
+            <div
+              className="w-full max-w-124 shrink-0"
+              key={index}
+            >
+              <IncredibleProductCard product={item} />
+            </div>
+          ))}
+      </Carousel>
+    </section>
   );
 }
-
 
 export const IncredibleOffersSkeleton: React.FC = () => {
   return (
@@ -68,7 +69,7 @@ export const IncredibleOffersSkeleton: React.FC = () => {
           {/* Header */}
           <div className="mb-8 md:mb-15 flex max-sm:flex-col justify-between sm:items-center gap-x-10 gap-y-6">
             <Skeleton className="h-7 md:h-9 w-48 bg-primary-foreground/20" />
-            
+
             <div className="flex md:gap-6 shrink-0">
               <Skeleton className="h-9 w-24 rounded-lg max-md:hidden bg-primary-foreground/20" />
               <Skeleton className="h-7 w-16 rounded-lg md:hidden bg-primary-foreground/20" />
@@ -82,8 +83,8 @@ export const IncredibleOffersSkeleton: React.FC = () => {
           {/* Product Cards */}
           <div className="flex touch-pan-y gap-4 md:gap-10">
             {Array.from({ length: 4 }).map((_, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="w-[50%] sm:w-[40%] lg:w-full max-w-124 shrink-0 space-y-3"
               >
                 <Skeleton className="aspect-square w-full rounded-lg bg-primary-foreground/10" />
@@ -98,6 +99,5 @@ export const IncredibleOffersSkeleton: React.FC = () => {
     </div>
   );
 };
-
 
 export default IncredibleOffers;

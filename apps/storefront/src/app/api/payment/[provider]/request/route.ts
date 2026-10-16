@@ -5,6 +5,7 @@ export async function POST(
   { params }: { params: Promise<{ provider: string }> }
 ) {
   const { provider } = await params;
+  console.log(provider)
   let referenceId = ''
 
   switch (provider) {
@@ -30,7 +31,7 @@ export async function POST(
       // statement 2
       break;
     default:
-      // 
+      //
       break;
   }
 

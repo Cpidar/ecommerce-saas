@@ -13,6 +13,7 @@ import { siteConfig as defaultConfig } from "@/lib/config";
 import { clearToken, isAuthed } from "@/lib/medusa/admin-auth";
 import { AdminBar } from "@/components/admin/admin-bar";
 import { redirect } from "next/navigation";
+import { adminSdk } from "@/lib/medusa";
 
 async function HeaderProvider() {
   const categories = await categoryRepository.list();
@@ -39,17 +40,15 @@ async function AnnouncementBarProvider() {
 }
 
 export async function AdminBarProvider() {
-  const isAuthenticated = await isAuthed();
+  const user = await adminSdk.admin.user.me().catch(() => null);
+  console.log(user)
   const handleLogout = async () => {
-    "use server";
-    await clearToken();
-    redirect("/admin-portal/login");
+    return adminSdk.auth.logout()
   };
 
   return (
-    <AdminBar 
-      isAuthenticated={isAuthenticated} 
-      onLogout={handleLogout}
+    <AdminBar
+      isAuthenticated={!user}
       adminName="John Doe" // You can fetch this from your admin session
     />
   );

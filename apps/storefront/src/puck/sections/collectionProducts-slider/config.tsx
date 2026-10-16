@@ -11,9 +11,9 @@ interface MedusaCollection {
   title: string;
   handle: string;
   deleted_at?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   external_id?: string;
-  products?: any[];
+  products?: unknown;
 }
 
 type Props = {
@@ -151,6 +151,7 @@ export const CollectionProductsSliderSection: ComponentConfig<Props> = {
       return (
         <CollectionProductsSlider
           heading={heading}
+          subHeading={subHeading}
           handle={collection.handle}
           data={mockData.products as unknown as Product[]}
         />
@@ -163,6 +164,7 @@ export const CollectionProductsSliderSection: ComponentConfig<Props> = {
       <CollectionProductsSlider
         handle={collection.handle}
         heading={heading}
+        subHeading={subHeading}
         data={data}
       />
     );

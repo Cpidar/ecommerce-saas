@@ -11,6 +11,7 @@ export const CollectionsSection: React.FC<{
   collections: StoreCollection[];
 }> = ({ className, collections }) => {
   return (
+  <section className="store-width section">
     <Carousel
       heading={<h3 className="text-md md:text-2xl">Collections</h3>}
       button={
@@ -58,7 +59,8 @@ export const CollectionsSection: React.FC<{
           </Link>
         </div>
       ))}
-    </Carousel>
+      </Carousel>
+  </section>
   );
 };
 
@@ -70,7 +72,7 @@ export const CollectionSliderSkeleton: React.FC = () => {
           {/* Header */}
           <div className="mb-8 md:mb-15 flex max-sm:flex-col justify-between sm:items-center gap-x-10 gap-y-6">
             <Skeleton className="h-7 md:h-9 w-32" />
-            
+
             <div className="flex md:gap-6 shrink-0">
               <Skeleton className="h-9 w-24 rounded-lg max-md:hidden" />
               <Skeleton className="h-7 w-16 rounded-lg md:hidden" />
@@ -85,8 +87,8 @@ export const CollectionSliderSkeleton: React.FC = () => {
           <div>
             <div className="flex touch-pan-y gap-4 md:gap-10">
               {Array.from({ length: 4 }).map((_, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="w-[50%] sm:w-[40%] lg:w-full max-w-124 shrink-0"
                 >
                   <div className="space-y-3">
@@ -94,7 +96,7 @@ export const CollectionSliderSkeleton: React.FC = () => {
                     <div className="relative aspect-square overflow-hidden rounded-lg bg-muted">
                       <Skeleton className="w-full h-full" />
                     </div>
-                    
+
                     {/* Info placeholders */}
                     <div className="space-y-2">
                       <Skeleton className="h-4 w-3/4" />

@@ -93,34 +93,40 @@ export const AboutSection: ComponentConfig<AboutSection> = {
     if (!showSection) return <></>;
 
     return (
-      <Layout>
-        <LayoutColumn className="col-span-full">
-          <h3 className="text-md md:text-2xl mb-8 md:mb-16">{title}</h3>
-          <Image
-            src={typeof mainImage === "string" ? getFullImageUrl(mainImage) : getFullImageUrl(mainImage.src)}
-            width={2496}
-            height={1400}
-            alt={mainImageAlt}
-            className="mb-8 md:mb-16 max-md:aspect-[3/2] max-md:object-cover"
-          />
-        </LayoutColumn>
-        <LayoutColumn start={1} end={{ base: 13, md: 7 }}>
-          <h2 className="text-md md:text-2xl">{heading}</h2>
-        </LayoutColumn>
-        <LayoutColumn
-          start={{ base: 1, md: 8 }}
-          end={13}
-          className="mt-6 md:mt-19"
-        >
-          <div className="md:text-md">
-            <p className="mb-5 md:mb-9">{paragraph1}</p>
-            <p className="mb-5 md:mb-3">{paragraph2}</p>
-            <Link href={linkHref} variant="underline">
-              {linkText}
-            </Link>
-          </div>
-        </LayoutColumn>
-      </Layout>
+      <section className="store-width section">
+        <Layout>
+          <LayoutColumn className="col-span-full">
+            <h3 className="text-md md:text-2xl mb-8 md:mb-16">{title}</h3>
+            <Image
+              src={
+                typeof mainImage === "string"
+                  ? getFullImageUrl(mainImage)
+                  : getFullImageUrl(mainImage.src)
+              }
+              width={2496}
+              height={1400}
+              alt={mainImageAlt}
+              className="mb-8 md:mb-16 max-md:aspect-[3/2] max-md:object-cover"
+            />
+          </LayoutColumn>
+          <LayoutColumn start={1} end={{ base: 13, md: 7 }}>
+            <h2 className="text-md md:text-2xl">{heading}</h2>
+          </LayoutColumn>
+          <LayoutColumn
+            start={{ base: 1, md: 8 }}
+            end={13}
+            className="mt-6 md:mt-19"
+          >
+            <div className="md:text-md">
+              <p className="mb-5 md:mb-9">{paragraph1}</p>
+              <p className="mb-5 md:mb-3">{paragraph2}</p>
+              <Link href={linkHref} variant="underline">
+                {linkText}
+              </Link>
+            </div>
+          </LayoutColumn>
+        </Layout>
+      </section>
     );
   },
 };

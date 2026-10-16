@@ -190,6 +190,14 @@ Application Tokens
 
 @layer base {
   :root {
+    /* Frame for product photos. Match your photography (e.g. 1 / 1 for square shots). */
+    --sf-product-ratio: 5 / 6;
+    --sf-width: 1360px;
+    --sf-gutter: clamp(16px, 4vw, 40px);
+    --sf-section-gap: clamp(56px, 7vw, 96px);
+    --sf-shadow-pop:
+      0 1px 2px rgb(20 22 20 / 6%), 0 16px 40px -12px rgb(20 22 20 / 22%);
+
     /* Store accent colors — edit these to retheme the store */
     --rating: var(--chart-1);
     --wishlist: var(--destructive);
@@ -234,6 +242,139 @@ Application Tokens
   input[type="text"] {
     @apply h-11; /* Note: @apply still works in CSS, just not in JS */
   }
+}
+
+.store-width {
+  max-width: min(100% - var(--sf-gutter), var(--sf-width));
+  /*max-width: var(--sf-width);*/
+  margin-inline: auto;
+}
+
+/* === MEDIA =============================================================== */
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--sf-panel);
+}
+.media img {
+  object-fit: contain;
+}
+.media-fallback {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: var(--sf-faint);
+  font-size: 12px;
+}
+
+/* ============================================================================
+   Home Page
+   ============================================================================ */
+.home-page {
+  display: grid;
+  gap: var(--sf-section-gap);
+  padding-top: 20px;
+}
+.section {
+  min-width: 0;
+}
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.section-head p {
+  margin-top: 6px;
+  color: var(--sf-muted);
+}
+.section-head .button {
+  margin-right: -10px;
+}
+/* Hero */
+.hero {
+  position: relative;
+}
+.hero-slide {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 12px;
+  min-height: clamp(440px, 44vw, 580px);
+  padding: 12px;
+  border-radius: var(--sf-r-panel);
+  background: var(--sf-panel);
+}
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+  padding: clamp(24px, 4vw, 56px);
+}
+.hero-copy :is(h1, h2) {
+  max-width: 11ch;
+  font-size: clamp(38px, 5vw, 68px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+.hero-copy p {
+  max-width: 38ch;
+  color: var(--sf-muted);
+  font-size: clamp(15px, 1.3vw, 17px);
+}
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+.hero-media {
+  min-height: 280px;
+  border-radius: calc(var(--sf-r-panel) - 6px);
+}
+.hero-media img {
+  object-fit: cover;
+}
+.hero-carousel .carousel-controls {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  z-index: 2;
+}
+/* Carousel arrows (all carousels) */
+.carousel-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+.carousel-controls
+  :is([data-slot="carousel-previous"], [data-slot="carousel-next"]) {
+  position: static;
+  inset: auto;
+  width: 40px;
+  height: 40px;
+  margin: 0;
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-r-pill);
+  background: white;
+  color: var(--sf-ink);
+  transform: none;
+  transition:
+    border-color 150ms ease,
+    opacity 150ms ease,
+    transform 150ms var(--ease-out);
+}
+.carousel-controls
+  :is([data-slot="carousel-previous"], [data-slot="carousel-next"]):hover:not(
+    :disabled
+  ) {
+  border-color: var(--sf-ink);
+}
+.carousel-controls
+  :is([data-slot="carousel-previous"], [data-slot="carousel-next"]):disabled {
+  opacity: 0.35;
 }
 
 /* ============================================================================

@@ -43,7 +43,7 @@ export function Client({
     process.env.NODE_ENV === "production"
       ? "/app/login"
       : "http://localhost:9000/app/login";
-  const { isReady } = useAdminAuthGuard(redirectTo);
+  const { isReady } = useAdminAuthGuard();
 
   if (!isReady) {
     return editPageLoading();

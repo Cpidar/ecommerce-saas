@@ -29,7 +29,6 @@ export function Client({ data, path }: { data: Data; path: string }) {
   );
 }
 
-
 // "use client";
 
 // export function Client() {

@@ -7,7 +7,7 @@ export const config = defineWidgetConfig({
 
 const RedirectWidget = () => {
   const [params, setParams] = useSearchParams();
-  const redirectTo = params.get("ref");
+  const redirectTo = params.get("from");
   const location = useLocation();
   const navigate = useNavigate();
   if (redirectTo) {

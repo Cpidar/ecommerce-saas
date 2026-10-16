@@ -9,23 +9,24 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AlertCircle, Pencil, Shield } from "lucide-react";
 import { isSlugEditable } from "@/lib/config";
+import { adminSdk } from "@/lib/medusa";
 
 interface AdminBarProps {
-  isAuthenticated: boolean;
+  isAuthenticated?: boolean;
   onLogout?: () => Promise<void>;
   adminName?: string;
 }
 
-export function AdminBar({
-  isAuthenticated,
-  onLogout,
-  adminName = "Admin",
-}: AdminBarProps) {
+export function AdminBar({ adminName = "Admin" }: AdminBarProps) {
   const pathname = usePathname();
   const [isEditable, setIsEditable] = useState(false);
   const [editUrl, setEditUrl] = useState("");
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   useEffect(() => {
+    adminSdk.admin.user
+      .me()
+      .then(() => setIsAuthenticated(true))
+      .catch(() => setIsAuthenticated(false));
     if (!pathname) {
       setIsEditable(false);
       setEditUrl("");
@@ -40,6 +41,10 @@ export function AdminBar({
 
   if (!isAuthenticated) return null;
 
+  const handleLogout = async () => {
+    await adminSdk.auth.logout();
+    setIsAuthenticated(false);
+  };
   return (
     <div className="fixed inset-x-0 top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-11 items-center gap-2.5 px-4">
@@ -87,7 +92,7 @@ export function AdminBar({
             size="sm"
             variant="outline"
             className="h-7 px-3 text-xs"
-            onClick={onLogout}
+            onClick={handleLogout}
           >
             خروج
           </Button>

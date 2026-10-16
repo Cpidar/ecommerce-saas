@@ -11,16 +11,18 @@ type Props = {
   className?: string;
 };
 
-const IMAGE_REMOTE_DOMAIN = "https://nitrocommerce-demo-data.s3.ir-thr-at1.arvanstorage.ir/morrow"
+const IMAGE_REMOTE_DOMAIN =
+  "https://nitrocommerce-demo-data.s3.ir-thr-at1.arvanstorage.ir/morrow";
 
 export const mockProductCategories: Category[] = [
   {
     id: "1",
     name: "لوازم ضروری میز کار",
     slug: "desk-essentials",
-    description: "محصولات کاربردی که محیط کار شما را پربازده‌تر و زیباتر می‌کنند.",
+    description:
+      "محصولات کاربردی که محیط کار شما را پربازده‌تر و زیباتر می‌کنند.",
     thumbnail: {
-      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/desk-essentials.svg`,
+      url: `${IMAGE_REMOTE_DOMAIN || ""}/categories/desk-essentials.svg`,
       alt: "",
     },
     parentId: undefined,
@@ -30,9 +32,10 @@ export const mockProductCategories: Category[] = [
     id: "2",
     name: "لوازم جانبی دیجیتال",
     slug: "tech-accessories",
-    description: "سازمان‌دهنده‌ها و محافظ‌های هوشمند برای وسایل روزمره دیجیتال شما.",
+    description:
+      "سازمان‌دهنده‌ها و محافظ‌های هوشمند برای وسایل روزمره دیجیتال شما.",
     thumbnail: {
-      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/tech-accessories.svg`,
+      url: `${IMAGE_REMOTE_DOMAIN || ""}/categories/tech-accessories.svg`,
       alt: "",
     },
     parentId: undefined,
@@ -44,7 +47,7 @@ export const mockProductCategories: Category[] = [
     slug: "travel-goods",
     description: "کیف و سازمان‌دهنده‌های مقاوم برای سفری آسان و بی‌دغدغه.",
     thumbnail: {
-      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/travel-goods.svg`,
+      url: `${IMAGE_REMOTE_DOMAIN || ""}/categories/travel-goods.svg`,
       alt: "",
     },
     parentId: undefined,
@@ -56,7 +59,7 @@ export const mockProductCategories: Category[] = [
     slug: "home-objects",
     description: "سفال، صوتی و وسایل تزئینی که به فضای شما گرما می‌بخشند.",
     thumbnail: {
-      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/home-objects.svg`,
+      url: `${IMAGE_REMOTE_DOMAIN || ""}/categories/home-objects.svg`,
       alt: "",
     },
     parentId: undefined,
@@ -68,7 +71,7 @@ export const mockProductCategories: Category[] = [
     slug: "bags-and-carry",
     description: "کوله‌پشتی و کیف‌های چندمنظوره برای زندگی مدرن روزمره.",
     thumbnail: {
-      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/bags-and-carry.svg`,
+      url: `${IMAGE_REMOTE_DOMAIN || ""}/categories/bags-and-carry.svg`,
       alt: "",
     },
     parentId: undefined,
@@ -80,7 +83,7 @@ export const mockProductCategories: Category[] = [
     slug: "everyday-tools",
     description: "ابزارهای ظریف برای نوشتن، صنایع دستی و ساخت.",
     thumbnail: {
-      url: `${IMAGE_REMOTE_DOMAIN || ''}/categories/everyday-tools.svg`,
+      url: `${IMAGE_REMOTE_DOMAIN || ""}/categories/everyday-tools.svg`,
       alt: "",
     },
     parentId: undefined,
@@ -124,18 +127,26 @@ export const CategoriesSlider: ComponentConfig<Props> = {
   },
   render: ({ heading, subHeading, data, categoryCardType, className }) => {
     return (
-      <Carousel
-        heading={<h3 className="text-md md:text-2xl">{heading}</h3>}
-        className={`mx-auto w-full max-w-[1440px] ${className}`}
-        arrows={false}
-      >
-        <CategoryShowcase
-          heading={heading}
-          subHeading={subHeading}
-          data={(data && data.length !== 0) ? data : mockProductCategories}
-          categoryCardType={categoryCardType}
-        />
-      </Carousel>
+      <section className="store-width section">
+        <Carousel
+          heading={<h3 className="text-md md:text-2xl">{heading}</h3>}
+          className={`mx-auto w-full max-w-[1440px] ${className}`}
+          arrows={false}
+          cardSize="small"
+        >
+          {data?.map((item, index) => {
+            return (
+              <CategoryShowcase
+                heading={heading}
+                subHeading={subHeading}
+                item={item}
+                key={index}
+                categoryCardType={categoryCardType}
+              />
+            );
+          })}
+        </Carousel>
+      </section>
     );
   },
 };

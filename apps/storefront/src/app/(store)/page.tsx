@@ -108,7 +108,7 @@ async function EnrichedContent({ data }: { data: Data }) {
 // ---------------------------------------------------------------------------
 export default async function HomePage() {
   // 1. Load the light Puck page data first (this is fast + can be cached)
-  const data = await siteConfigRepository.getPage("/home");
+  const data = await siteConfigRepository.getPage("/home") as Data;
   if (!data) notFound();
 
   return (

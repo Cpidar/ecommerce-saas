@@ -9,18 +9,18 @@ import { PLACEHOLDER_IMAGE } from "../constants";
  */
 export const getFullImageUrl = (filePath: string, baseUrl = null) => {
   if (!filePath) return PLACEHOLDER_IMAGE; // Return placeholder if no file path
-  
+
   // If it's already a full URL, return as is
   if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
     return filePath;
   }
-  
+
   // Get base URL from environment or parameter
   const base = baseUrl || process.env.NEXT_PUBLIC_IMAGE_HOST_ADDRESS || '';
-  
+
   // Ensure path starts with /
   const path = filePath.startsWith('/') ? filePath : `/${filePath}`;
-  
+
   return `${base}${path}`;
 };
 
@@ -29,8 +29,8 @@ export const getFullImageUrl = (filePath: string, baseUrl = null) => {
  */
 export const getThumbnailUrl = (product: Product, size = 'small') => {
     const thumbnail = product.images[0]
-  if (!thumbnail) return '/placeholder.jpg';
-  
+  if (!thumbnail) return PLACEHOLDER_IMAGE;
+
   // You can add image processing parameters here if needed
   return getFullImageUrl(thumbnail.url);
 };
@@ -42,6 +42,6 @@ export const getGalleryUrls = (product: Product) => {
   if (!product.images || product.images.length === 0) {
     return [];
   }
-  
+
   return product.images.map(img => getFullImageUrl(img.url));
 };

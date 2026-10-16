@@ -1,42 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { useRouter, useParams } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { AuthCardLayout } from "@/components/auth/emailpass-auth-card-layout"
-import { useAuthStore } from "@/store/auth"
-import { AuthError } from "@/lib/utils/auth-error"
-import { toast } from "sonner"
-import { loginSchema } from "@/lib/validators"
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter, useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { AuthCardLayout } from "@/components/auth/emailpass-auth-card-layout";
+import { useAuthStore } from "@/store/auth";
+import { AuthError } from "@/lib/utils/auth-error";
+import { toast } from "sonner";
+import { loginSchema } from "@/lib/validators";
+import { adminSdk } from "@/lib/medusa";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const login = useAuthStore((s) => s.login)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
+  const router = useRouter();
+  const login = useAuthStore((s) => s.login);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const result = loginSchema.safeParse({ email, password })
+    e.preventDefault();
+    const result = loginSchema.safeParse({ email, password });
     if (!result.success) {
-      toast.error(result.error.issues[0].message)
-      return
+      toast.error(result.error.issues[0].message);
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      await login(email, password)
-      toast.success("Welcome back!")
-      router.push(`/account`)
+      // await login(email, password)
+      await adminSdk.auth.login("user", "emailauth", { email, password });
+      toast.success("Welcome back!");
+      router.push(`/account`);
     } catch (err) {
       const message =
-        err instanceof AuthError ? err.message : "Invalid email or password"
-      toast.error(message)
+        err instanceof AuthError ? err.message : "Invalid email or password";
+      toast.error(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -51,21 +53,37 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password">Password</Label>
-            <Link href="/auth/forgot-password" className="text-xs text-muted-foreground hover:text-foreground">
+            <Link
+              href="/auth/forgot-password"
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
               Forgot password?
             </Link>
           </div>
-          <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Signing in..." : "Sign In"}
         </Button>
       </form>
     </AuthCardLayout>
-  )
+  );
 }

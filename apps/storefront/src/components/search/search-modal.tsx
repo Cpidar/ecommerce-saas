@@ -11,6 +11,7 @@ import { PLACEHOLDER_IMAGE } from "@/lib/constants"
 import type { Product } from "@/types"
 import { searchProductsClient } from "@/lib/medusa-client-search"
 import { normalizePersianText } from "@/lib/utils/normalize-persian-text"
+import { getThumbnailUrl } from "@/lib/utils/image-url"
 
 const popularSearches = [
   "T-Shirt",
@@ -151,7 +152,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     >
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-neutral-100">
                         <Image
-                          src={product.images[0]?.url ?? PLACEHOLDER_IMAGE}
+                          src={getThumbnailUrl(product)}
                           alt={product.images[0]?.alt ?? product.name}
                           fill
                           className="object-cover"

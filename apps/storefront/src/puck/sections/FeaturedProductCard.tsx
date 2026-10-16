@@ -74,26 +74,28 @@ export const FeaturedProductCard: ComponentConfig<FeaturedProductCardProps> = {
     if (!showSection) return <></>;
 
     return (
-      <LayoutColumn start={{ base: 1, md: 9 }} end={13}>
-        <Link href={`/products/${productHandle}`}>
-          <Image
-            src={getFullImageUrl(productImage)}
-            width={768}
-            height={572}
-            alt={imageAlt}
-            className="mb-4 md:mb-6"
-          />
-          <div className="flex justify-between">
-            <div>
-              <p className="mb-1">{productName}</p>
-              <p className="text-grayscale-500 text-xs">{productCategory}</p>
+      <section className="store-width section">
+        <LayoutColumn start={{ base: 1, md: 9 }} end={13}>
+          <Link href={`/products/${productHandle}`}>
+            <Image
+              src={getFullImageUrl(productImage)}
+              width={768}
+              height={572}
+              alt={imageAlt}
+              className="mb-4 md:mb-6"
+            />
+            <div className="flex justify-between">
+              <div>
+                <p className="mb-1">{productName}</p>
+                <p className="text-grayscale-500 text-xs">{productCategory}</p>
+              </div>
+              <div>
+                <p className="font-semibold">{productPrice}</p>
+              </div>
             </div>
-            <div>
-              <p className="font-semibold">{productPrice}</p>
-            </div>
-          </div>
-        </Link>
-      </LayoutColumn>
+          </Link>
+        </LayoutColumn>
+      </section>
     );
   },
 };

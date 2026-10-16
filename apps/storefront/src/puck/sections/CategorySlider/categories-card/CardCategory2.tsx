@@ -26,7 +26,7 @@ const CardCategory2: FC<CardCategory2Props> = ({
   return (
     <Link
       href={`/categories/${slug}`}
-      className={`nc-CardCategory2 ${className}`}
+      className={`flex-col justify-center ${className}`}
       data-nc-id="CardCategory2"
     >
       <div

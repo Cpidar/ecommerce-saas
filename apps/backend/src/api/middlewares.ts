@@ -1,4 +1,4 @@
-import { authenticate, defineMiddlewares } from "@medusajs/medusa";
+import { defineMiddlewares } from "@medusajs/medusa";
 import { storeProductsRoutesMiddlewares } from "./store/products/middlewares";
 import { storeProductCategoriesRoutesMiddlewares } from "./store/product-categories/middlewares";
 import { adminProductCategoryRoutesMiddlewares } from "./admin/product-categories/middlewares";
@@ -10,10 +10,9 @@ import { adminProductOptionRoutesMiddlewares } from "./admin/product-options/mid
 import { storeStoreConfigRoutesMiddlewares } from "./store/store-config/middlewares";
 import { adminProductsRoutesMiddlewares } from "./admin/products/middleware";
 import { storesRoutesMiddlewares } from "./stores/middlewares";
-
+import { storeSearchMiddleware } from "./middlewares/store-search";
 
 export default defineMiddlewares({
-
   routes: [
     {
       method: ["ALL"],
@@ -25,6 +24,10 @@ export default defineMiddlewares({
     //   matcher: '/store/custom/customer/*',
     //   middlewares: [authenticate('customer', ['session', 'bearer'])],
     // },
+    {
+      matcher: "/store/search",
+      middlewares: [storeSearchMiddleware],
+    },
     ...storeProductsRoutesMiddlewares,
     ...storeProductCategoriesRoutesMiddlewares,
     ...storeProductCollectionsRoutesMiddlewares,
@@ -34,6 +37,6 @@ export default defineMiddlewares({
     ...adminStoreMethodsRoutesMiddlewares,
     ...adminCustomUploadsRoutesMiddlewares,
     ...adminProductsRoutesMiddlewares,
-    ...storesRoutesMiddlewares
+    ...storesRoutesMiddlewares,
   ],
 });

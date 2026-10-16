@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Toaster } from "sonner";
 import "./globals.css";
+// import "./storefront.css";
 import { IRANSans } from "@/styles/font";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { tryGetCurrentCustomer } from "@/lib/medusa/auth-server";

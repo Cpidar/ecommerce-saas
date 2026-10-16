@@ -83,7 +83,7 @@ export const FeaturesSection: ComponentConfig<IntroSection> = {
   },
 
   render: ({ features }: IntroSection) => (
-    <section className="mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8">
+    <section className="store-width mx-auto w-full max-w-[1440px] px-4 py-16 sm:px-6 lg:px-8">
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
         {features.map((feature, index) => (
           <div

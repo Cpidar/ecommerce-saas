@@ -217,8 +217,12 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true })
         try {
           const { user } = await adminSdk.admin.user.me()
+          console.log(user)
           set({ user, isAdminAuthenticated: true, hasHydrated: true })
-        } finally {
+        } catch {
+          set({ isAdminAuthenticated: false, hasHydrated: true })
+        }
+        finally {
           set({ isLoading: false })
         }
       }

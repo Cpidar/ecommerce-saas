@@ -14,6 +14,7 @@ import { Client } from "./client";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { siteConfigRepository } from "@/lib/repositories/site-configs";
+import { Data } from "@puckeditor/core";
 
 export async function generateMetadata({
   params,
@@ -23,8 +24,8 @@ export async function generateMetadata({
   // const { puckPath = [] } = await params;
   // const path = `/${puckPath.join("/")}`;
   const path = "/policies/returns"
-  const data = await siteConfigRepository.getPage(path);
-  
+  const data = await siteConfigRepository.getPage(path) as Data;
+
   return {
     title: data?.root.props?.title ?? "درباره ما",
   };
@@ -38,7 +39,7 @@ export default async function Page({
   // const { puckPath = [] } = await params;
   // const path = `/${puckPath.join("/")}`;
   const path = "/policies/returns"
-  const data = await siteConfigRepository.getPage(path);
+  const data = await siteConfigRepository.getPage(path) as Data;
 
   if (!data) {
     return notFound();

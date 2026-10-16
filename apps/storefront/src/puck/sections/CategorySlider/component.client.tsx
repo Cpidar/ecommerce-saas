@@ -24,7 +24,7 @@ export interface SectionSliderCategoriesProps {
   itemClassName?: string;
   heading?: string;
   subHeading?: string;
-  data?: Category[];
+  item: Category;
   categoryCardType: string;
 }
 
@@ -42,36 +42,30 @@ const cardComponents: Record<string, FC<any>> = {
 const SectionSliderCategories: FC<SectionSliderCategoriesProps> = ({
   itemClassName = "",
   categoryCardType = "card07",
-  data,
+  item,
 }) => {
   // Get the appropriate card component based on type
   const CardComponent = cardComponents[categoryCardType] || CardCategory7;
+  // Get the base props
+  const { thumbnail, name, description, slug, ...rest } = item;
+
+  // Create card props with explicit values and spread the rest
+  const cardProps = {
+    featuredImage: thumbnail
+      ? getFullImageUrl(thumbnail.url)
+      : PLACEHOLDER_IMAGE,
+    name: name,
+    desc: description,
+    slug,
+    ...rest, // This won't overwrite the explicit props above
+  };
 
   return (
-    <>
-      {data?.map((item, index) => {
-        // Get the base props
-        const { thumbnail, name, description, slug, ...rest } = item;
-
-
-        // Create card props with explicit values and spread the rest
-        const cardProps = {
-          featuredImage: thumbnail ? getFullImageUrl(thumbnail.url) : PLACEHOLDER_IMAGE,
-          name: name,
-          desc: description,
-          slug,
-          ...rest, // This won't overwrite the explicit props above
-        };
-
-        return (
-          <li key={index} className={`glide__slide ${itemClassName}`}>
-            <Suspense fallback={<CardFallback />}>
-              <CardComponent {...cardProps} />
-            </Suspense>
-          </li>
-        );
-      })}
-    </>
+    <div className={`${itemClassName}`}>
+      <Suspense fallback={<CardFallback />}>
+        <CardComponent {...cardProps} />
+      </Suspense>
+    </div>
   );
 };
 

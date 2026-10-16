@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { notFound, useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,7 +34,7 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
 
   if (!phone) return notFound();
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   }
 
@@ -137,7 +137,7 @@ const Register = ({ appMode }: { appMode: AppMode }) => {
             id="email"
             name="email"
             value={email}
-            onSubmit={handleChange}
+            onChange={handleChange}
             hidden
             required
           />

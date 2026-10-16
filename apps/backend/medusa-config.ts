@@ -23,10 +23,9 @@ module.exports = defineConfig({
       sameSite: "lax",
       secure: false,
     },
-
   },
   modules: [
-  // AUTH module
+    // AUTH module
     {
       resolve: "@medusajs/medusa/auth",
       dependencies: [
@@ -109,7 +108,8 @@ module.exports = defineConfig({
             options: {
               // Use port 3900 for S3 API
               endpoint: process.env.S3_ENDPOINT || "http://rustfs:3900", // Custom port
-              file_url: process.env.S3_FILE_URL || "http://localhost:3900/medusabucket",
+              file_url:
+                process.env.S3_FILE_URL || "http://localhost:3900/medusabucket",
               access_key_id: process.env.S3_ACCESS_KEY_ID, // From step 1
               secret_access_key: process.env.S3_SECRET_ACCESS_KEY, // From step 1
               region: process.env.S3_REGION || "us-east-1",
@@ -172,6 +172,20 @@ module.exports = defineConfig({
             options: {
               redisUrl: process.env.LOCKING_REDIS_URL || process.env.REDIS_URL,
             },
+          },
+        ],
+      },
+    },
+
+    // Search Module
+    {
+      resolve: "@medusajs/medusa/search",
+      options: {
+        index_prefix: "prod_",
+        providers: [
+          {
+            resolve: "@medusajs/medusa/search-postgres",
+            id: "search-postgres",
           },
         ],
       },

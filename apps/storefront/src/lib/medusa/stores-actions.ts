@@ -1,5 +1,5 @@
 "use client";
-import { sdk } from "../medusa";
+import { adminSdk, sdk } from "../medusa";
 import { medusaError } from "../medusa-error";
 import {
   AdditionalData,
@@ -176,7 +176,7 @@ export const savePuckData = async (payload: {
   // fs.writeFileSync(dbPath, JSON.stringify(payload.data, null, 2)); // Added pretty printing
 
   try {
-    await sdk.client
+    await adminSdk.client
       .fetch("/admin/store-config", {
         method: "PUT",
         credentials: "include",

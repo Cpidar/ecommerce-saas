@@ -1,7 +1,7 @@
 // puck.config.tsx
 
 import { Config } from "@puckeditor/core";
-import { HeroSection } from "./sections/HeroSection01";
+import { HeroSection } from "./sections/hero-sections/HeroSection01";
 import { HeroSection03 } from "./sections/hero-sections/TwoColumn/config";
 import { IntroSection } from "./sections/IntroSection01";
 import { ProductTypesSection } from "./sections/ProductTypeSection01";
@@ -18,12 +18,14 @@ import { CollectionProductsSliderSection } from "./sections/collectionProducts-s
 import { FullPageRichText } from "./sections/FullPageRichText/config";
 import { FeaturesSection } from "./sections/FeaturesSections";
 import { FAQSection } from "./sections/FAQ";
+import { HeroSection02Config } from "./sections/hero-sections/hero2/config";
 
 // Define the root categories for better organization in the editor
 export const config: Config = {
   components: {
     // Section Components (main building blocks)
     HeroSection,
+    HeroSection02Config,
     HeroSection03,
     IntroSection,
     ProductTypesSection,
@@ -63,6 +65,7 @@ desc: {  type: "text"},
     sections: {
       components: [
         "HeroSection",
+        "HeroSection02Config",
         "IntroSection",
         "ProductTypesSection",
         "CollectionsSectionWrapper",

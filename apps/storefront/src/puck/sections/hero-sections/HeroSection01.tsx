@@ -1,6 +1,6 @@
 // configs/components/HeroSection.ts
 import { getFullImageUrl } from "@/lib/utils/image-url";
-import { imagePickerField } from "../fields/image-picker";
+import { imagePickerField } from "../../fields/image-picker";
 import { ComponentConfig } from "@puckeditor/core";
 import Image, { StaticImageData } from "next/image";
 
