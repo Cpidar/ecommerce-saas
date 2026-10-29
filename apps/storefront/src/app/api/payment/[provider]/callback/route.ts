@@ -3,8 +3,9 @@ import { BehpardakhtErrors } from "@/lib/constants";
 import { siteConfigRepository } from "@/lib/repositories/site-configs";
 import { redirect } from "next/navigation";
 import { NextRequest } from "next/server";
+import { processPasargadCallback } from "./proccess-parsian";
 
-type Provider = "sandbox" | "behpardakht";
+type Provider = "sandbox" | "behpardakht" | "parsian" | "zibal" | "sadad";
 
 type BpCallbackFields = {
   RefId?: string;
@@ -60,7 +61,7 @@ export async function POST(
   const cartId = searchParams.get("cartId") || "";
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000";
-console.log("Behpardakht callback")
+  console.log("Behpardakht callback");
   try {
     switch (provider as Provider) {
       case "sandbox":
@@ -86,6 +87,24 @@ console.log("Behpardakht callback")
           }),
         );
       }
+      case "parsian":
+        const result = await processPasargadCallback(request);
+
+        if (!result.success) {
+          redirect(
+            buildRedirectUrl(baseUrl, failUrl, {
+              errorMessage: result.error,
+              cartId,
+            }),
+          );
+        }
+
+        redirect(
+          buildRedirectUrl(baseUrl, successUrl, {
+            saleReferenceId: result.token,
+            cartId,
+          }),
+        );
 
       default:
         redirect(
@@ -176,10 +195,10 @@ async function processBehpardakhtCallback(
     }).then((res) => res.json());
   } else {
     const config = await siteConfigRepository.getShippingAndPaymentConfig();
-    console.log(config)
+    console.log(config);
     const behpardakhtConfig =
       config?.payment_configs?.["pp_behpardakht_behpardakht"]?.config;
-    console.log(behpardakhtConfig)
+    console.log(behpardakhtConfig);
     if (
       !behpardakhtConfig ||
       !behpardakhtConfig.terminalId ||

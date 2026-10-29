@@ -1,5 +1,6 @@
 "use server";
 import { bpPayRequest } from "./behpardakht";
+import { pecSaleRequest } from "./parsian";
 
 export type PaymentResult =
   | {
@@ -75,7 +76,7 @@ export async function requestProvider({
       };
 
     case "pp_behpardakht_behpardakht":
-      const result = await bpPayRequest({
+      const bpResult = await bpPayRequest({
         terminalId: +config.terminalId,
         userName: config.username,
         userPassword: config.password,
@@ -86,22 +87,45 @@ export async function requestProvider({
         payerId: "0",
         isSandbox: true,
       });
-      if (!result.success) {
+      if (!bpResult.success) {
         return {
           success: false,
-          error: result.message,
-          resCode: result.resCode,
+          error: bpResult.message,
+          resCode: bpResult.resCode,
         };
       }
-
       return {
         success: true,
-        referenceId: result.refId!,
+        referenceId: bpResult.refId!,
         url:
           process.env.NODE_ENV === "production"
             ? "https://bpm.shaparak.ir/pgwchannel/startpay.mellat"
             : "https://pgw.dev.bpmellat.ir/pgwchannel/startpay.mellat",
         method: "POST",
+      };
+
+    case "pp_parsian_parsian":
+      const parsResult = await pecSaleRequest({
+        pin: process.env.PASARGAD_PIN!,
+        orderId: Date.now(),
+        amount: 150000, // Rials
+        callBackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payment/pasargad/callback?cartId=...`,
+        additionalData: "order-123",
+        originator: "",
+      });
+
+      if (!parsResult.success) {
+        return {
+          success: false,
+          error: parsResult.message,
+        };
+      }
+
+      return {
+        success: true,
+        referenceId: parsResult.token!,
+        url: parsResult.url,
+        method: parsResult.method,
       };
   }
   return {
