@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { defineWidgetConfig } from "@medusajs/admin-sdk";
 import { Button, Container, Heading, Select, Text, Badge } from "@medusajs/ui";
+import { useStoreConfig } from "../routes/store-config/hooks";
 
 const ACCOUNTING_PROVIDERS = [
   { value: "pishro", label: "پیشرو" },
@@ -27,12 +28,26 @@ const AccountingSyncWidget = () => {
     };
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const {
+    data: storeConfig,
+    isLoading,
+    isError,
+    error: err,
+  } = useStoreConfig();
+  console.log(provider)
+  const options = storeConfig?.config?.[provider];
+  console.log(options, isError);
 
+console.log(options)
   const sync = async () => {
     setLoading(true);
     setError(null);
     setPendingSync(null);
 
+    if (isError || !options) {
+      setError(err instanceof Error ? err.message : "Synchronization failed");
+      throw new Error("Please Set Config");
+    }
     try {
       const response = await fetch("/admin/accounting/sync", {
         method: "POST",
@@ -42,12 +57,7 @@ const AccountingSyncWidget = () => {
         },
         body: JSON.stringify({
           provider,
-          options: {
-            apiUrl: "https://api.core.pishroacc.com",
-            username: "011931",
-            appcode: "011931",
-            password: "197967957424",
-          },
+          options,
         }),
       });
 

@@ -3,3 +3,4 @@ export { BrandingTab } from "./branding-tab";
 export { SeoTab } from "./seo-tab";
 export { SiteSettingsTab } from "./site-settings-tab";
 export { AdvancedTab } from "./advanced-tab";
+export { IntegrationTab } from './integration-tab'

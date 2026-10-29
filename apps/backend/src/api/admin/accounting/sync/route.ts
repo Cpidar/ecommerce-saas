@@ -5,7 +5,7 @@ import { syncAccountingProductsWorkflow } from "../../../../workflows/sync-accou
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
   const currentStore = req.scope.resolve("currentStore") as StoreDTO;
   const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-
+console.log(body)
   const { result, transaction } = await syncAccountingProductsWorkflow(
     req.scope,
   ).run({
@@ -13,6 +13,7 @@ export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
       provider: body.provider,
       storeId: currentStore.id,
       stockLocationId: body.stockLocationId,
+      options: body.options
     },
   });
 
