@@ -1,6 +1,34 @@
 packages:
   - "apps/**"
   - "!apps/backend/.medusa/**"
+
+catalog:
+  next: ^16.4.3
+  eslint-config-next: ^16.4.3
+  react: ^19.3.1
+  react-dom: ^19.3.1
+  '@types/react': ^19.3.0
+  '@types/react-dom': ^19.3.0
+
 peerDependencyRules:
   allowedVersions:
     fdir>picomatch: "4"
+overrides:
+  tsconfig-paths: ^4.2.0
+
+autoInstallPeers: true
+publicHoistPattern:
+  - '*@medusajs/*'
+  - '@tanstack/react-query'
+  - react-i18next
+  - react-router-dom
+allowBuilds:
+  '@medusajs/telemetry': set this to true or false
+  '@parcel/watcher': true
+  '@swc/core': set this to true or false
+  esbuild: set this to true or false
+  msgpackr-extract: set this to true or false
+  msw: true
+  protobufjs: set this to true or false
+  sharp: true
+  unrs-resolver: true
