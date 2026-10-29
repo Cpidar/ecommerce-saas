@@ -61,7 +61,7 @@ body:has(.store-header) {
 
 /* === BASE ================================================================ */
 body {
-  font-size: 15px;
+  /*font-size: 15px;*/
   line-height: 1.55;
   color: var(--sf-ink-2);
   background: var(--sf-canvas);
@@ -95,22 +95,22 @@ p {
 h1,
 h2,
 h3 {
-  color: var(--sf-ink);
+  /*color: var(--sf-ink);*/
   font-weight: 500;
   text-wrap: balance;
 }
 h1 {
-  font-size: clamp(30px, 3.4vw, 46px);
+  /*font-size: clamp(18px, 2.2vw, 36px);*/
   line-height: 1.08;
   letter-spacing: -0.035em;
 }
 h2 {
-  font-size: clamp(22px, 2.2vw, 28px);
+  /*font-size: clamp(16px, 1.8vw, 22px);*/
   line-height: 1.2;
   letter-spacing: -0.025em;
 }
 h3 {
-  font-size: 16px;
+  /*font-size: 16px;*/
   line-height: 1.35;
   letter-spacing: -0.01em;
 }
@@ -513,7 +513,7 @@ html:not([data-input="keyboard"])
 }
 .hero-copy :is(h1, h2) {
   max-width: 11ch;
-  font-size: clamp(28px, 3vw, 48px);
+  font-size: clamp(22px, 2.2vw, 36px);
   line-height: 1;
   letter-spacing: -0.045em;
 }
@@ -574,4 +574,316 @@ html:not([data-input="keyboard"])
 .carousel-controls
   :is([data-slot="carousel-previous"], [data-slot="carousel-next"]):disabled {
   opacity: 0.35;
+}
+
+/* === PRODUCT CARD ======================================================== */
+/* A grey panel (photo) holding a white info plate, like the admin's KPI and
+   queue cards. The name link stretches over the card; the heart and quick add
+   sit above it. Inner radius stays concentric with the 6px frame. */
+.product-card {
+  --card-frame: 6px;
+  --card-inner: max(0px, calc(var(--sf-r-panel) - var(--card-frame)));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  padding: var(--card-frame);
+  border: 1px solid var(--sf-line);
+  border-radius: var(--sf-r-panel);
+  background: var(--sf-panel);
+  transition:
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+.product-card:has(.product-card-link:focus-visible) {
+  outline: 2px solid var(--sf-ink);
+  outline-offset: 3px;
+}
+.product-card-link {
+  color: inherit;
+  text-decoration: underline transparent;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 150ms ease;
+}
+.product-card-link:focus-visible {
+  outline: none;
+}
+.product-card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+.product-card-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--card-inner);
+  background: var(--sf-panel);
+}
+.product-card-media .media {
+  aspect-ratio: var(--sf-product-ratio);
+}
+.product-card-media .media img {
+  transition: scale 600ms var(--ease-out);
+}
+.product-card-media .hover-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.product-card-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 6px;
+}
+.product-card[data-soldout] .product-card-media .media:first-child {
+  opacity: 0.55;
+}
+/* Stock is only called out when it matters, as an admin-style status pill. */
+.stock-flag {
+  --dot: var(--sf-warn-dot);
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--sf-r-pill);
+  background: color-mix(in srgb, var(--dot) 12%, white);
+  color: var(--sf-warn);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgb(20 22 20 / 6%);
+}
+.stock-flag[data-tone="bad"] {
+  --dot: var(--sf-bad-dot);
+  color: var(--sf-bad);
+}
+.stock-flag i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dot);
+}
+.product-card-media .wishlist-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+}
+/* Quick add: a 40px circle that widens into "Add 50 ml". clip-path, not width,
+   so nothing reflows; the hit area follows the clip. */
+.quick-add {
+  --size: 40px;
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: var(--size);
+  padding: 0 0 0 16px;
+  border: 0;
+  border-radius: var(--sf-r-pill);
+  background: white;
+  color: var(--sf-ink);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
+  clip-path: inset(0 0 0 calc(100% - var(--size)) round var(--sf-r-pill));
+  transition:
+    clip-path 260ms var(--ease-out),
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms var(--ease-out);
+}
+.quick-add-label {
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+.quick-add-icon {
+  display: grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+}
+.quick-add:focus-visible {
+  background: var(--sf-accent);
+  color: var(--sf-accent-ink);
+}
+/* Touchscreens skip hover styles, so a tapped button doesn't stay highlighted. */
+@media (hover: hover) {
+  .quick-add:hover {
+    background: var(--sf-accent);
+    color: var(--sf-accent-ink);
+  }
+}
+.quick-add:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--sf-ink);
+}
+.quick-add:focus-visible,
+.quick-add:focus-visible .quick-add-label {
+  clip-path: inset(0 round var(--sf-r-pill));
+  opacity: 1;
+}
+html:not([data-input="keyboard"]) .quick-add:not(:disabled):active {
+  transform: scale(0.96);
+}
+.product-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: var(--card-frame);
+  padding: 12px 14px 14px;
+  border-radius: var(--card-inner);
+  background: white;
+}
+.product-card-brand {
+  color: var(--sf-muted);
+  font-size: 12.5px;
+}
+.product-card-name {
+  font-size: 15.5px;
+  font-weight: 500;
+}
+.product-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.product-card-tags li {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--sf-r-pill);
+  background: var(--sf-panel);
+  color: var(--sf-ink-2);
+  font-size: 12px;
+  white-space: nowrap;
+}
+.product-card-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--sf-ink-2);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.product-card-body > :has(+ .product-card-foot) {
+  margin-bottom: 14px;
+}
+.product-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--sf-line);
+}
+.product-card-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+}
+.product-card-price strong {
+  color: var(--sf-ink);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.product-card-price del {
+  color: var(--sf-faint);
+  font-size: 13px;
+}
+.product-card-foot .arrow-chip {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--sf-r-pill);
+}
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover {
+    border-color: var(--sf-line-strong);
+    box-shadow: 0 1px 2px rgb(20 22 20 / 4%), 0 20px 40px -26px rgb(20 22 20 / 40%);
+  }
+  .product-card:hover .hover-image {
+    opacity: 1;
+  }
+  .product-card:hover .product-card-media .media img {
+    scale: 1.04;
+  }
+  .product-card:hover .product-card-link {
+    text-decoration-color: var(--sf-line-strong);
+  }
+  .product-card:hover .product-card-foot .arrow-chip {
+    background: var(--sf-accent);
+    color: var(--sf-accent-ink);
+  }
+  .product-card:hover .product-card-foot .arrow-chip svg {
+    translate: 2px -2px;
+  }
+  .product-card:hover .quick-add,
+  .product-card:hover .quick-add-label {
+    clip-path: inset(0 round var(--sf-r-pill));
+    opacity: 1;
+  }
+}
+
+.wishlist-button {
+  width: 38px;
+  height: 38px;
+  border-color: transparent;
+}
+.wishlist-button[aria-pressed="true"] {
+  color: var(--sf-bad-dot);
+}
+/* Two stacked hearts: the filled one scales in, so the state change reads as a press. */
+.wishlist-button .heart {
+  grid-area: 1 / 1;
+  transition:
+    opacity 150ms ease,
+    scale 200ms var(--ease-out);
+}
+.wishlist-button .heart-on {
+  opacity: 0;
+  scale: 0.6;
+}
+.wishlist-button[aria-pressed="true"] .heart-on {
+  opacity: 1;
+  scale: 1;
+}
+.wishlist-button[aria-pressed="true"] .heart-off {
+  opacity: 0;
+}
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.related-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }

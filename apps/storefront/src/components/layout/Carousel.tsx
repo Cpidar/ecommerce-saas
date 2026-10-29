@@ -141,19 +141,19 @@ export const Carousel: React.FC<CarouselProps> = ({
               </CarouselItem>
             ))}
           </CarouselContent>
-          {children.length > 1 && (
-            <div className="carousel-controls" data-count={children.length}>
-              <CarouselPrevious />
-              <CarouselNext />
-            </div>
-          )}
-          {/* Page dots stand in for the arrows on phones (app-shell.css). */}
           {hero && children.length > 1 && (
-            <div className="carousel-dots" aria-hidden>
-              {children.map((_, i) => (
-                <span key={i} data-active={i === selected || undefined} />
-              ))}
-            </div>
+            <>
+              <div className="carousel-controls" data-count={children.length}>
+                <CarouselPrevious />
+                <CarouselNext />
+              </div>
+              {/* Page dots stand in for the arrows on phones (app-shell.css). */}
+              <div className="carousel-dots" aria-hidden>
+                {children.map((_, i) => (
+                  <span key={i} data-active={i === selected || undefined} />
+                ))}
+              </div>
+            </>
           )}
         </LayoutColumn>
       </Layout>

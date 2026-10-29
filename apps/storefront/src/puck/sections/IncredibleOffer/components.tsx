@@ -63,7 +63,7 @@ function IncredibleOffers({
 
 export const IncredibleOffersSkeleton: React.FC = () => {
   return (
-    <div className="overflow-hidden bg-primary py-10">
+    <div className="store-width section overflow-hidden bg-primary py-6 rounded-2xl">
       <div className="mx-auto grid grid-cols-12 gap-x-4 md:gap-x-12 px-4 sm:container">
         <div className="col-start-1 col-end-13 relative">
           {/* Header */}
@@ -85,7 +85,7 @@ export const IncredibleOffersSkeleton: React.FC = () => {
             {Array.from({ length: 4 }).map((_, index) => (
               <div
                 key={index}
-                className="w-[50%] sm:w-[40%] lg:w-full max-w-124 shrink-0 space-y-3"
+                className="basis-[46%] sm:basis-[42%] md:basis-1/3 lg:basis-1/4 space-y-3"
               >
                 <Skeleton className="aspect-square w-full rounded-lg bg-primary-foreground/10" />
                 <Skeleton className="h-4 w-3/4 bg-primary-foreground/20" />

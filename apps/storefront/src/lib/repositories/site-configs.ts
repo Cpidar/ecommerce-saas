@@ -194,31 +194,31 @@ const fetchGeneralConfig = async (storeId?: string) => {
 // ---------------------------------------------------------------------------
 export const siteConfigRevalidation = {
   async all(storeId: string) {
-    await revalidateTag(storeConfigTags.all(storeId), STORE_CONFIG_CACHE_PROFILE)
+    revalidateTag(storeConfigTags.all(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async core(storeId: string) {
-    await revalidateTag(storeConfigTags.coreConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
+    revalidateTag(storeConfigTags.coreConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async seo(storeId: string) {
-    await revalidateTag(storeConfigTags.seoConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
+    revalidateTag(storeConfigTags.seoConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async general(storeId: string) {
-    await revalidateTag(storeConfigTags.generalConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
+    revalidateTag(storeConfigTags.generalConfig(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async payment(storeId: string) {
-    await revalidateTag(storeConfigTags.payment(storeId), STORE_CONFIG_CACHE_PROFILE)
+    revalidateTag(storeConfigTags.payment(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async shipping(storeId: string) {
-    await revalidateTag(storeConfigTags.shipping(storeId), STORE_CONFIG_CACHE_PROFILE)
+    revalidateTag(storeConfigTags.shipping(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 
   async puck(storeId: string) {
-    await revalidateTag(storeConfigTags.puckData(storeId), STORE_CONFIG_CACHE_PROFILE)
+    revalidateTag(storeConfigTags.puckData(storeId), STORE_CONFIG_CACHE_PROFILE)
   },
 }
 
