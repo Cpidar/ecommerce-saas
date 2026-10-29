@@ -11,6 +11,7 @@ import { storeStoreConfigRoutesMiddlewares } from "./store/store-config/middlewa
 import { adminProductsRoutesMiddlewares } from "./admin/products/middleware";
 import { storesRoutesMiddlewares } from "./stores/middlewares";
 import { storeSearchMiddleware } from "./middlewares/store-search";
+import { storeSearchRoutesMiddlewares } from "./store/search/middleware";
 
 export default defineMiddlewares({
   routes: [
@@ -24,10 +25,10 @@ export default defineMiddlewares({
     //   matcher: '/store/custom/customer/*',
     //   middlewares: [authenticate('customer', ['session', 'bearer'])],
     // },
-    {
-      matcher: "/store/search",
-      middlewares: [storeSearchMiddleware],
-    },
+    // {
+    //   matcher: "/store/search",
+    //   middlewares: [storeSearchMiddleware],
+    // },
     ...storeProductsRoutesMiddlewares,
     ...storeProductCategoriesRoutesMiddlewares,
     ...storeProductCollectionsRoutesMiddlewares,
@@ -38,5 +39,6 @@ export default defineMiddlewares({
     ...adminCustomUploadsRoutesMiddlewares,
     ...adminProductsRoutesMiddlewares,
     ...storesRoutesMiddlewares,
+    ...storeSearchRoutesMiddlewares,
   ],
 });

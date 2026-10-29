@@ -20,7 +20,7 @@ export const storeSearchMiddleware = configureStoreSearch({
           }
 
           return {
-            store_id: store.id,
+            "store.id": store.id,
           };
         } else {
           throw new MedusaError(

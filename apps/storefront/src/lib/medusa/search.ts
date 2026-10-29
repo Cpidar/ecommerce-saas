@@ -88,7 +88,7 @@ async function fetchSearchProducts(
   currency: string,
 ): Promise<Product[]> {
   const normalizedQuery = query.trim();
-
+console.log("🎗️🎗️🎗️🎗️", query)
   if (!normalizedQuery || limit <= 0) {
     return [];
   }
@@ -103,6 +103,9 @@ async function fetchSearchProducts(
         fields: ["id"],
         filters: {
           q: normalizedQuery,
+        },
+        search_options: {
+          match_strategy: "any",
         },
         pagination: {
           take: limit,

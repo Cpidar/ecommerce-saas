@@ -3,7 +3,8 @@ import {
   graphConsume,
   graphSeed,
   search,
-} from "@medusajs/framework/utils"
+} from "@medusajs/framework/utils";
+import { normalizePersianText } from "../utils/normalize-persian-text";
 
 const source = {
   fields: [
@@ -13,37 +14,43 @@ const source = {
     "handle",
     "thumbnail",
     "status",
-    "store_id",
+    "sales_channel_ids",
+    "store.id",
   ],
-}
+  transform: (products) => {
+    console.log(products);
+    return products.map((product) => ({
+      ...product,
+      title: normalizePersianText(product.title),
+      status: product.status,
+    }));
+  },
+};
 
 export const productIndex = defineSearchIndex({
   name: "product",
   entity: "product",
 
   fields: search.define({
-    id: search.keyword().filterable(),
-    title: search.text().searchable({ weight: 3 }),
+    id: search.keyword().filterable().retrievable(),
+    title: search.text().searchable({ weight: 3 }).sortable().retrievable(),
     description: search.text().searchable(),
-    handle: search.keyword().filterable(),
+    handle: search.keyword().filterable().retrievable(),
     thumbnail: search.keyword(),
 
-    status: search
-      .keyword()
-      .filterable()
-      .retrievable(false),
+    status: search.keyword().filterable().retrievable(false),
 
-    store_id: search
-      .keyword()
+    // sales_channel_ids: search.keyword().array().filterable().retrievable(false),
+
+    store: search
+      .object({
+        id: search.keyword().filterable().retrievable(false),
+      })
       .filterable(),
   }),
 
-  events: [
-    "product.created",
-    "product.updated",
-    "product.deleted",
-  ],
+  events: ["product.created", "product.updated", "product.deleted"],
 
   consume: graphConsume(source),
   seed: graphSeed(source),
-})
+});
