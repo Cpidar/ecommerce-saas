@@ -5,7 +5,10 @@
 // Edit this file to customize the store name, contact info, social links, etc.
 // ============================================================================
 
-import { ReorderStoreProductSubscriptionOfferResponse, ReorderStoreSubscriptionOfferFrequency } from "@/types/subscription"
+import {
+  ReorderStoreProductSubscriptionOfferResponse,
+  ReorderStoreSubscriptionOfferFrequency,
+} from "@/types/subscription";
 
 export const siteConfig = {
   // Branding
@@ -52,81 +55,134 @@ export const siteConfig = {
 
   // Legal
   copyrightYear: new Date().getFullYear(),
-} as const
-
+} as const;
 
 // ============================================================================
 // Store Configuration — Single source of truth for all store-wide settings.
 // Edit this file to customize the store name, contact info, social links, etc.
 // ============================================================================
 
-export const COMPANY_NAME = 'Nitro'
-export const BASE_URL = ''
-export const SUPPORT_EMAIL_ADDRESS = 'support@xyz.com'
+export const COMPANY_NAME = "Nitro";
+export const BASE_URL = "";
+export const SUPPORT_EMAIL_ADDRESS = "support@xyz.com";
 
 export const UNEXPECTED_ERROR_MESSAGE =
-  'Something went wrong. Please try again later.'
+  "Something went wrong. Please try again later.";
 
 export const formErrorMessage = {
   required(fieldName: string) {
-    return `Please enter a ${fieldName}.`
+    return `Please enter a ${fieldName}.`;
   },
   minLength(min: number) {
-    return `Use at least ${min} characters.`
+    return `Use at least ${min} characters.`;
   },
   maxLength(max: number) {
-    return `Use ${max} characters or fewer.`
+    return `Use ${max} characters or fewer.`;
   },
-}
+};
 
-export const BASE_SUBSCRIPTION_PRICE = process.env.BASE_SUBSCRIPTION_PRICE || "900000"
+export const BASE_SUBSCRIPTION_PRICE =
+  process.env.BASE_SUBSCRIPTION_PRICE || "900000";
 
-export const BASE_SUBSCRIPTION_OFFERS: ReorderStoreProductSubscriptionOfferResponse = {
-  subscription_offer: {
-    is_subscription_available: true,
-    product_id: "",
-    variant_id: "",
-    source_offer_id: "",
-    source_scope: "product",
-    discount_semantics: {
-      has_frequency_specific_discounts: false
-    },
-    minimum_cycles: 3,
-    allowed_frequencies: [
-      {
-        frequency_interval: "month",
-        frequency_value: 3,
-        label: "سه ماهه",
-        discount: {
-          type: "percentage",
-          value: 1
-        }
-      },
-      {
-        frequency_interval: "month",
-        frequency_value: 6,
-        label: "شش ماهه",
-        discount: {
-          type: "percentage",
-          value: 10
-        }
-      },
-      {
-        frequency_interval: "year",
-        frequency_value: 12,
-        label: "یک ساله",
-        discount: {
-          type: "percentage",
-          value: 12
-        }
-      }
+// PLACEHOLDER pricing; replace package scope, prices, and terms before launch.
+export const plans = [
+  {
+    id: "three-months",
+    name: "سه‌ماهه",
+    description: "شروعی ساده و مقرون‌به‌صرفه برای راه‌اندازی و مدیریت فروشگاه اینترنتی شما.",
+    price: +BASE_SUBSCRIPTION_PRICE * 3,
+    discount: 0,
+    features: [
+      "اشتراک سه‌ماهه",
+      "دسترسی به امکانات اصلی فروشگاه",
+      "مدیریت محصولات و سفارش‌ها",
+      "پشتیبانی و راهنمایی اولیه",
     ],
-    trial: {
-      is_enabled: true,
-      days: 14
-    }
-  }
-}
+    cta: "با 300 هزار تومان اشتراک هدیه شروع کنید",
+    href: "#contact",
+  },
+  {
+    id: "six-months",
+    name: "شش‌ماهه",
+    description: "انتخابی مناسب برای رشد فروشگاه و مدیریت پایدار کسب‌وکار آنلاین.",
+    price: +BASE_SUBSCRIPTION_PRICE * 6,
+    discount: 10,
+    features: [
+      "اشتراک شش‌ماهه",
+      "دسترسی به امکانات اصلی فروشگاه",
+      "مدیریت محصولات و سفارش‌ها",
+      "پشتیبانی و راهنمایی",
+      "صرفه‌جویی در هزینه نسبت به تمدید کوتاه‌مدت",
+    ],
+    cta: "با 300 هزار تومان اشتراک هدیه شروع کنید",
+    href: "#contact",
+    highlighted: true,
+  },
+  {
+    id: "twelve-months",
+    name: "یک‌ساله",
+    description: "راهکاری بلندمدت برای توسعه کسب‌وکار و مدیریت یکپارچه فروشگاه اینترنتی.",
+    price: +BASE_SUBSCRIPTION_PRICE * 12,
+    discount: 15,
+    features: [
+      "اشتراک دوازده‌ماهه",
+      "دسترسی به امکانات اصلی فروشگاه",
+      "مدیریت محصولات و سفارش‌ها",
+      "پشتیبانی و راهنمایی",
+      "مناسب برای برنامه‌ریزی بلندمدت کسب‌وکار",
+    ],
+    cta: "با 300 هزار تومان اشتراک هدیه شروع کنید",
+    href: "#contact",
+  },
+]
+
+export const BASE_SUBSCRIPTION_OFFERS: ReorderStoreProductSubscriptionOfferResponse =
+  {
+    subscription_offer: {
+      is_subscription_available: true,
+      product_id: "",
+      variant_id: "",
+      source_offer_id: "",
+      source_scope: "product",
+      discount_semantics: {
+        has_frequency_specific_discounts: false,
+      },
+      minimum_cycles: 3,
+      allowed_frequencies: [
+        {
+          frequency_interval: "month",
+          frequency_value: 3,
+          label: "سه ماهه",
+          discount: {
+            type: "percentage",
+            value: 1,
+          },
+        },
+        {
+          frequency_interval: "month",
+          frequency_value: 6,
+          label: "شش ماهه",
+          discount: {
+            type: "percentage",
+            value: 10,
+          },
+        },
+        {
+          frequency_interval: "year",
+          frequency_value: 12,
+          label: "یک ساله",
+          discount: {
+            type: "percentage",
+            value: 12,
+          },
+        },
+      ],
+      trial: {
+        is_enabled: true,
+        days: 14,
+      },
+    },
+  };
 
 // lib/config.ts
 
@@ -134,7 +190,7 @@ export function getIncludedSlugs(): Set<string> {
   const envSlugs = process.env.INCLUDED_SLUGS;
 
   if (envSlugs) {
-    const slugs = envSlugs.split(',').map(s => s.trim());
+    const slugs = envSlugs.split(",").map((s) => s.trim());
     return new Set(slugs);
   }
 
@@ -156,4 +212,4 @@ export function isSlugEditable(slug: string): boolean {
   return includedSlugs.has(slug);
 }
 
-export type SiteConfig = typeof siteConfig
+export type SiteConfig = typeof siteConfig;

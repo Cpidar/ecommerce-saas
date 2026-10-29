@@ -1,6 +1,35 @@
 import type { HttpTypes } from "@medusajs/types"
 import { CartItem } from "."
 
+// =================== SAAS PLAN ===============================
+export interface PricingPlan {
+  name: string;
+  description: string;
+  monthly: number | null;
+  yearly: number | null;
+  cta: string;
+  features: string[];
+  highlighted?: boolean;
+}
+
+export type BillingInterval = "monthly" | "yearly";
+
+export interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  // price: {
+  //   monthly: number | null;
+  //   yearly: number | null;
+  // };
+  price: number;
+  discount: number;
+  features: string[];
+  cta: string;
+  href: string;
+  highlighted?: boolean;
+}
+// =================== ReorderJS Types =========================
 export type ReorderSubscriptionFrequencyInterval = "week" | "month" | "year"
 export type SubscriptionPurchaseMode = "one-time" | "subscribe"
 export type CartPurchaseMode =

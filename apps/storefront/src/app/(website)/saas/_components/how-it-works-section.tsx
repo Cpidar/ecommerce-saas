@@ -29,7 +29,7 @@ export function HowItWorksSection() {
 
 function Step(props: { icon: ReactNode; title: string; description: string }) {
   return (
-    <div className='marketing-container flex flex-col items-center text-center'>
+    <div className='container flex flex-col items-center text-center'>
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent'>
         {props.icon}
       </div>

@@ -1,15 +1,14 @@
 import { Page } from "@/components/Saas/page";
-import { medusaProductRepository } from "@/lib/repositories/products-repository";
-import PriceCard from "../_components/price-card";
-import { notFound } from "next/navigation";
+import { PricingInteractive } from "../_components/pricing-intractive";
+import { plans } from "@/lib/config";
+// import { medusaProductRepository } from "@/lib/repositories/products-repository";
 
 export default async function PricingPage() {
+  // const defaultPlanProduct = await medusaProductRepository.getSubscriptionProduct();
 
-  const defaultPlanProduct = await medusaProductRepository.getSubscriptionProduct();
-
-  if (!defaultPlanProduct?.id) {
-    return notFound();
-  }
+  // if (!defaultPlanProduct?.id) {
+  //   return notFound();
+  // }
 
   return (
     <div className="grow bg-linear-to-b from-background from-80% to-primary/5">
@@ -22,8 +21,9 @@ export default async function PricingPage() {
           grow.
         </p>
 
-        <div className="mx-auto grid max-w-2xl gap-6 md:grid-cols-2 lg:gap-8">
-          <PriceCard product={defaultPlanProduct} />
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/*<PriceCard product={defaultPlanProduct} />*/}
+          <PricingInteractive plans={plans} />
         </div>
 
         <div className="mt-8 text-center">
