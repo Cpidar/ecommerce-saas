@@ -25,8 +25,7 @@ import {
   listCartOptions,
   applyPromotions,
 } from "./cart-server";
-import { productRepository } from "../repositories";
-import { siteConfigRepository } from "../repositories/site-configs";
+import { JsonRecord, siteConfigRepository } from "../repositories/site-configs";
 
 // Types
 export interface ActivePaymentSession {
@@ -44,8 +43,10 @@ export interface ShippingOption {
 }
 
 export interface PaymentProviderInfo {
-  id: string;
-  isEnabled: boolean;
+  id: string
+  name: string
+  isEnabled: boolean
+  config?: JsonRecord
 }
 
 export interface CheckoutAddress {
@@ -236,7 +237,6 @@ export async function listPaymentProviders(): Promise<PaymentProviderInfo[]> {
   // const payment_providers = await listCartPaymentMethods(cart.region_id)
   const shippingAndPaymentConfig =
     await siteConfigRepository.getShippingAndPaymentConfig();
-  console.log(shippingAndPaymentConfig);
   if (!shippingAndPaymentConfig) return [];
 
   const payment_providers = Object.values(
@@ -246,6 +246,7 @@ export async function listPaymentProviders(): Promise<PaymentProviderInfo[]> {
   console.log(payment_providers);
   return payment_providers.map((p) => ({
     id: p.provider_id,
+    name: p.name,
     isEnabled: (p as { is_enabled?: boolean }).is_enabled ?? true,
     config: p.config ?? {},
   }));

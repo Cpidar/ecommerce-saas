@@ -3,11 +3,13 @@ import { addStoreIdToFilterableFields } from "../middlewares/add-store-id-to-fil
 import { moveIdsToQueryFromFilterableFields } from "../middlewares/move-ids-to-query-from-filterable-fields";
 import { checkApiKey } from "@sepidar/medusa-multistore-plugin/api/middlewares/check-api-key";
 import { applyStoreCors } from "@sepidar/medusa-multistore-plugin/api/middlewares/apply-store-cors";
+import { addStoreScope } from "../middlewares/add-store-scope";
 
 export const storesRoutesMiddlewares: MiddlewareRoute[] = [
   {
+    method: ["ALL"],
     matcher: "/stores*",
-    middlewares: [applyStoreCors],
+    middlewares: [addStoreScope, applyStoreCors],
   },
   {
     method: ["GET"],

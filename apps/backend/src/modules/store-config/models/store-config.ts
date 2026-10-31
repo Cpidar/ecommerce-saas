@@ -1,15 +1,15 @@
-import { InferTypeOf } from '@medusajs/framework/types'
-import { model } from '@medusajs/framework/utils'
+import { InferTypeOf } from "@medusajs/framework/types";
+import { model } from "@medusajs/framework/utils";
 
-const StoreConfig = model.define('store_config', {
+const StoreConfig = model.define("store_config", {
   id: model.id().primaryKey(),
 
   medusa_store_id: model.text(),
-  title: model.text().default(''),
+  title: model.text().default(""),
   handle: model.text().unique().nullable(),
-  domain: model.text().default('').nullable(),
-  tagline: model.text().default('').nullable(),
-  description: model.text().default('').nullable(),
+  domain: model.text().default("").nullable(),
+  tagline: model.text().default("").nullable(),
+  description: model.text().default("").nullable(),
 
   logo_url: model.text().nullable(),
   logo_alt: model.text().nullable(),
@@ -29,10 +29,12 @@ const StoreConfig = model.define('store_config', {
 
   shipping_method_configs: model.json().default({}),
 
-  subscription_product_id: model.text().unique().nullable(),
-  subscription_status: model.text().default('PENDING')
-})
+  store_credit_account_id: model.text().unique().nullable(),
+  subscription_status: model.text().default("PENDING"),
+  store_suspended_at: model.dateTime(),
+  store_suspended_reason: model.text().default(""),
+});
 
-export type StoreConfigModelType = InferTypeOf<typeof StoreConfig>
+export type StoreConfigModelType = InferTypeOf<typeof StoreConfig>;
 
-export default StoreConfig
+export default StoreConfig;

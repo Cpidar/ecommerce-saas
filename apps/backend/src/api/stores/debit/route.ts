@@ -33,9 +33,11 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     // 1. Find the store credit account (do NOT create one for debits)
     const { data: accounts } = await query.graph({
       entity: "store_credit_account",
-      fields: ["id"],
+      fields: ["*"],
       filters: { customer_id },
     });
+
+    console.log(accounts)
 
     if (accounts.length === 0) {
       return res.status(404).json({

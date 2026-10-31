@@ -1,8 +1,14 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http";
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import {
+  ContainerRegistrationKeys,
+  MedusaError,
+  MedusaErrorTypes,
+} from "@medusajs/framework/utils";
 import { creditStoreCreditAccountWorkflow } from "@medusajs/loyalty-plugin/workflows";
 import { createStoreCreditWithMetadataWorkflow } from "../../../workflows/store-credit-account";
 import { IStoreCreditModuleService } from "@medusajs/loyalty-plugin/types";
+import { resolveCurrentStore } from "../../../utils/resolve-current-store";
+import { updateStoreConfigWorkflow } from "../../../workflows/update-store-config";
 
 const CURRENCY = "irr";
 
@@ -11,6 +17,13 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
   const storeCreditModuleService =
     req.scope.resolve<IStoreCreditModuleService>("store_credit");
+  const currentStore = await resolveCurrentStore(req.scope);
+  if (!currentStore) {
+    throw new MedusaError(
+      MedusaErrorTypes.INVALID_DATA,
+      "Current Store not Found",
+    );
+  }
 
   // 1. Read all transaction details from the request body
   const {
@@ -112,6 +125,34 @@ export async function POST(req: MedusaRequest, res: MedusaResponse) {
     logger.info(
       `Credited ${amount} to account ${accountId} (ref: ${reference}/${reference_id})`,
     );
+
+    // 5. Change status of Store
+    const {
+      data: [storeConfig],
+    } = await query.graph(
+      {
+        entity: "store_config",
+        fields: ["id"],
+        filters: { medusa_store_id: currentStore.id },
+      },
+      { throwIfKeyNotFound: true },
+    );
+
+    if (!storeConfig) {
+      throw new MedusaError(
+        MedusaErrorTypes.INVALID_DATA,
+        "Current Store Config not Found",
+      );
+    }
+
+    await updateStoreConfigWorkflow.run({
+      input: {
+        id: storeConfig.id,
+        subscription_status: "active",
+      },
+    });
+
+    logger.info(`Change status of store ${currentStore.id} to active`);
 
     return res.status(200).json({ store_credit_account });
   } catch (error) {

@@ -30,11 +30,11 @@ export const registerWithPhoneWorkflow = createWorkflow(
     const accountData = createAccountStep(input)
 
     // Step 5: Link phone-auth identity to the new customer
-    setAuthAppMetadataStep({
-        authIdentityId: phoneAuthIdentity.authIdentity!.id,
-        actorType: "customer",
-        value: accountData.customer_id
-    })
+    // setAuthAppMetadataStep({
+    //     authIdentityId: phoneAuthIdentity.authIdentity!.id,
+    //     actorType: "customer",
+    //     value: accountData.customer_id
+    // })
 
     return new WorkflowResponse({
         message: "Registration completed",

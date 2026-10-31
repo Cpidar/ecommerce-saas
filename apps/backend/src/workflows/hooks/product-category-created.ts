@@ -1,14 +1,18 @@
 import { IProductModuleService, StoreDTO } from "@medusajs/framework/types";
 import { linkProductCategoryToStoreWorkflow } from "../link-product-category-to-store";
-import { Modules } from "@medusajs/framework/utils";
+import { MedusaError, MedusaErrorTypes, Modules } from "@medusajs/framework/utils";
 import { createProductCategoriesWorkflow } from "@medusajs/medusa/core-flows";
 import { normalizePersianText } from "../../utils/normalize-persian-text";
+import { resolveCurrentStore } from "../../utils/resolve-current-store";
 
 createProductCategoriesWorkflow.hooks.categoriesCreated(async ({ categories }, { container }) => {
   console.log("HOOK categoriesCreated", categories.map(pc => pc.id));
   const productModuleService = container.resolve<IProductModuleService>(Modules.PRODUCT)
 
-  const currentStore = container.resolve("currentStore") as Pick<StoreDTO, 'id'>;
+  const currentStore = await resolveCurrentStore(container)
+  if (!currentStore) {
+      throw new MedusaError(MedusaErrorTypes.INVALID_DATA, "Current Store not Found")
+  }
   await Promise.all(
     categories.map(({ id }) =>
       linkProductCategoryToStoreWorkflow(container).run({

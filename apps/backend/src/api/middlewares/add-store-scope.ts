@@ -1,19 +1,27 @@
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
-import { type MedusaNextFunction, type MedusaRequest, type MedusaResponse } from "@medusajs/framework/http";
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import {
+  type MedusaNextFunction,
+  type MedusaRequest,
+  type MedusaResponse,
+} from "@medusajs/framework/http";
 import { StoreDTO } from "@medusajs/framework/types";
 
 import { asValue } from "@medusajs/framework/awilix";
 import { storeContext } from "../../utils/resolve-current-store";
 
-export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, next: MedusaNextFunction) {
-
-  let storeId
+export async function addStoreScope(
+  req: MedusaRequest,
+  res: MedusaResponse,
+  next: MedusaNextFunction,
+) {
+  // --- 1. Reslove store id -----------------------------------
+  let storeId: string;
   if (req.scope.hasRegistration("currentStore")) {
-    const store = req.scope.resolve("currentStore") as Pick<StoreDTO, "id">
-    console.log("✌️✌️✌️✌️", store)
-    storeId = store.id
+    const store = req.scope.resolve("currentStore") as Pick<StoreDTO, "id">;
+    storeId = store.id;
   } else {
-    storeId = req.cookies['current_store_id'] || req?.headers['x-store-id'] as string || "store_01KVAPY42Q9STAS5V1NYWYBXCA";
+    storeId =
+      req.cookies["current_store_id"] || (req?.headers["x-store-id"] as string);
   }
 
   if (!storeId) {
@@ -24,26 +32,29 @@ export async function addStoreScope(req: MedusaRequest, res: MedusaResponse, nex
     return;
   }
 
-  // const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  // TODO: must be optimized (every request query the database)
+  // ── 2. Check existance of store id ─────────────────────────
+  // const query = req.scope.resolve(ContainerRegistrationKeys.QUERY);
 
-  // const sluggyfiedStoreId = storeId.toLowerCase().replace(/_/g, '-')
+  // const { data: [store] } = await query.graph({
+  //   entity: "store",
+  //   fields: ["id"],
+  //   filters: { id: storeId },
+  // });
 
-  // const { data: [product] } = await query.graph({
-  //   entity: "product",
-  //   fields: ['id', 'handle', 'title', 'subscriptions.*'],
-  //   filters: { handle: sluggyfiedStoreId }
-  // })
+  // if (!store || !store.id) {
+  //   res.status(404).json({
+  //     type: "not_found",
+  //     message: "Store not found.",
+  //     code: "STORE_NOT_FOUND",
+  //   });
+  //   return;
+  // }
 
-
-  // TODO: check subscription status of product and allow/disallow
-  // if(product)
+  // ── 3. Attach storeId to request scope for downstream handlers ──────────────────────────────
 
   req.scope.register({
     currentStore: asValue({ id: storeId }),
   });
-
-  return storeContext.run(
-    { storeId },
-    () => next()
-  );
+  return storeContext.run({ storeId }, () => next());
 }

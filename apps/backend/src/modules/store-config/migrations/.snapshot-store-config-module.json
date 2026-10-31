@@ -326,8 +326,8 @@
           "enumItems": [],
           "mappedType": "json"
         },
-        "subscription_product_id": {
-          "name": "subscription_product_id",
+        "store_credit_account_id": {
+          "name": "store_credit_account_id",
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
@@ -354,6 +354,38 @@
           "precision": null,
           "scale": null,
           "default": "'PENDING'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_suspended_at": {
+          "name": "store_suspended_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "datetime"
+        },
+        "store_suspended_reason": {
+          "name": "store_suspended_reason",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "''",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
@@ -420,13 +452,13 @@
           "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_store_config_handle_unique\" ON \"store_config\" (\"handle\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_store_config_subscription_product_id_unique",
+          "keyName": "IDX_store_config_store_credit_account_id_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_store_config_subscription_product_id_unique\" ON \"store_config\" (\"subscription_product_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_store_config_store_credit_account_id_unique\" ON \"store_config\" (\"store_credit_account_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_store_config_deleted_at",

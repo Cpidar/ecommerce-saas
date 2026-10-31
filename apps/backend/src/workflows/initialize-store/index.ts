@@ -56,7 +56,7 @@ export const initializeStoreWorkflow = createWorkflow(
       medusa_store_id: input.storeId,
       title: input.title,
       handle: input.handle,
-      subscription_product_id: input.subscription_id,
+      store_credit_account_id: input.subscription_id,
       subscription_status: input.subscription_status,
       // TODO
       puck_data: puckData as JsonRecord,

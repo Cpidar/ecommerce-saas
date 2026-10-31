@@ -58,8 +58,6 @@ export function SeedProgressTracker({
   });
   const progressKey = customer?.id ?? crypto.randomUUID();
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   useEffect(() => {
     if (!customer?.id) return;
 
@@ -129,7 +127,7 @@ export function SeedProgressTracker({
     return () => {
       cancelled = true;
     };
-  }, [progressKey, customer, email, password, name, subscriptionId]);
+  }, [progressKey, customer, email, password, name, subscriptionId, storeCreditAccount?.id]);
 
   // Poll while running
   useEffect(() => {

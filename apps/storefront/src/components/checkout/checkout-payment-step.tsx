@@ -58,7 +58,7 @@ export function CheckoutPaymentStep({
 
     setInitiatingProvider(providerId);
     try {
-      const { session } = await initiatePaymentSession(providerId, data);
+      const { session } = await initiatePaymentSession("pp_system_default", data);
       setActiveSession(session);
       return session;
     } catch (err) {
@@ -142,7 +142,7 @@ export function CheckoutPaymentStep({
                   onChange={() => handleProviderPick(p)}
                 />
                 <span className="text-sm font-medium">
-                  {providerLabel(p.id, tCheckout)}
+                  {p.name}
                 </span>
               </div>
               <code className="text-xs text-muted-foreground">{p.id}</code>

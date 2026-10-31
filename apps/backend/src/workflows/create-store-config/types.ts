@@ -80,6 +80,6 @@ export type CreateStoreConfigWorkflowInput = {
   shipping_method_configs?: Record<string, ShippingMethodConfigInput>
 
   /** Subscription billing fields seeded during store initialization. */
-  subscription_product_id?: string | null;
+  store_credit_account_id?: string | null;
   subscription_status?: string;
 }

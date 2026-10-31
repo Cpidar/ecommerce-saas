@@ -62,8 +62,8 @@ export const grantInitialCreditStep = createStep(
       // 3. Idempotency guard: skip if this reference_id was already credited
       const existing = await storeCreditModuleService.listAccountTransactions({
         account_id: accountId,
-        reference: REFERENCE,
-        reference_id: REFERENCE_ID,
+        // reference: REFERENCE,
+        // reference_id: REFERENCE_ID,
       });
 
       if (existing.length > 0) {
@@ -106,6 +106,6 @@ export const grantInitialCreditStep = createStep(
     // Compensation logic if workflow fails
     if (!creditId) return;
     const storeCreditService = container.resolve<IStoreCreditModuleService>("store-credit");
-    await storeCreditService.deleteTransactions([creditId]);
+    await storeCreditService.deleteTransactions(creditId as string[]);
   },
 );

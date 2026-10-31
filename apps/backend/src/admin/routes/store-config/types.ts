@@ -8,6 +8,7 @@ export type PaymentConfigInput = {
   is_default?: boolean
   is_enabled?: boolean
   config?: JsonRecord
+  logo?: string
 }
 
 export type ShippingMethodConfigInput = {
@@ -27,7 +28,7 @@ export type StoreConfigInput = {
   title: string
   handle: string
   domain: string
-  
+
   tagline?: string
   description?: string
   logo_url?: string | null

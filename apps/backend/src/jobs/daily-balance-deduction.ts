@@ -1,7 +1,8 @@
 // src/jobs/daily-balance-deduction.ts
 import { MedusaContainer, Query } from "@medusajs/framework/types";
-import { ContainerRegistrationKeys } from "@medusajs/framework/utils";
+import { ContainerRegistrationKeys, MathBN } from "@medusajs/framework/utils";
 import { debitStoreCreditAccountWorkflow } from "@medusajs/loyalty-plugin/workflows";
+import { updateStoreConfigWorkflow } from "../workflows/update-store-config";
 
 // The amount to deduct daily (e.g., in the account's currency)
 const DAILY_DEDUCTION_AMOUNT = Number(
@@ -22,8 +23,8 @@ export default async function dailyBalanceDeductionJob(
     fields: ["id", "customer_id", "metadata"],
     filters: {
       // @ts-ignore
-      "metadata": {
-        "store_id": process.env.SAAS_STORE_ID!,
+      metadata: {
+        store_id: process.env.SAAS_STORE_ID!,
       },
     },
   });
@@ -49,6 +50,51 @@ export default async function dailyBalanceDeductionJob(
           note: `Scheduled daily deduction for ${today}`,
         },
       });
+
+      // 1. Calculate current balance for this specific account
+      let currentBalance = MathBN.convert(0);
+      for (const tx of account.transactions || []) {
+        if (tx?.type === "credit")
+          currentBalance = MathBN.add(currentBalance, tx.amount);
+        else if (tx?.type === "debit")
+          currentBalance = MathBN.sub(currentBalance, tx.amount);
+      }
+      // 3. Check if balance is sufficient for today's deduction
+      const balanceAfterDeduction = MathBN.sub(
+        currentBalance,
+        DAILY_DEDUCTION_AMOUNT,
+      );
+      const isInsufficient = MathBN.lt(balanceAfterDeduction, 0);
+
+      if (isInsufficient) {
+        logger.warn(
+          `Account ${account.id} has insufficient balance (${currentBalance.toNumber()}). Suspending related store.`,
+        );
+        // 4. Find the related medusa_store_id via StoreConfigLink
+        const { data: storeConfigs } = await query.graph({
+          entity: "store_config", // Replace with your actual link entity name
+          fields: ["id", "medusa_store_id", "subscription_status"],
+          filters: {
+            store_credit_account_id: account.id,
+          },
+        });
+
+        const currentStoreConfig = storeConfigs?.[0];
+        if (
+          currentStoreConfig &&
+          currentStoreConfig.subscription_status !== "suspended" &&
+          currentStoreConfig.subscription_status !== "inactive"
+        ) {
+          await updateStoreConfigWorkflow.run({
+            input: {
+              id: currentStoreConfig.id,
+              subscription_status: "suspended",
+              store_suspended_at: new Date().toISOString(),
+              store_suspended_reason: "insufficient_store_credit",
+            },
+          });
+        }
+      }
       logger.info(`Successfully debited account ${account.id} for ${today}`);
     } catch (error) {
       // Log error but continue processing other accounts

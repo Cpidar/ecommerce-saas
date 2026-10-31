@@ -4,6 +4,7 @@ import type { HttpTypes } from "@medusajs/types"
 import { sdk, DEFAULT_REGION } from "../medusa"
 import type { Cart, CartItem } from "@/types"
 import { ReorderSubscriptionLineItemMetadataInput } from "@/types/subscription"
+import { JsonRecord } from "../repositories/site-configs"
 
 const CART_COOKIE = "_medusa_cart_id"
 const CART_FIELDS =
@@ -281,8 +282,9 @@ export async function addShippingMethod(optionId: string): Promise<Cart> {
 
 export interface PaymentProviderInfo {
   id: string
+  name?: string
   isEnabled: boolean
-  config?: Record<string, string>
+  config?: JsonRecord
 }
 
 export async function listPaymentProviders(): Promise<PaymentProviderInfo[]> {

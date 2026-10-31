@@ -1,4 +1,5 @@
 "use server";
+import { JsonRecord } from "../repositories/site-configs";
 import { bpPayRequest } from "./behpardakht";
 import { pecSaleRequest } from "./parsian";
 
@@ -26,7 +27,7 @@ export async function requestProvider({
   cartId: string;
   providerId: string;
   amount: string;
-  config: Record<string, string>;
+  config: JsonRecord;
   callbackUrl?: string;
   successUrl?: string;
   failUrl?: string;

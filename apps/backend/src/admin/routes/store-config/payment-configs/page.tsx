@@ -2,32 +2,24 @@
 
 import {
   CreditCard,
-  EllipsisVertical,
-  Pencil,
-  Plus,
-  FloppyDisk,
-  Trash,
-  XMark,
   CurrencyDollar,
+  FloppyDisk,
   Loader,
 } from "@medusajs/icons";
 import { useMemo, useState } from "react";
-
 import {
   Badge,
   Button,
   Container,
-  DropdownMenu,
   Input,
   Label,
-  Select,
   Text,
   Heading,
+  Switch,
   toast,
 } from "@medusajs/ui";
 import { defineRouteConfig } from "@medusajs/admin-sdk";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { sdk } from "../../../lib/sdk";
 import { getStoreConfig, saveStoreConfig } from "../api";
 import type { StoreConfigInput, PaymentConfigInput } from "../types";
 import { StoreConfigShell } from "../store-config-layout";
@@ -40,16 +32,16 @@ type ProviderConfig = {
 };
 
 const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
-  pp_behpardakht_behpardakht: {
+  pp_behpardakht: {
     name: "به پرداخت",
-    logo: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/ecommerce/payment-methods/paypal.svg",
-    fields: ["terminalId", "username", "password", "wsdlUrl", "gatewayUrl"],
+    logo: "https://my.behpardakht.com/logo.png",
+    fields: ["terminalId", "username", "password"],
     placeholders: {
       terminalId: "ترمینال آیدی",
       username: "نام کاربری",
       password: "رمز عبور",
-      wsdlUrl: "آدرس WSDL",
-      gatewayUrl: "آدرس Gateway",
+      // wsdlUrl: "آدرس WSDL",
+      // gatewayUrl: "آدرس Gateway",
     },
   },
   pp_zarinpal: {
@@ -66,17 +58,7 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
   },
   pp_parsian: {
     name: "پارسیان",
-    logo: "https://www.pec.ir/favicon.ico",
-    fields: ["terminalId", "username", "password"],
-    placeholders: {
-      terminalId: "ترمینال آیدی",
-      username: "نام کاربری",
-      password: "رمز عبور",
-    },
-  },
-  pp_mellat: {
-    name: "ملت",
-    logo: "https://www.bpi.ir/favicon.ico",
+    logo: "https://pec.ir/uploads/assets/images/pec-fav-icon.png",
     fields: ["terminalId", "username", "password"],
     placeholders: {
       terminalId: "ترمینال آیدی",
@@ -92,21 +74,28 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
   },
 };
 
-const emptyPaymentConfig: PaymentConfigInput = {
-  name: "",
-  provider_id: "",
+const SUPPORTED_PAYMENT_PROVIDERS = Object.keys(PROVIDER_CONFIGS);
+
+const emptyPaymentConfig = (providerId: string): PaymentConfigInput => ({
+  name: PROVIDER_CONFIGS[providerId]?.name ?? providerId,
+  provider_id: providerId,
   provider_store_id: "",
   is_default: false,
-  is_enabled: true,
+  is_enabled: false,
   config: {},
+  logo: PROVIDER_CONFIGS[providerId]?.logo
+});
+
+const isConfigComplete = (method: PaymentConfigInput): boolean => {
+  const provider = PROVIDER_CONFIGS[method.provider_id];
+  if (!provider) return false;
+
+  const config = method.config ?? {};
+  return provider.fields.every((field) => {
+    const value = config[field];
+    return value !== undefined && value !== null && String(value).trim() !== "";
+  });
 };
-
-interface PaymentMethodsProps {
-  className?: string;
-}
-
-const getPaymentConfigKey = (paymentConfig: PaymentConfigInput) =>
-  paymentConfig.provider_id;
 
 const upsertPaymentConfig = (
   storeConfig: StoreConfigInput,
@@ -122,37 +111,26 @@ const upsertPaymentConfig = (
   },
 });
 
-// const deletePaymentConfig = (
-//   storeConfig: StoreConfigInput,
-//   providerId: string,
-// ): StoreConfigInput => {
-//   const { [providerId]: _deleted, ...remainingPaymentConfigs } =
-//     storeConfig.payment_configs ?? {};
+const FormField = ({
+  label,
+  children,
+  className = "",
+}: {
+  label: string;
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={`grid gap-2 ${className}`}>
+    <Label>{label}</Label>
+    {children}
+  </div>
+);
 
-//   return {
-//     ...storeConfig,
-//     payment_configs: remainingPaymentConfigs,
-//   };
-// };
-
-const PaymentMethods = ({ className }: PaymentMethodsProps) => {
+const PaymentMethods = () => {
   const queryClient = useQueryClient();
-  const [editingProviderId, setEditingProviderId] = useState<string | null>(
-    null,
-  );
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  const [editForm, setEditForm] =
-    useState<PaymentConfigInput>(emptyPaymentConfig);
-
-  const { data: medusaPaymentProviderIds = [] } = useQuery({
-    queryKey: ["payment_providers"],
-    queryFn: async () => {
-      const { payment_providers } =
-        await sdk.admin.payment.listPaymentProviders();
-
-      return payment_providers.filter((pp) => pp.is_enabled).map((pp) => pp.id);
-    },
-  });
+  const [localConfigs, setLocalConfigs] = useState<
+    Record<string, PaymentConfigInput>
+  >({});
 
   const {
     data: storeConfig,
@@ -167,129 +145,73 @@ const PaymentMethods = ({ className }: PaymentMethodsProps) => {
     mutationFn: saveStoreConfig,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payment_methods"] });
+      toast.success("تنظیمات درگاه ذخیره شد");
     },
-    onError: (error) => {
-      toast.error(
-        error instanceof SyntaxError
-          ? "Payment config JSON is invalid"
-          : "Unable to save payment config",
-      );
+    onError: () => {
+      toast.error("خطا در ذخیره تنظیمات");
     },
   });
 
-  const methods = useMemo(
-    () => Object.values(storeConfig?.payment_configs ?? {}),
-    [storeConfig?.payment_configs],
-  );
+  const methods = useMemo(() => {
+    return SUPPORTED_PAYMENT_PROVIDERS.map((providerId) => {
+      const existing = storeConfig?.payment_configs?.[providerId];
+      const local = localConfigs[providerId];
+      return local ?? existing ?? emptyPaymentConfig(providerId);
+    });
+  }, [storeConfig?.payment_configs, localConfigs]);
 
-  const missingProviderIds = useMemo(() => {
-    const activeProviderIds = new Set(
-      Object.keys(storeConfig?.payment_configs ?? {}).filter(
-        // filter of lefted old key that remains in payment config object, refer to deleteMethod
-        (p) => storeConfig?.payment_configs?.[p],
-      ),
-    );
+  const updateLocal = (providerId: string, updates: Partial<PaymentConfigInput>) => {
+    setLocalConfigs((prev) => {
+      const current =
+        prev[providerId] ??
+        storeConfig?.payment_configs?.[providerId] ??
+        emptyPaymentConfig(providerId);
 
-    return medusaPaymentProviderIds.filter(
-      (providerId) => !activeProviderIds.has(providerId),
-    );
-  }, [medusaPaymentProviderIds, storeConfig?.payment_configs]);
-
-  const currentProvider = editForm.provider_id
-    ? PROVIDER_CONFIGS[editForm.provider_id]
-    : null;
-
-  const startEditing = (method: PaymentConfigInput) => {
-    setIsAddingNew(false);
-    setEditingProviderId(method.provider_id);
-    setEditForm({ ...method, config: { ...(method.config ?? {}) } });
-  };
-
-  const cancelEditing = () => {
-    setEditingProviderId(null);
-    setEditForm(emptyPaymentConfig);
-  };
-
-  const startAddingNew = () => {
-    const providerId = missingProviderIds[0];
-
-    if (!providerId) {
-      return;
-    }
-
-    setEditingProviderId(null);
-    setIsAddingNew(true);
-    setEditForm({
-      ...emptyPaymentConfig,
-      provider_id: providerId,
-      name: PROVIDER_CONFIGS[providerId]?.name ?? providerId,
-      is_default: methods.length === 0,
+      return {
+        ...prev,
+        [providerId]: {
+          ...current,
+          ...updates,
+          config: {
+            ...(current.config ?? {}),
+            ...(updates.config ?? {}),
+          },
+        },
+      };
     });
   };
 
-  const cancelAddingNew = () => {
-    setIsAddingNew(false);
-    setEditForm(emptyPaymentConfig);
-  };
-
-  const save = () => {
-    if (!storeConfig || !editForm.provider_id) {
-      return;
-    }
-
-    const providerName =
-      PROVIDER_CONFIGS[editForm.provider_id]?.name || editForm.name;
-    const paymentConfig = {
-      ...editForm,
-      name: providerName,
-    };
-
-    saveMutation.mutate(upsertPaymentConfig(storeConfig, paymentConfig), {
-      onSuccess: () => {
-        setEditingProviderId(null);
-        setIsAddingNew(false);
-        setEditForm(emptyPaymentConfig);
-        toast.success("Payment config saved");
-      },
+  const handleConfigChange = (providerId: string, key: string, value: string) => {
+    updateLocal(providerId, {
+      config: { [key]: value },
     });
   };
 
-  const deleteMethod = (providerId: string) => {
+  const handleToggle = (method: PaymentConfigInput, enabled: boolean) => {
+    if (enabled && !isConfigComplete(method)) {
+      toast.error("لطفا ابتدا تمام فیلدهای مورد نیاز را پر کنید");
+      return;
+    }
+    updateLocal(method.provider_id, { is_enabled: enabled });
+  };
+
+  const handleSave = (method: PaymentConfigInput) => {
     if (!storeConfig) return;
 
-    const { [providerId]: _deleted, ...payment_configs } =
-      storeConfig.payment_configs ?? {};
+    const payload = {
+      ...method,
+      name: PROVIDER_CONFIGS[method.provider_id]?.name || method.name,
+    };
 
-    saveMutation.mutate(
-      {
-        ...storeConfig,
-        payment_configs,
+    saveMutation.mutate(upsertPaymentConfig(storeConfig, payload), {
+      onSuccess: () => {
+        // clear local override after successful save
+        setLocalConfigs((prev) => {
+          const { [method.provider_id]: _, ...rest } = prev;
+          return rest;
+        });
       },
-      {
-        onSuccess: () => {
-          setEditingProviderId(null);
-          setIsAddingNew(false);
-          setEditForm(emptyPaymentConfig);
-          toast.success("Payment config deleted");
-        },
-      },
-    );
-  };
-
-  const handleProviderChange = (providerId: string) => {
-    setEditForm((prev) => ({
-      ...prev,
-      provider_id: providerId,
-      name: PROVIDER_CONFIGS[providerId]?.name ?? providerId,
-      config: {},
-    }));
-  };
-
-  const handleConfigChange = (key: string, value: string) => {
-    setEditForm((prev) => ({
-      ...prev,
-      config: { ...(prev.config ?? {}), [key]: value },
-    }));
+    });
   };
 
   if (isLoading) {
@@ -313,262 +235,99 @@ const PaymentMethods = ({ className }: PaymentMethodsProps) => {
 
   return (
     <StoreConfigShell>
-      <Container className="p-6">
-        <div className="mb-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <Heading>روش‌های پرداخت</Heading>
-              <Text className="text-ui-fg-subtle mt-1">
-                مدیریت درگاه‌های پرداخت ایرانی
-              </Text>
-            </div>
-            <Button
-              onClick={startAddingNew}
-              disabled={
-                saveMutation.isPending ||
-                isAddingNew ||
-                missingProviderIds.length === 0
-              }
-            >
-              <Plus className="mr-2" />
-              افزودن درگاه جدید
-            </Button>
-          </div>
+      <div className="space-y-3">
+        {/*<div>
+          <Heading>روش‌های پرداخت</Heading>
+          <Text className="text-ui-fg-subtle mt-1">
+            مدیریت درگاه‌های پرداخت ایرانی
+          </Text>
+        </div>*/}
 
-          <div className="space-y-3">
-            {methods
-              .filter((method) => method)
-              .map((method) => {
-                const providerId = getPaymentConfigKey(method);
-                const isEditing = editingProviderId === providerId;
+        {methods.map((method) => {
+          const provider = PROVIDER_CONFIGS[method.provider_id];
+          const complete = isConfigComplete(method);
 
-                return (
-                  <Container
-                    key={providerId}
-                    className={`overflow-hidden border p-0 transition-colors ${
-                      isEditing
-                        ? "border-ui-border-interactive"
-                        : "border-ui-border-base"
-                    }`}
-                  >
-                    <div className="p-4">
-                      {isEditing ? (
-                        <EditForm
-                          editForm={editForm}
-                          currentProvider={currentProvider}
-                          onProviderChange={handleProviderChange}
-                          onConfigChange={handleConfigChange}
-                          onSave={save}
-                          onCancel={cancelEditing}
-                          isSaving={saveMutation.isPending}
-                        />
-                      ) : (
-                        <ViewMode
-                          method={method}
-                          onEdit={() => startEditing(method)}
-                          onDelete={() => deleteMethod(method.provider_id)}
-                          isDeleting={saveMutation.isPending}
-                        />
-                      )}
-                    </div>
-                  </Container>
-                );
-              })}
+          return (
+            <Container key={method.provider_id} className="p-6">
+              {/* Header */}
+              <div className="mb-6 flex items-center justify-between border-b border-ui-border-base pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center">
+                    {provider?.logo ? (
+                      <img
+                        src={provider.logo}
+                        alt={provider.name}
+                        className="h-full w-full object-contain"
+                      />
+                    ) : (
+                      <CreditCard className="size-6 text-ui-fg-muted" />
+                    )}
+                  </div>
+                  <div>
+                    <Heading level="h2">{provider?.name || method.name}</Heading>
+                    {/*<Text size="small" className="text-ui-fg-subtle">
+                      {method.provider_id}
+                    </Text>*/}
+                  </div>
+                </div>
 
-            {isAddingNew && (
-              <Container className="border-ui-border-interactive overflow-hidden p-0">
-                <div className="p-4">
-                  <EditForm
-                    editForm={editForm}
-                    availableProviderIds={missingProviderIds}
-                    currentProvider={currentProvider}
-                    onProviderChange={handleProviderChange}
-                    onConfigChange={handleConfigChange}
-                    onSave={save}
-                    onCancel={cancelAddingNew}
-                    isSaving={saveMutation.isPending}
-                    isNew
+                <div className="flex items-center gap-3">
+                  <Text size="small" className="text-ui-fg-subtle">
+                    {method.is_enabled ? "فعال" : "غیرفعال"}
+                  </Text>
+                  <Switch
+                    checked={!!method.is_enabled}
+                    onCheckedChange={(checked) =>
+                      handleToggle(method, !!checked)
+                    }
+                    disabled={!complete && !method.is_enabled}
                   />
                 </div>
-              </Container>
-            )}
-          </div>
+              </div>
 
-          {methods.filter((m) => m).length === 0 && !isAddingNew && (
-            <div className="mt-3 flex flex-col items-center justify-center py-12">
-              <CreditCard className="mb-4 size-12 text-ui-fg-muted" />
-              <Heading level="h2">هیچ درگاهی ثبت نشده است</Heading>
-              <Text className="mt-2 text-ui-fg-subtle">
-                درگاه پرداخت اضافه کنید
-              </Text>
-              <Button
-                className="mt-4"
-                onClick={startAddingNew}
-                disabled={missingProviderIds.length === 0}
-              >
-                <Plus className="mr-2" />
-                افزودن درگاه پرداخت
-              </Button>
-            </div>
-          )}
-        </div>
-      </Container>
+              {/* Always visible config fields */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {provider?.fields.map((field) => (
+                  <FormField
+                    key={field}
+                    label={provider.placeholders?.[field] || field}
+                  >
+                    <Input
+                      type={
+                        field.toLowerCase().includes("password")
+                          ? "password"
+                          : "text"
+                      }
+                      value={String(method.config?.[field] ?? "")}
+                      onChange={(e) =>
+                        handleConfigChange(
+                          method.provider_id,
+                          field,
+                          e.target.value,
+                        )
+                      }
+                      placeholder={provider.placeholders?.[field]}
+                    />
+                  </FormField>
+                ))}
+              </div>
+
+              {/* Save button */}
+              <div className="mt-6 flex justify-end">
+                <Button
+                  size="small"
+                  onClick={() => handleSave(method)}
+                  isLoading={saveMutation.isPending}
+                >
+                  <FloppyDisk className="mr-2" />
+                  ذخیره
+                </Button>
+              </div>
+            </Container>
+          );
+        })}
+      </div>
     </StoreConfigShell>
-  );
-};
-
-type EditFormProps = {
-  editForm: PaymentConfigInput;
-  availableProviderIds?: string[];
-  currentProvider: ProviderConfig | null;
-  onProviderChange: (providerId: string) => void;
-  onConfigChange: (key: string, value: string) => void;
-  onSave: () => void;
-  onCancel: () => void;
-  isSaving: boolean;
-  isNew?: boolean;
-};
-
-const EditForm = ({
-  editForm,
-  availableProviderIds,
-  currentProvider,
-  onProviderChange,
-  onConfigChange,
-  onSave,
-  onCancel,
-  isSaving,
-  isNew = false,
-}: EditFormProps) => {
-  const providerIds = availableProviderIds ?? [editForm.provider_id];
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-semibold">
-          {isNew ? "افزودن درگاه جدید" : "ویرایش درگاه"}
-        </h3>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            size="small"
-            onClick={onCancel}
-            disabled={isSaving}
-          >
-            <XMark />
-          </Button>
-          <Button
-            size="small"
-            onClick={onSave}
-            disabled={isSaving || !editForm.provider_id}
-          >
-            {isSaving ? (
-              <Loader className="size-4" />
-            ) : (
-              <FloppyDisk className="mr-2" />
-            )}
-            ذخیره
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid gap-4">
-        <div className="space-y-2">
-          <Label>درگاه پرداخت</Label>
-          <Select
-            value={editForm.provider_id}
-            onValueChange={onProviderChange}
-            disabled={!isNew}
-          >
-            <Select.Trigger>
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content>
-              {providerIds.map((providerId) => (
-                <Select.Item key={providerId} value={providerId}>
-                  {PROVIDER_CONFIGS[providerId]?.name ?? providerId}
-                </Select.Item>
-              ))}
-            </Select.Content>
-          </Select>
-        </div>
-
-        {currentProvider?.fields.map((field) => (
-          <div key={field} className="space-y-2">
-            <Label>{currentProvider.placeholders?.[field] || field}</Label>
-            <Input
-              type={
-                field.toLowerCase().includes("password") ? "password" : "text"
-              }
-              value={String(editForm.config?.[field] ?? "")}
-              onChange={(event) => onConfigChange(field, event.target.value)}
-              placeholder={currentProvider.placeholders?.[field]}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-type ViewModeProps = {
-  method: PaymentConfigInput;
-  onEdit: () => void;
-  onDelete: () => void;
-  isDeleting: boolean;
-};
-
-const ViewMode = ({ method, onEdit, onDelete, isDeleting }: ViewModeProps) => {
-  const provider = PROVIDER_CONFIGS[method.provider_id];
-
-  return (
-    <div className="flex items-center gap-4">
-      <div className="flex size-12 items-center justify-center">
-        {provider?.logo ? (
-          <img
-            src={provider.logo}
-            alt={provider.name}
-            className="h-full w-full object-contain"
-          />
-        ) : (
-          <CreditCard className="size-6 text-ui-fg-muted" />
-        )}
-      </div>
-
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{provider?.name || method.name}</span>
-          {method.is_default && (
-            <Badge color="green" size="small">
-              پیش‌فرض
-            </Badge>
-          )}
-        </div>
-        <Text className="text-sm text-ui-fg-subtle">{method.provider_id}</Text>
-      </div>
-
-      <DropdownMenu>
-        <DropdownMenu.Trigger asChild>
-          <Button variant="transparent" size="small" className="size-8 p-0">
-            <EllipsisVertical />
-          </Button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content align="end">
-          <DropdownMenu.Item onClick={onEdit}>
-            <Pencil className="mr-2" />
-            ویرایش
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            className="text-ui-fg-error"
-            onSelect={onDelete}
-            disabled={isDeleting}
-          >
-            <Trash className="mr-2" />
-            حذف
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu>
-    </div>
   );
 };
 

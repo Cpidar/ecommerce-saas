@@ -47,7 +47,6 @@ export function CheckoutShippingStep({
     try {
       await addShippingMethod(selectedShipping);
       const providers = await listPaymentProviders();
-      console.log(providers)
       onShippingSubmitted(providers);
     } catch (err) {
       console.error(err);

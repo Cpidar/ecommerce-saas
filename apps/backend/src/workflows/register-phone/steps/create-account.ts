@@ -20,7 +20,8 @@ export const createAccountStep = createStep(
       string
     >;
 
-    const { authIdentity } = await authModule.register("emailpass", authData);
+    const [authIdentity] = await authModule.listAuthIdentities({ provider_identities: { entity_id: email, provider: "emailpass" } })
+    console.log("🦒🦒🦒🦒create-account response🦒🦒🦒🦒", authIdentity)
 
     const { result } = await createCustomerAccountWorkflow(container).run({
       input: {

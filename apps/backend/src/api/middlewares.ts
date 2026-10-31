@@ -12,13 +12,14 @@ import { adminProductsRoutesMiddlewares } from "./admin/products/middleware";
 import { storesRoutesMiddlewares } from "./stores/middlewares";
 import { storeSearchMiddleware } from "./middlewares/store-search";
 import { storeSearchRoutesMiddlewares } from "./store/search/middleware";
+import { checkStoreStatus } from "./middlewares/check-store-status";
 
 export default defineMiddlewares({
   routes: [
     {
       method: ["ALL"],
       matcher: "/store/*",
-      middlewares: [addStoreScope],
+      middlewares: [addStoreScope, checkStoreStatus],
     },
     // {
     //   method: 'ALL',

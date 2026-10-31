@@ -5,13 +5,14 @@ import type { ActivePaymentSession } from "@/lib/medusa/cart-client";
 import BehpardakhtIcon from "./BehpardakhtIcon";
 import { requestProvider } from "@/lib/checkout/request-payments";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { JsonRecord } from "@/lib/repositories/site-configs";
 
 export interface ProviderInputProps {
   cartId: string;
   /** The provider id chosen by the customer (e.g. "pp_stripe_stripe"). */
   providerId: string;
 
-  config?: Record<string, string>;
+  config?: JsonRecord;
   /** Payment session returned by initiatePaymentSession — provider-specific data. */
   session: ActivePaymentSession | null;
   /** Pretty total to render on the submit button. */

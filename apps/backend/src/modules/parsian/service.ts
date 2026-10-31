@@ -36,8 +36,8 @@ type InjectedDependencies = {
   logger: Logger;
 };
 
-export default class ZibalPaymentProvider extends AbstractPaymentProvider {
-  static identifier = "zibal";
+export default class ParsianPaymentProvider extends AbstractPaymentProvider {
+  static identifier = "parsian";
 
   protected logger_: Logger;
   // protected driver: BehpardakhtDriver;
@@ -136,9 +136,9 @@ export default class ZibalPaymentProvider extends AbstractPaymentProvider {
   getPaymentStatus(
     input: GetPaymentStatusInput,
   ): Promise<any> {
-    throw new Error("Method not implemented.");
+    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "Method not implemented.");
   }
   retrievePayment(input: RetrievePaymentInput): Promise<RetrievePaymentOutput> {
-    throw new Error("Method not implemented.");
+    throw new MedusaError(MedusaError.Types.UNEXPECTED_STATE, "Method not implemented.");
   }
 }

@@ -42,4 +42,9 @@ export type UpdateStoreConfigWorkflowInput = {
 
   payment_configs?: Record<string, UpdatePaymentConfigInput>
   shipping_method_configs?: Record<string, UpdateShippingMethodConfigInput>
+
+  store_credit_account_id?: string,
+  subscription_status?: string,
+  store_suspended_at?: string,
+  store_suspended_reason?: string,
 }

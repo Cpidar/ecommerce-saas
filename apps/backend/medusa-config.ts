@@ -66,15 +66,15 @@ module.exports = defineConfig({
       resolve: "@medusajs/medusa/payment",
       options: {
         providers: [
-          {
-            // if module provider is in a plugin, use `plugin-name/providers/my-payment`
-            resolve: "./src/modules/behpardakht",
-            id: "behpardakht",
-          },
-          {
-            resolve: "./src/modules/zibal",
-            id: "zibal",
-          },
+          // {
+          //   // if module provider is in a plugin, use `plugin-name/providers/my-payment`
+          //   resolve: "./src/modules/behpardakht",
+          //   id: "behpardakht",
+          // },
+          // {
+          //   resolve: "./src/modules/parsian",
+          //   id: "parsian",
+          // },
         ],
       },
     },
