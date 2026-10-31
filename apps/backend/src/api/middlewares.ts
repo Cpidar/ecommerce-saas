@@ -13,6 +13,7 @@ import { storesRoutesMiddlewares } from "./stores/middlewares";
 import { storeSearchMiddleware } from "./middlewares/store-search";
 import { storeSearchRoutesMiddlewares } from "./store/search/middleware";
 import { checkStoreStatus } from "./middlewares/check-store-status";
+import { storeShippingOptionsRoutesMiddlewares } from "./store/shipping-options/middleware";
 
 export default defineMiddlewares({
   routes: [
@@ -34,6 +35,7 @@ export default defineMiddlewares({
     ...storeProductCategoriesRoutesMiddlewares,
     ...storeProductCollectionsRoutesMiddlewares,
     ...storeStoreConfigRoutesMiddlewares,
+    ...storeShippingOptionsRoutesMiddlewares,
     ...adminProductCategoryRoutesMiddlewares,
     ...adminProductOptionRoutesMiddlewares,
     ...adminStoreMethodsRoutesMiddlewares,
